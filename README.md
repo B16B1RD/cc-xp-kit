@@ -2,6 +2,17 @@
 
 Claude Code 用の TDD 開発キット - Kent Beck 流で小さく始めて大きく育てる。
 
+> [!NOTE]
+> **このプロジェクトは Claude Code との Vibe Coding で作成された実験的プロジェクトです**  
+>
+> もともと個人的な開発効率化のために作ったツールですが、以下の理由で公開しています。
+> - **Vibe Coding の実践例**として、新しい開発手法の可能性を示す
+> - **TDD + AI ペアプロ**の具体的な成果物として参考になるかもしれない
+> - **「こんなやり方もあるよ」**という情報共有
+>
+> ただし、AI との協調開発で作成されたツールの安定性や保守性はまだ検証段階です。  
+> 便利そうだと思われた方は、その点をご理解の上でお試しください。
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blue)](https://www.anthropic.com/)
 
