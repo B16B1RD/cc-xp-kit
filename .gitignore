@@ -70,7 +70,6 @@ playwright/.cache/
 
 # Claude specific (for development)
 .claude/agile-artifacts/
-CLAUDE.md
 
 # Package files
 *.tar.gz
