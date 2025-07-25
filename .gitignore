@@ -79,3 +79,6 @@ CLAUDE.md
 # Documentation build
 docs/_build/
 docs/.doctrees/
+
+# Local binaries
+bin/
