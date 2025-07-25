@@ -1,0 +1,108 @@
+name: ✨ 機能提案
+description: cc-tdd-kit の新機能を提案してください
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        機能提案をしていただき、ありがとうございます！✨
+        より良い実装のため、以下の情報をご提供ください。
+
+  - type: checkboxes
+    id: preliminary-checks
+    attributes:
+      label: 事前確認
+      description: 以下の項目をご確認ください
+      options:
+        - label: 既存のIssueで同じ機能が提案されていないか検索しました
+          required: true
+        - label: この機能がプロジェクトのスコープに適しているか検討しました
+          required: true
+        - label: 既存の機能で解決できないか確認しました
+          required: true
+
+  - type: textarea
+    id: problem-summary
+    attributes:
+      label: 解決したい問題
+      description: この機能提案が解決しようとしている問題を説明してください
+      placeholder: "現在、...という問題があります。なぜなら..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 提案する解決策
+      description: 問題を解決するためのアイデアを説明してください
+      placeholder: "...という機能を追加することで、この問題を解決できると思います。"
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: 使用例
+      description: この機能がどのように使用されるかの具体例を教えてください
+      placeholder: |
+        使用例1: ユーザーが...するとき、この機能により...
+        使用例2: ...の場合、この機能で...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 検討した代替案
+      description: 他に検討した解決策があれば説明してください
+      placeholder: "代替案として...も考えましたが、...という理由で採用しませんでした。"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: この機能の重要度を評価してください
+      options:
+        - 低 - あれば便利だが、なくても困らない
+        - 中 - ワークフローの改善に役立つ
+        - 高 - 重要な問題を解決する
+        - 緊急 - 現在の機能に重大な制限がある
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implementation-complexity
+    attributes:
+      label: 実装の複雑さ（予想）
+      description: この機能の実装がどの程度複雑だと思いますか？
+      options:
+        - 簡単 - 小さな変更や追加
+        - 中程度 - いくつかのファイルの変更
+        - 複雑 - 大きな設計変更が必要
+        - 分からない
+
+  - type: textarea
+    id: implementation-ideas
+    attributes:
+      label: 実装のアイデア
+      description: 実装方法についてアイデアがあれば共有してください
+      placeholder: "この機能は...というアプローチで実装できそうです。"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: この提案について、他に何か関連する情報があれば教えてください
+      placeholder: "参考資料、類似機能を持つツール、スクリーンショット、モックアップなど..."
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: 貢献
+      description: この機能の実装にご協力いただけますか？
+      options:
+        - label: この機能の実装に取り組むことができます
+        - label: 設計やレビューに協力できます
+        - label: テストや検証に協力できます

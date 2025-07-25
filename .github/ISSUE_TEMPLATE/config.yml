@@ -1,0 +1,13 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/B16B1RD/cc-tdd-kit/discussions
+    about: 質問、アイデア共有、一般的な議論はこちらで
+
+  - name: 🔒 セキュリティ脆弱性の報告
+    url: https://github.com/B16B1RD/cc-tdd-kit/security/advisories/new
+    about: セキュリティに関する問題は非公開で報告してください
+
+  - name: 📚 ドキュメント
+    url: https://github.com/B16B1RD/cc-tdd-kit#readme
+    about: 使用方法や基本的な情報はREADMEをご確認ください
