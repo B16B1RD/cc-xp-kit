@@ -85,7 +85,7 @@ install_tdd_kit() {
     
     # 一時ディレクトリの作成
     TEMP_DIR=$(mktemp -d)
-    trap "rm -rf $TEMP_DIR" EXIT
+    trap 'rm -rf "$TEMP_DIR"' EXIT
     
     echo -e "${BLUE}📥 ファイルをダウンロード中...${NC}"
     
@@ -120,7 +120,7 @@ install_tdd_kit() {
         if download_file "$REPO_URL/raw/$BRANCH/src/commands/$file" "$TEMP_DIR/$file"; then
             # インストールタイプに応じてパスを調整
             if [ "$INSTALL_TYPE" = "project" ]; then
-                sed -i.bak 's|~/.claude/commands/shared/|.claude/commands/shared/|g' "$TEMP_DIR/$file"
+                sed -i.bak 's|~/.claude/commands/shared/|.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
             fi
             cp "$TEMP_DIR/$file" "$INSTALL_DIR/$file"
             echo -e "${GREEN}✓${NC}"
@@ -146,7 +146,7 @@ install_tdd_kit() {
         if download_file "$REPO_URL/raw/$BRANCH/src/subcommands/tdd/$file" "$TEMP_DIR/$file"; then
             # インストールタイプに応じてパスを調整
             if [ "$INSTALL_TYPE" = "project" ]; then
-                sed -i.bak 's|~/.claude/commands/shared/|.claude/commands/shared/|g' "$TEMP_DIR/$file"
+                sed -i.bak 's|~/.claude/commands/shared/|.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
             fi
             cp "$TEMP_DIR/$file" "$INSTALL_DIR/tdd/$file"
             echo -e "${GREEN}✓${NC}"

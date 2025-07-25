@@ -36,7 +36,7 @@ run_test() {
 
 # テストディレクトリの確認
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR" || exit
 
 # 1. インストールテスト
 echo -e "\n${YELLOW}1. インストールテスト${NC}"
@@ -58,7 +58,7 @@ mkdir -p "$USER_HOME"
 # インストール実行
 (
     export HOME="$USER_HOME"
-    cd "$TEMP_DIR"
+    cd "$TEMP_DIR" || exit
     echo "1" | timeout 10 bash "$SCRIPT_DIR/../install.sh" > /dev/null 2>&1
 )
 user_install_result=$?
@@ -83,10 +83,10 @@ mkdir -p "$PROJECT_DIR"
 echo -n "  プロジェクト用インストール ... "
 
 # インストール実行
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" || exit
 echo "2" | timeout 10 bash "$SCRIPT_DIR/../install.sh" > install.log 2>&1
 install_result=$?
-cd - > /dev/null
+cd - > /dev/null || exit
 
 # 結果確認
 if [ $install_result -eq 0 ] && \
@@ -171,7 +171,7 @@ mkdir -p "$UNINSTALL_HOME"
 # インストール
 (
     export HOME="$UNINSTALL_HOME"
-    cd "$TEMP_DIR"
+    cd "$TEMP_DIR" || exit
     echo "1" | timeout 10 bash "$SCRIPT_DIR/../install.sh" > /dev/null 2>&1
 )
 install_result=$?
@@ -179,7 +179,7 @@ install_result=$?
 # アンインストール
 (
     export HOME="$UNINSTALL_HOME"
-    cd "$TEMP_DIR"
+    cd "$TEMP_DIR" || exit
     echo "y" | timeout 5 bash "$SCRIPT_DIR/../install.sh" uninstall > /dev/null 2>&1
 )
 uninstall_result=$?
