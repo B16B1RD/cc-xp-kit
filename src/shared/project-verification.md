@@ -16,8 +16,8 @@ fi
 ```
 
 ### 確認手順
-1. Playwright MCPで `http://localhost:8000` を開く
-2. 0.5秒待機して描画を待つ
+1. Playwright MCP で `http://localhost:8000` を開く
+2. 0.5 秒待機して描画を待つ
 3. スクリーンショットを取得
 4. 受け入れ基準の視覚的要素を確認
 

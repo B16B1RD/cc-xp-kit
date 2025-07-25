@@ -42,7 +42,7 @@
 ### 3. 各ステップの実行
 
 #### 🔴 RED（テスト作成）
-Kent Beck視点で最小限のテストを作成：
+Kent Beck 視点で最小限のテストを作成：
 ```javascript
 test("具体的な例から始める", () => {
   expect(game.getBlock()).toBe("red");
@@ -55,7 +55,7 @@ npm test -- --watchAll=false --forceExit 2>&1
 ```
 
 #### 🟢 GREEN（最小実装）
-必ずFake Itから始める：
+必ず Fake It から始める：
 ```javascript
 getBlock() {
   return "red"; // ハードコーディング
@@ -77,9 +77,9 @@ git commit -m "[STRUCTURE] Step X.Y: Extract method"
 参照: `~/.claude/commands/shared/mandatory-gates.md`
 
 - **動作確認**: プロジェクトタイプに応じて実施
-  - Web: Playwright MCPでスクリーンショット
+  - Web: Playwright MCP でスクリーンショット
   - CLI: コマンド実行結果
-  - API: curlでレスポンス確認
+  - API: curl でレスポンス確認
 
 - **受け入れ基準**: ストーリーファイルを更新
 ```bash
@@ -121,7 +121,7 @@ git commit -m "[BEHAVIOR] Save iteration N feedback"
 ## エラー対応
 参照: `~/.claude/commands/shared/error-handling.md`
 
-エラー時は3つの質問に答えてから対応。
+エラー時は 3 つの質問に答えてから対応。
 
 ## プロジェクトタイプ別確認
 参照: `~/.claude/commands/shared/project-verification.md`

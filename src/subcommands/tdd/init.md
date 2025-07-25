@@ -1,6 +1,6 @@
 # TDD開発環境の初期化
 
-現在のプロジェクトにTDD開発環境をセットアップします。
+現在のプロジェクトに TDD 開発環境をセットアップします。
 
 ## 実行内容
 
@@ -10,7 +10,7 @@ mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
 ```
 
 2. **CLAUDE.mdの作成/更新**
-- 既存ファイルがあれば、TDD情報を先頭に追加
+- 既存ファイルがあれば、TDD 情報を先頭に追加
 - なければ新規作成
 
 内容:

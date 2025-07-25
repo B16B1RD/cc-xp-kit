@@ -36,4 +36,4 @@ git commit -m "[BEHAVIOR] Fix error with Fake It approach"
 - 複雑なライブラリの追加
 - 大規模な設計変更
 - 複数問題の同時解決
-- Stack Overflowのコピペ
+- Stack Overflow のコピペ

@@ -5,9 +5,9 @@
 ## 🔗 関連Issue
 
 <!-- 関連するIssueがあればリンクしてください -->
-Fixes #(issue番号)
-Closes #(issue番号)
-Relates to #(issue番号)
+Fixes #(issue 番号)
+Closes #(issue 番号)
+Relates to #(issue 番号)
 
 ## 📋 変更の種類
 
@@ -21,7 +21,7 @@ Relates to #(issue番号)
 - [ ] ♻️ リファクタリング (バグ修正や機能追加を含まないコード変更)
 - [ ] ⚡ パフォーマンス改善
 - [ ] ✅ テスト追加・改善
-- [ ] 🔧 ビルドやCI関連の変更
+- [ ] 🔧 ビルドや CI 関連の変更
 - [ ] 🗑️ 削除 (機能やファイルの削除)
 
 ## 🧪 テスト
@@ -29,9 +29,9 @@ Relates to #(issue番号)
 以下のテストを実行し、チェックを入れてください：
 
 - [ ] `bash tests/run-tests.sh` が通る
-- [ ] `act -j test-install` が通る (actがインストールされている場合)
-- [ ] `act -j shellcheck` が通る (actがインストールされている場合)
-- [ ] `act -j markdown-lint` が通る (actがインストールされている場合)
+- [ ] `act -j test-install` が通る (act がインストールされている場合)
+- [ ] `act -j shellcheck` が通る (act がインストールされている場合)
+- [ ] `act -j markdown-lint` が通る (act がインストールされている場合)
 - [ ] 新しいテストを追加しました (該当する場合)
 - [ ] 手動テストを実施しました
 

@@ -23,7 +23,7 @@ git commit -m "[INIT] Add test framework"
 ```
 
 ## ルール
-- 1コミット = 1つの論理的変更
+- 1 コミット = 1 つの論理的変更
 - テスト実行（タイムアウト対策）:
   ```bash
   npm test -- --watchAll=false --forceExit 2>&1
