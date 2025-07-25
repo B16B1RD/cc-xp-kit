@@ -56,13 +56,14 @@ jobs:
     - name: Test uninstall
       run: |
         # アンインストールのテスト
-        echo "y" | bash ${{ github.workspace }}/install.sh uninstall
-        
-        # アンインストールの確認
         if [ "${{ matrix.install-type }}" = "user" ]; then
+          echo "y" | bash ${{ github.workspace }}/install.sh uninstall
+          # アンインストールの確認
           test ! -f "$HOME/.claude/commands/tdd.md"
         else
           cd test-project
+          echo "y" | bash ${{ github.workspace }}/install.sh uninstall
+          # アンインストールの確認
           test ! -f ".claude/commands/tdd.md"
         fi
 
