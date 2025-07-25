@@ -17,13 +17,10 @@ cc-tdd-kit のセキュリティ脆弱性を発見した場合は、**公開のI
 
 セキュリティに関する問題は、以下の方法により非公開で報告してください。
 
-1. **GitHub Security Advisories** (推奨)
-   - リポジトリの [Security Advisories](https://github.com/B16B1RD/cc-tdd-kit/security/advisories) から報告
-   - GitHub のプライベートな脆弱性報告システムを使用
-
-2. **メール**
-   - security@[プロジェクト固有のドメイン](設定後に更新)
-   - GPG 暗号化を推奨（公開鍵は後日提供）
+**GitHub Security Advisories**
+- リポジトリの [Security Advisories](https://github.com/B16B1RD/cc-tdd-kit/security/advisories) から報告
+- GitHub のプライベートな脆弱性報告システムを使用
+- CVE 番号の自動発行と段階的な公開が可能
 
 ### 報告に含めるべき情報
 

@@ -92,7 +92,9 @@
 
 コミュニティ影響ガイドラインは [Mozilla の行動規範執行梯子](https://github.com/mozilla/diversity) にインスパイアされています。
 
-この行動規範に関するよくある質問への回答については、https://www.contributor-covenant.org/faq をご覧ください。翻訳版は https://www.contributor-covenant.org/translations で利用できます。
+この行動規範に関するよくある質問への回答については、
+[FAQ](https://www.contributor-covenant.org/faq) をご覧ください。
+翻訳版は [Translations](https://www.contributor-covenant.org/translations) で利用できます。
 
 ---
 

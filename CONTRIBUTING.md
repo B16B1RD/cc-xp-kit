@@ -64,7 +64,9 @@ cc-tdd-kit への貢献をご検討いただき、ありがとうございます
 
 ### 機能提案
 
-新機能のアイデアがある場合は、[GitHub Discussions](https://github.com/B16B1RD/cc-tdd-kit/discussions) で議論を開始するか、[GitHub Issues](https://github.com/B16B1RD/cc-tdd-kit/issues) で提案してください。
+新機能のアイデアがある場合は、
+[GitHub Discussions](https://github.com/B16B1RD/cc-tdd-kit/discussions) で議論を開始するか、
+[GitHub Issues](https://github.com/B16B1RD/cc-tdd-kit/issues) で提案してください。
 
 #### 良い機能提案の要素
 
