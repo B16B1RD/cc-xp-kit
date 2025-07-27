@@ -2,7 +2,7 @@
 set -e
 
 # cc-tdd-kit インストーラー
-VERSION="0.1.3"
+VERSION="0.1.10"
 REPO_URL="https://github.com/B16B1RD/cc-tdd-kit"
 BRANCH="${CC_TDD_KIT_BRANCH:-main}"
 
@@ -62,19 +62,35 @@ select_install_location() {
     fi
 }
 
-# ファイルのダウンロード
+# ファイルのダウンロード（リトライロジック付き）
 download_file() {
     local url=$1
     local output=$2
+    local max_retries=3
+    local retry_delay=1
     
-    if command -v curl &> /dev/null; then
-        curl -fsSL "$url" -o "$output"
-    elif command -v wget &> /dev/null; then
-        wget -q "$url" -O "$output"
-    else
-        echo -e "${RED}❌ ダウンロードツールが見つかりません${NC}"
-        return 1
-    fi
+    for i in $(seq 1 $max_retries); do
+        if command -v curl &> /dev/null; then
+            if curl -fsSL "$url" -o "$output" 2>/dev/null; then
+                return 0
+            fi
+        elif command -v wget &> /dev/null; then
+            if wget -q "$url" -O "$output" 2>/dev/null; then
+                return 0
+            fi
+        else
+            echo -e "${RED}❌ ダウンロードツールが見つかりません${NC}"
+            return 1
+        fi
+        
+        # 最後の試行でない場合は遅延を入れてリトライ
+        if [ $i -lt $max_retries ]; then
+            sleep $retry_delay
+            retry_delay=$((retry_delay * 2))  # 指数バックオフ
+        fi
+    done
+    
+    return 1
 }
 
 # インストール実行
@@ -107,6 +123,8 @@ install_tdd_kit() {
             echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
             exit 1
         fi
+        # GitHub Actions でのレート制限対策
+        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
     done
     
     # メインコマンドのダウンロード
@@ -129,6 +147,8 @@ install_tdd_kit() {
             echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
             exit 1
         fi
+        # GitHub Actions でのレート制限対策
+        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
     done
     
     # サブコマンドのダウンロード
@@ -155,6 +175,8 @@ install_tdd_kit() {
             echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
             exit 1
         fi
+        # GitHub Actions でのレート制限対策
+        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
     done
     
     # 設定ファイルの作成
