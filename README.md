@@ -158,18 +158,6 @@ your-project/
 └── CLAUDE.md              # プロジェクト設定
 ```
 
-## 貢献方法
-
-バグ報告、機能要望、プルリクエストを歓迎します。
-
-1. このリポジトリをフォーク
-2. フィーチャーブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m '[BEHAVIOR] Add amazing feature'`)
-4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
-5. プルリクエストを作成
-
-詳細は [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
-
 ## ライセンス
 
 このプロジェクトは MIT ライセンスの下で公開されています。詳細は [LICENSE](LICENSE) ファイルを参照してください。
