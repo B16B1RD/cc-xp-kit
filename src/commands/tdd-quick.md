@@ -1,3 +1,10 @@
+---
+allowed-tools:
+  - Task
+description: TDD開発を即座に開始する統合コマンド
+argument-hint: "作りたいものを3行で説明"
+---
+
 # 🚀 TDDクイックスタート
 
 要望: $ARGUMENTS

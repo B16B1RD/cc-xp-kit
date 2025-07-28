@@ -1,3 +1,8 @@
+---
+allowed-tools: []
+description: TDD開発ツールのヘルプと使い方ガイド
+---
+
 # 🚀 TDD開発ツール
 
 Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援します。

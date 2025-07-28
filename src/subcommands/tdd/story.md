@@ -1,3 +1,14 @@
+---
+allowed-tools:
+  - Write
+  - Read(*)
+  - Bash(mkdir -p *)
+  - Bash(git add *)
+  - Bash(git commit -m *)
+description: ユーザーストーリーの作成と分析
+argument-hint: "作りたいものの説明"
+---
+
 # ユーザーストーリーの作成
 
 要望: $ARGUMENTS

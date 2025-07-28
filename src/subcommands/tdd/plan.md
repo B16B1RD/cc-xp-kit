@@ -1,3 +1,14 @@
+---
+allowed-tools:
+  - Read(.claude/agile-artifacts/*)
+  - Write
+  - Bash(mkdir -p *)
+  - Bash(git add *)
+  - Bash(git commit -m *)
+description: イテレーション計画の作成（90分単位）
+argument-hint: "[iteration-number]"
+---
+
 # イテレーション計画の作成
 
 イテレーション番号: $ARGUMENTS（省略時は自動判定）

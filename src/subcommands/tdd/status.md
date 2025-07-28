@@ -1,8 +1,31 @@
+---
+allowed-tools:
+  - Read(.claude/agile-artifacts/*)
+  - Bash(git status --short)
+  - Bash(git log --oneline -10)
+  - Bash(git log --since="today" --oneline | wc -l)
+  - Bash(find .claude/agile-artifacts -name "*.md" -o -name "*.json" | wc -l)
+  - LS
+description: TDD進捗状況の確認とレポート
+argument-hint: "[-v for detailed view]"
+---
+
 # TDD進捗状況
 
 オプション: $ARGUMENTS（-v で詳細表示）
 
-## 表示内容（デフォルト: シンプル）
+## 🔄 現在の状態
+
+### Git 状況
+!`git status --short`
+
+### 最近のコミット
+!`git log --oneline -10`
+
+### 本日の活動
+- コミット数: !`git log --since="today" --oneline | wc -l`
+
+## 📊 進捗情報
 
 ### 基本情報
 ```
@@ -14,11 +37,8 @@ Iteration N: 60% 完了 (36/60 チェック)
 必須ゲート: ⚠️ フィードバック未収集
 ```
 
-### Git統計
-```
-コミット: 24個 ([BEHAVIOR]: 18, [STRUCTURE]: 6)
-最新: [BEHAVIOR] Add rotation (5分前)
-```
+### プロジェクトファイル
+- アーティファクト数: !`find .claude/agile-artifacts -name "*.md" -o -name "*.json" | wc -l`
 
 ### 次のアクション
 ```

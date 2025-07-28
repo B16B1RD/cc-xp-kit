@@ -1,3 +1,14 @@
+---
+allowed-tools:
+  - Read(.claude/agile-artifacts/*)
+  - Write
+  - Bash(git log *)
+  - Bash(git diff --stat *)
+  - Bash(find .claude/agile-artifacts -name "*.md" -o -name "*.json" | wc -l)
+description: イテレーションレビューと品質分析
+argument-hint: "[iteration-number]"
+---
+
 # イテレーションレビュー
 
 レビュー対象: Iteration $ARGUMENTS（省略時は最新）

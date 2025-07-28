@@ -1,3 +1,17 @@
+---
+allowed-tools:
+  - Bash(mkdir -p *)
+  - Bash(test -d .git)
+  - Bash(test -f *)
+  - Bash(git init)
+  - Bash(git add *)
+  - Bash(git commit -m *)
+  - Read(CLAUDE.md)
+  - Write
+  - Edit
+description: TDD開発環境の初期化とGitセットアップ
+---
+
 # TDD開発環境の初期化
 
 現在のプロジェクトに TDD 開発環境をセットアップします。

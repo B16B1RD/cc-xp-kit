@@ -1,3 +1,19 @@
+---
+allowed-tools:
+  - Read(.claude/agile-artifacts/*)
+  - Write
+  - Edit
+  - MultiEdit
+  - Bash(*)
+  - Grep
+  - Glob
+  - LS
+  - Task
+  - TodoWrite
+description: TDD実行 - Red/Green/Refactorサイクルの実行
+argument-hint: "[--step|--micro|--step X.Y|--resume]"
+---
+
 # TDD実行
 
 オプション: $ARGUMENTS（--step, --micro, --step X.Y, --resume）
