@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 今後追加される機能をここに記載
 
+## [0.2.2] - 2025-01-28
+
+### Fixed
+
+- 📝 **Documentation quality improvements**
+  - textlint 準拠（README.md, CHANGELOG.md, CLAUDE.md）
+  - 全角・半角間スペースの統一
+  - 弱い表現や機械的表現の改善
+  - MD047: ファイル末尾改行の統一
+  - GitHub Actions CI でのマークダウンリントエラー解消
+
+### Enhanced
+
+- 📋 **Release management**
+  - リリース管理・タグ付けガイドラインを CLAUDE.md に追加
+  - Semantic Versioning に基づく正式なプロセス確立
+  - タグ付け後の追加変更への対処法明示
+
 ## [0.2.1] - 2025-01-28
 
 ### Fixed
