@@ -13,3 +13,6 @@ CLAUDE.md
 
 # Node.js関連
 node_modules/
+
+# 一時ファイル（Claude参照用）
+tmp/
