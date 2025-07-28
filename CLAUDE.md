@@ -151,6 +151,19 @@ argument-hint: 期待される引数の形式
    - GitHub Releases でリリースノート作成
    - インストールスクリプトが新バージョンを正しく取得することを確認
 
+### リリーススクリプト
+手動作業を減らすため、`scripts/release.sh` を使用：
+
+```bash
+./scripts/release.sh 0.2.0
+```
+
+このスクリプトは以下を自動化：
+- バージョン番号の更新
+- CHANGELOG.md 編集のガイド
+- Git コミットとタグ作成
+- 手動作業の指示表示
+
 ### 変更履歴の記録
 開発中は常に `CHANGELOG.md` の `[Unreleased]` セクションを更新：
 
