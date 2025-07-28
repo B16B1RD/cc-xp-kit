@@ -4,8 +4,8 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## プロジェクト概要
 
-cc-tdd-kit は Claude Code 用のTDD開発キットです。
-Kent Beck 流のTDD原則に基づいて、Red → Green → Refactor サイクルを厳格に実施します。
+cc-tdd-kit は Claude Code 用の TDD 開発キットです。
+Kent Beck 流の TDD 原則に基づいて、Red → Green → Refactor サイクルを厳格に実施します。
 小さく始めて大きく育てる開発を支援します。
 
 ## 基本コマンド
@@ -36,8 +36,8 @@ shellcheck install.sh
 
 ### 主要ディレクトリ構造
 - `src/commands/` - メインコマンド（`/tdd`, `/tdd-quick`）
-- `src/subcommands/tdd/` - TDDサブコマンド（`init`、`story`、`plan`、`run`、`status`、`review`）
-- `src/shared/` - 共通リソース（Kent Beck原則、必須ゲート、プロジェクト検証など）
+- `src/subcommands/tdd/` - TDD サブコマンド（`init`、`story`、`plan`、`run`、`status`、`review`）
+- `src/shared/` - 共通リソース（Kent Beck 原則、必須ゲート、プロジェクト検証など）
 - `tests/` - 自動テストスイート
 - `examples/` - 使用例（api-server, cli-tool, web-app）
 
@@ -47,10 +47,10 @@ shellcheck install.sh
 - **プログレッシブ表示** - 必要な情報を必要なときに表示（`-v` オプションで詳細表示）
 
 ### TDD ワークフロー
-1. `/tdd:init` - 環境初期化とGit初期化
+1. `/tdd:init` - 環境初期化と Git 初期化
 2. `/tdd:story` - ユーザーストーリー作成
-3. `/tdd:plan` - 90分イテレーション計画
-4. `/tdd:run` - TDD実行（連続実行 or ステップ実行）
+3. `/tdd:plan` - 90 分イテレーション計画
+4. `/tdd:run` - TDD 実行（連続実行 or ステップ実行）
 5. `/tdd:status` - 進捗確認
 6. `/tdd:review` - 品質分析とフィードバック
 
@@ -61,20 +61,20 @@ shellcheck install.sh
 ## データ管理
 
 各プロジェクトに `.claude/agile-artifacts/` ディレクトリが作成され、以下を管理します。
-- `stories/` - ユーザーストーリー（Git管理対象）
-- `iterations/` - イテレーション計画（Git管理対象）
-- `reviews/` - レビューとフィードバック（Git管理対象）
-- `tdd-logs/` - 実行ログ（Git管理対象外、個人用）
+- `stories/` - ユーザーストーリー（Git 管理対象）
+- `iterations/` - イテレーション計画（Git 管理対象）
+- `reviews/` - レビューとフィードバック（Git 管理対象）
+- `tdd-logs/` - 実行ログ（Git 管理対象外、個人用）
 
 ### Git管理方針
-- チーム共有価値の高い情報（stories, iterations, reviews）はGit管理
+- チーム共有価値の高い情報（stories, iterations, reviews）は Git 管理
 - 個人的な実行ログ（tdd-logs）は`.gitignore`で除外
 - プロジェクトの成長過程と学習内容を追跡可能に
 
 ## Kent Beck TDD 戦略
 
-- **Fake It戦略**（60%以上で使用） - 最初はハードコーディングで実装
-- **Triangulation** - 2つ目のテストで一般化
+- **Fake It 戦略**（60%以上で使用）- 最初はハードコーディングで実装
+- **Triangulation** - 2 つ目のテストで一般化
 - **Obvious Implementation** - 明白な場合のみ最初から正しい実装
 
 ## 品質管理
@@ -83,7 +83,7 @@ shellcheck install.sh
 - ShellCheck によるシェルスクリプト品質チェック
 - インストール/アンインストール機能の統合テスト
 - ファイル整合性チェック
-- Markdown lint チェック（textlint使用）
+- Markdown lint チェック（textlint 使用）
 
 ## リリース管理
 
@@ -96,7 +96,7 @@ shellcheck install.sh
 ### リリースプロセス
 1. **コード変更**
    - 全テストが通ることを確認
-   - Markdown lintエラーがないことを確認
+   - Markdown lint エラーがないことを確認
 
 2. **CHANGELOG.md更新**
    - 変更内容を該当するセクション（Added/Changed/Fixed/Removed）に具体的に記載
@@ -132,5 +132,5 @@ shellcheck install.sh
 - 例: v0.2.0 → v0.2.1（リント修正など）
 
 ### GitHub Actions
-- Markdown lintエラーは必ずローカルで修正してからプッシュ
-- CIが通らない状態でのタグ付けは避ける
+- Markdown lint エラーは必ずローカルで修正してからプッシュ
+- CI が通らない状態でのタグ付けは避ける
