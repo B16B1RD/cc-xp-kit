@@ -1,9 +1,3 @@
----
-description: "TDD実行環境。Red→Green→Refactorサイクルを実行し、必須ゲートを通過させながら開発を進めます。"
-argument-hint: "実行オプション（--step|--micro|--step X.Y|--resume）"
-allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
----
-
 # TDD実行
 
 オプション: $ARGUMENTS（--step, --micro, --step X.Y, --resume）
@@ -24,7 +18,7 @@ allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 ### 1. プロジェクトコンテキストの検出
 ```bash
 # 言語検出ロジックを読み込み
-source ~/.claude/commands/shared/language-detector.md
+source .claude/commands/shared/language-detector.md
 
 # 現在のコンテキストを検出
 CURRENT_CONTEXT=$(get_current_context)
@@ -194,7 +188,7 @@ git commit -m "[STRUCTURE] Step X.Y: Extract method"
 ```
 
 ### 4. 必須チェック（各ステップ後）
-参照: `~/.claude/commands/shared/mandatory-gates.md`
+参照: `.claude/commands/shared/mandatory-gates.md`
 
 - **動作確認**: プロジェクトタイプに応じて実施
   - Web: Playwright MCP でスクリーンショット
@@ -239,12 +233,12 @@ git commit -m "[BEHAVIOR] Save iteration N feedback"
 ```
 
 ## エラー対応
-参照: `~/.claude/commands/shared/error-handling.md`
+参照: `.claude/commands/shared/error-handling.md`
 
 エラー時は 3 つの質問に答えてから対応。
 
 ## プロジェクトタイプ別確認
-参照: `~/.claude/commands/shared/project-verification.md`
+参照: `.claude/commands/shared/project-verification.md`
 
 ## 完了メッセージ
 

@@ -1,9 +1,3 @@
----
-description: "Kent Beck流TDD開発を支援するメインツール。段階的な開発プロセスで小さく始めて大きく育てる開発を実現します。"
-argument-hint: "サブコマンド名（init|story|plan|run|status|review|detect）"
-allowed-tools: ["Bash", "Read", "LS"]
----
-
 # 🚀 TDD開発ツール
 
 Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援します。
@@ -68,7 +62,7 @@ Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援し�
 
 ## 📚 詳細情報
 
-共通リソースは `~/.claude/commands/shared/` を参照：
+共通リソースは `.claude/commands/shared/` を参照：
 - kent-beck-principles.md - TDD 原則
 - mandatory-gates.md - 必須チェックポイント
 - project-verification.md - 動作確認方法
