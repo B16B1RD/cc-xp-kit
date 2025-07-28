@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 今後追加される機能をここに記載
 
+## [0.2.1] - 2025-01-28
+
+### Fixed
+
+- 🔧 **Markdown lint errors**
+  - MD010: Makefileのハードタブをスペースに変換
+  - GitHub Actions CIでのマークダウンリントエラーを解消
+
 ## [0.2.0] - 2025-01-15
 
 ### Added
