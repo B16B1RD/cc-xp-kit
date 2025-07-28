@@ -81,3 +81,54 @@ shellcheck install.sh
 - ShellCheck によるシェルスクリプト品質チェック
 - インストール/アンインストール機能の統合テスト
 - ファイル整合性チェック
+- Markdown lint チェック（textlint使用）
+
+## リリース管理
+
+### バージョニング
+[Semantic Versioning](https://semver.org/) に準拠：
+- **MAJOR**: 破壊的変更（例: 0.x.x → 1.0.0）
+- **MINOR**: 新機能追加（例: 0.1.x → 0.2.0）  
+- **PATCH**: バグ修正・改善（例: 0.1.0 → 0.1.1）
+
+### リリースプロセス
+1. **コード変更**
+   - 全テストが通ることを確認
+   - Markdown lintエラーがないことを確認
+   
+2. **CHANGELOG.md更新**
+   - 変更内容を適切なセクション（Added/Changed/Fixed/Removed）に記載
+   - リリース日を記載（例: `## [0.2.1] - 2025-01-28`）
+   
+3. **タグ付けの注意点**
+   - **必ず最新のコミット後にタグ付け**を実行
+   - タグ作成前に必要な変更が全てコミット済みか確認
+   - タグメッセージには簡潔な変更概要を含める
+   
+4. **実行手順**
+   ```bash
+   # 1. 変更をコミット
+   git add -A
+   git commit -m "[BEHAVIOR] 新機能の説明"
+   
+   # 2. CHANGELOGを更新
+   # （CHANGELOG.mdを編集）
+   git add CHANGELOG.md
+   git commit -m "[STRUCTURE] v0.x.x CHANGELOGエントリを追加"
+   
+   # 3. タグ付け（最新コミットに対して）
+   git tag v0.x.x -m "v0.x.x: 変更概要"
+   
+   # 4. プッシュ
+   git push origin main
+   git push origin v0.x.x
+   ```
+
+### タグ付け後の追加変更
+タグ付け後に追加のコミットが発生した場合：
+- パッチバージョンとして新しいタグを作成（推奨）
+- 例: v0.2.0 → v0.2.1（リント修正など）
+
+### GitHub Actions
+- Markdown lintエラーは必ずローカルで修正してからプッシュ
+- CIが通らない状態でのタグ付けは避ける
