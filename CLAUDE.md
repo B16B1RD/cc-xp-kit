@@ -116,3 +116,56 @@ argument-hint: 期待される引数の形式
 - `docs/slash-command-spec.md` - 完全な仕様書
 - `docs/best-practices.md` - ベストプラクティス集
 - `examples/advanced-commands/` - 高度な使用例
+
+## リリース管理
+
+### バージョン管理ルール
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html) に従います：
+
+- **MAJOR.MINOR.PATCH** (例: 1.2.3)
+- **MAJOR**: 破壊的変更
+- **MINOR**: 後方互換性のある機能追加
+- **PATCH**: 後方互換性のあるバグ修正
+
+### リリース時の必須作業
+新バージョンをリリースする際は以下を**必ず**実行：
+
+1. **バージョン更新**
+   ```bash
+   # install.sh のバージョン更新
+   sed -i 's/VERSION="[^"]*"/VERSION="X.Y.Z"/' install.sh
+   ```
+
+2. **CHANGELOG.md の更新**
+   - `[Unreleased]` セクションの内容を新バージョンに移動
+   - 日付とバージョン番号を追加
+   - 新しい `[Unreleased]` セクションを作成
+
+3. **Git タグの作成**
+   ```bash
+   git tag -a vX.Y.Z -m "Release version X.Y.Z"
+   git push origin vX.Y.Z
+   ```
+
+4. **リリース後の確認**
+   - GitHub Releases でリリースノート作成
+   - インストールスクリプトが新バージョンを正しく取得することを確認
+
+### 変更履歴の記録
+開発中は常に `CHANGELOG.md` の `[Unreleased]` セクションを更新：
+
+```markdown
+## [Unreleased]
+
+### Added
+- 新機能の説明
+
+### Changed  
+- 変更された機能の説明
+
+### Fixed
+- 修正されたバグの説明
+
+### Removed
+- 削除された機能の説明
+```

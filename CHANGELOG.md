@@ -7,17 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### 追加予定
+### Added
 
-- 今後追加される機能をここに記載
+- スラッシュコマンド完全仕様書 (`docs/slash-command-spec.md`)
+- ベストプラクティス集 (`docs/best-practices.md`)
+- 高度なコマンド使用例 (`examples/advanced-commands/`)
+  - プロジェクト健康診断コマンド (`health-check.md`)
+  - インテリジェントGitコミットコマンド (`smart-commit.md`)
+  - プロジェクトコンテキスト収集コマンド (`context-gather.md`)
+- すべてのスラッシュコマンドにYAML frontmatter追加
+- 開発ブランチ運用ルールの明文化
+- リリース管理とバージョン管理ルールの策定
 
-### 変更予定
+### Changed
 
-- 今後変更される機能をここに記載
+- `/tdd:status` コマンドに動的コンテンツ機能を追加（Git状況のリアルタイム表示）
+- 全スラッシュコマンドでセキュリティ強化（必要最小限の`allowed-tools`指定）
 
-### 修正予定
+### Technical Details
 
-- 今後修正されるバグをここに記載
+- YAML frontmatter による `allowed-tools`, `description`, `argument-hint` の明示
+- 動的コンテンツ機能: `$ARGUMENTS`, `!`記法, `@`記法の活用
+- Claude Code 公式仕様への完全準拠
 
 ## [0.1.0] - 2025-07-25
 
