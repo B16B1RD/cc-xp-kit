@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository.
 
 ## プロジェクト概要
 
-cc-tdd-kit は Claude Code 用のTDD開発キットです。Kent Beck 流のTDD原則に基づいて、Red → Green → Refactor サイクルを厳格に実施し、小さく始めて大きく育てる開発を支援します。
+cc-tdd-kit は Claude Code 用のTDD開発キットです。
+Kent Beck 流のTDD原則に基づいて、Red → Green → Refactor サイクルを厳格に実施します。
+小さく始めて大きく育てる開発を支援します。
 
 ## 基本コマンド
 
@@ -34,15 +36,15 @@ shellcheck install.sh
 
 ### 主要ディレクトリ構造
 - `src/commands/` - メインコマンド（`/tdd`, `/tdd-quick`）
-- `src/subcommands/tdd/` - TDDサブコマンド（`init`, `story`, `plan`, `run`, `status`, `review`）
+- `src/subcommands/tdd/` - TDDサブコマンド（`init`、`story`、`plan`、`run`、`status`、`review`）
 - `src/shared/` - 共通リソース（Kent Beck原則、必須ゲート、プロジェクト検証など）
 - `tests/` - 自動テストスイート
 - `examples/` - 使用例（api-server, cli-tool, web-app）
 
 ### 設計原則
-- **Tidy First原則**: 構造的変更（[STRUCTURE]）と振る舞いの変更（[BEHAVIOR]）を厳格に分離
-- **必須ゲート**: 各ステップで動作確認、受け入れ基準チェック、Git コミットを強制
-- **プログレッシブ表示**: 必要な情報を必要なときに表示（`-v` オプションで詳細表示）
+- **Tidy First原則** - 構造的変更（[STRUCTURE]）と振る舞いの変更（[BEHAVIOR]）を厳格に分離
+- **必須ゲート** - 各ステップで動作確認、受け入れ基準チェック、Git コミットを強制
+- **プログレッシブ表示** - 必要な情報を必要なときに表示（`-v` オプションで詳細表示）
 
 ### TDD ワークフロー
 1. `/tdd:init` - 環境初期化とGit初期化
@@ -53,12 +55,12 @@ shellcheck install.sh
 6. `/tdd:review` - 品質分析とフィードバック
 
 ### インストールタイプ
-- **ユーザー用**: `~/.claude/commands/` - 全プロジェクトで利用可能
-- **プロジェクト用**: `.claude/commands/` - プロジェクト固有カスタマイズ可能
+- **ユーザー用** - `~/.claude/commands/` で全プロジェクトで利用可能
+- **プロジェクト用** - `.claude/commands/` でプロジェクト固有カスタマイズ可能
 
 ## データ管理
 
-各プロジェクトに `.claude/agile-artifacts/` ディレクトリが作成され、以下を管理：
+各プロジェクトに `.claude/agile-artifacts/` ディレクトリが作成され、以下を管理します。
 - `stories/` - ユーザーストーリー（Git管理対象）
 - `iterations/` - イテレーション計画（Git管理対象）
 - `reviews/` - レビューとフィードバック（Git管理対象）
@@ -71,9 +73,9 @@ shellcheck install.sh
 
 ## Kent Beck TDD 戦略
 
-- **Fake It戦略**（60%以上で使用）: 最初はハードコーディングで実装
-- **Triangulation**: 2つ目のテストで一般化
-- **Obvious Implementation**: 明白な場合のみ最初から正しい実装
+- **Fake It戦略**（60%以上で使用） - 最初はハードコーディングで実装
+- **Triangulation** - 2つ目のテストで一般化
+- **Obvious Implementation** - 明白な場合のみ最初から正しい実装
 
 ## 品質管理
 
@@ -86,10 +88,10 @@ shellcheck install.sh
 ## リリース管理
 
 ### バージョニング
-[Semantic Versioning](https://semver.org/) に準拠：
-- **MAJOR**: 破壊的変更（例: 0.x.x → 1.0.0）
-- **MINOR**: 新機能追加（例: 0.1.x → 0.2.0）  
-- **PATCH**: バグ修正・改善（例: 0.1.0 → 0.1.1）
+[Semantic Versioning](https://semver.org/) に準拠します。
+- **MAJOR** - 破壊的変更（例: 0.x.x → 1.0.0）
+- **MINOR** - 新機能追加（例: 0.1.x → 0.2.0）  
+- **PATCH** - バグ修正・改善（例: 0.1.0 → 0.1.1）
 
 ### リリースプロセス
 1. **コード変更**
@@ -97,7 +99,7 @@ shellcheck install.sh
    - Markdown lintエラーがないことを確認
 
 2. **CHANGELOG.md更新**
-   - 変更内容を適切なセクション（Added/Changed/Fixed/Removed）に記載
+   - 変更内容を該当するセクション（Added/Changed/Fixed/Removed）に具体的に記載
    - リリース日を記載（例: `## [0.2.1] - 2025-01-28`）
 
 3. **タグ付けの注意点**
@@ -125,7 +127,7 @@ shellcheck install.sh
    ```
 
 ### タグ付け後の追加変更
-タグ付け後に追加のコミットが発生した場合：
+タグ付け後に追加のコミットが発生した場合の対処法です。
 - パッチバージョンとして新しいタグを作成（推奨）
 - 例: v0.2.0 → v0.2.1（リント修正など）
 
