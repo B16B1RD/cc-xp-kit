@@ -2,7 +2,7 @@
 set -e
 
 # cc-tdd-kit インストーラー
-VERSION="0.1.10"
+VERSION="0.2.0"
 REPO_URL="https://github.com/B16B1RD/cc-tdd-kit"
 BRANCH="${CC_TDD_KIT_BRANCH:-main}"
 

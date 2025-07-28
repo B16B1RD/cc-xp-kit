@@ -68,8 +68,9 @@ test-results/
 playwright-report/
 playwright/.cache/
 
-# Claude specific (for development)
-.claude/agile-artifacts/
+# Claude specific
+# TDD個人ログのみ除外（stories, iterations, reviews はGit管理）
+.claude/agile-artifacts/tdd-logs/
 
 # Package files
 *.tar.gz

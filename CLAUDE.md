@@ -59,10 +59,15 @@ shellcheck install.sh
 ## データ管理
 
 各プロジェクトに `.claude/agile-artifacts/` ディレクトリが作成され、以下を管理：
-- `stories/` - ユーザーストーリー
-- `iterations/` - イテレーション計画
-- `reviews/` - レビューとフィードバック
-- `tdd-logs/` - 実行ログ
+- `stories/` - ユーザーストーリー（Git管理対象）
+- `iterations/` - イテレーション計画（Git管理対象）
+- `reviews/` - レビューとフィードバック（Git管理対象）
+- `tdd-logs/` - 実行ログ（Git管理対象外、個人用）
+
+### Git管理方針
+- チーム共有価値の高い情報（stories, iterations, reviews）はGit管理
+- 個人的な実行ログ（tdd-logs）は`.gitignore`で除外
+- プロジェクトの成長過程と学習内容を追跡可能に
 
 ## Kent Beck TDD 戦略
 

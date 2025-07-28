@@ -15,11 +15,66 @@
 
 ## 実行フロー
 
-### 1. 準備
+### 1. プロジェクトコンテキストの検出
+```bash
+# 言語検出ロジックを読み込み
+source ~/.claude/commands/shared/language-detector.md
+
+# 現在のコンテキストを検出
+CURRENT_CONTEXT=$(get_current_context)
+CONTEXT_DIR=$(echo "$CURRENT_CONTEXT" | cut -d: -f1)
+CONTEXT_LANG=$(echo "$CURRENT_CONTEXT" | cut -d: -f2)
+
+echo "🔍 実行コンテキスト: $CONTEXT_DIR ($CONTEXT_LANG)"
+
+# 適用するプラクティスファイルを決定
+if [ "$CONTEXT_LANG" = "mixed" ]; then
+    # 混合プロジェクトの場合、プライマリ言語を使用
+    MIXED_LANGUAGES=($(get_mixed_languages))
+    PRIMARY_LANG=$(get_primary_language "${MIXED_LANGUAGES[@]}")
+    PRACTICE_FILE=$(resolve_practice_file "$PRIMARY_LANG" "user")
+    echo "📖 混合プロジェクト - プライマリ言語: $PRIMARY_LANG"
+    echo "📖 適用プラクティス: $PRACTICE_FILE"
+else
+    PRACTICE_FILE=$(resolve_practice_file "$CONTEXT_LANG" "user")
+    echo "📖 適用プラクティス: $PRACTICE_FILE"
+fi
+```
+
+### 2. 準備
 - 最新のイテレーションファイルを読み込み
 - 前回フィードバックの確認（未収集なら警告）
+- 言語別コマンドの準備
 
-### 2. 実行モードに応じた処理
+### 3. 言語別コマンドの準備
+```bash
+# プラクティスファイルから言語別コマンドを抽出
+extract_commands() {
+    local practice_file="$1"
+    local command_type="$2"  # test, lint, build, run など
+    
+    # プラクティスファイルから該当コマンドを抽出
+    grep "^$command_type:" "$practice_file" | cut -d'"' -f2 2>/dev/null || echo ""
+}
+
+# 各種コマンドを設定
+TEST_CMD=$(extract_commands "$PRACTICE_FILE" "test")
+LINT_CMD=$(extract_commands "$PRACTICE_FILE" "lint")
+BUILD_CMD=$(extract_commands "$PRACTICE_FILE" "build")
+RUN_CMD=$(extract_commands "$PRACTICE_FILE" "run")
+
+# コマンドが見つからない場合の fallback
+[ -z "$TEST_CMD" ] && TEST_CMD="echo 'テストコマンドが設定されていません'"
+[ -z "$LINT_CMD" ] && LINT_CMD="echo 'リントコマンドが設定されていません'"
+
+echo "🔧 使用コマンド:"
+echo "  - テスト: $TEST_CMD"
+echo "  - リント: $LINT_CMD"
+[ -n "$BUILD_CMD" ] && echo "  - ビルド: $BUILD_CMD"
+[ -n "$RUN_CMD" ] && echo "  - 実行: $RUN_CMD"
+```
+
+### 4. 実行モードに応じた処理
 
 #### イテレーション全体実行（デフォルト）
 ```
@@ -39,37 +94,96 @@
 次の未完了ステップのみを実行して終了します。
 ```
 
-### 3. 各ステップの実行
+### 5. 各ステップの実行
 
 #### 🔴 RED（テスト作成）
-Kent Beck 視点で最小限のテストを作成：
-```javascript
-test("具体的な例から始める", () => {
-  expect(game.getBlock()).toBe("red");
-});
-```
+Kent Beck 視点で最小限のテストを作成。
 
-テスト実行（タイムアウト対策）:
+言語別テスト実行:
 ```bash
-npm test -- --watchAll=false --forceExit 2>&1
+# コンテキストに応じたディレクトリに移動
+if [ "$CONTEXT_DIR" != "." ]; then
+    cd "$CONTEXT_DIR"
+fi
+
+# 言語別テストコマンドを実行
+echo "🧪 テスト実行: $TEST_CMD"
+eval "$TEST_CMD" 2>&1 | head -20
+
+# テスト結果の確認
+TEST_EXIT_CODE=${PIPESTATUS[0]}
+if [ $TEST_EXIT_CODE -eq 0 ]; then
+    echo "❌ テストが通ってしまいました！まずは失敗するテストを書いてください。"
+    exit 1
+else
+    echo "✅ テストが失敗しました。RED フェーズ完了。"
+fi
 ```
 
 #### 🟢 GREEN（最小実装）
-必ず Fake It から始める：
-```javascript
-getBlock() {
-  return "red"; // ハードコーディング
-}
+必ず Fake It から始める。実装後のテスト実行:
+
+```bash
+# 実装後のテスト実行
+echo "🧪 実装後テスト実行: $TEST_CMD"
+eval "$TEST_CMD" 2>&1 | head -20
+
+TEST_EXIT_CODE=${PIPESTATUS[0]}
+if [ $TEST_EXIT_CODE -eq 0 ]; then
+    echo "✅ テストが通りました。GREEN フェーズ完了。"
+    
+    # 必須ゲート: リント実行
+    echo "🔍 リント実行: $LINT_CMD"
+    eval "$LINT_CMD" 2>&1 | head -10
+    
+    LINT_EXIT_CODE=${PIPESTATUS[0]}
+    if [ $LINT_EXIT_CODE -ne 0 ]; then
+        echo "⚠️ リントエラーがあります。修正してください。"
+        exit 1
+    fi
+    
+    echo "✅ リントも通りました。"
+else
+    echo "❌ テストがまだ失敗しています。実装を確認してください。"
+    exit 1
+fi
 ```
 
 コミット:
 ```bash
+git add .
 git commit -m "[BEHAVIOR] Step X.Y: Fake It implementation"
 ```
 
 #### 🔵 REFACTOR（必要時）
-構造的変更のみ（振る舞いは変えない）：
+構造的変更のみ（振る舞いは変えない）。リファクタ後の確認:
+
 ```bash
+# リファクタ後のテスト実行（振る舞いが変わってないことを確認）
+echo "🧪 リファクタ後テスト実行: $TEST_CMD"
+eval "$TEST_CMD" 2>&1 | head -20
+
+TEST_EXIT_CODE=${PIPESTATUS[0]}
+if [ $TEST_EXIT_CODE -eq 0 ]; then
+    echo "✅ リファクタ後もテストが通っています。"
+    
+    # 必須ゲート: リント実行
+    echo "🔍 リント実行: $LINT_CMD"
+    eval "$LINT_CMD" 2>&1 | head -10
+    
+    LINT_EXIT_CODE=${PIPESTATUS[0]}
+    if [ $LINT_EXIT_CODE -ne 0 ]; then
+        echo "⚠️ リントエラーがあります。修正してください。"
+        exit 1
+    fi
+    
+    echo "✅ REFACTOR フェーズ完了。"
+else
+    echo "❌ リファクタでテストが壊れました！変更を確認してください。"
+    exit 1
+fi
+
+git add .
 git commit -m "[STRUCTURE] Step X.Y: Extract method"
 ```
 

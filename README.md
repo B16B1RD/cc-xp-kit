@@ -151,10 +151,10 @@ your-project/
 ├── .claude/
 │   ├── commands/          # プロジェクト用の場合のみ
 │   └── agile-artifacts/
-│       ├── stories/       # ユーザーストーリー
-│       ├── iterations/    # イテレーション計画
-│       ├── reviews/       # レビューとフィードバック
-│       └── tdd-logs/      # 実行ログ
+│       ├── stories/       # ユーザーストーリー（Git管理）
+│       ├── iterations/    # イテレーション計画（Git管理）
+│       ├── reviews/       # レビューとフィードバック（Git管理）
+│       └── tdd-logs/      # 実行ログ（Git管理対象外）
 └── CLAUDE.md              # プロジェクト設定
 ```
 

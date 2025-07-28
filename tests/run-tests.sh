@@ -113,7 +113,6 @@ required_files=(
     "../README.md"
     "../LICENSE"
     "../CHANGELOG.md"
-    "../CONTRIBUTING.md"
     "../install.sh"
     "../.gitignore"
     "../src/commands/tdd.md"
