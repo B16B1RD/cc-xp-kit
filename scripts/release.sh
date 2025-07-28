@@ -44,6 +44,29 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 # 1. バージョン更新
+echo -e "\n${BLUE}🔍 品質チェック実行中...${NC}"
+
+# Lintチェック
+if [ -f "package.json" ] && [ -d "node_modules" ]; then
+    if ! npm run lint; then
+        echo -e "${RED}❌ Lintエラーが検出されました。修正してからリリースしてください。${NC}"
+        echo -e "修正コマンド: ${YELLOW}npm run lint:fix${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✅ すべてのlintチェックが通りました${NC}"
+else
+    echo -e "${YELLOW}⚠️  package.json または node_modules が見つかりません。lintをスキップします。${NC}"
+fi
+
+# テスト実行
+if [ -f "tests/run-tests.sh" ]; then
+    if ! bash tests/run-tests.sh; then
+        echo -e "${RED}❌ テストが失敗しました。修正してからリリースしてください。${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✅ すべてのテストが通りました${NC}"
+fi
+
 echo -e "\n${BLUE}📝 バージョン更新中...${NC}"
 sed -i.bak "s/VERSION=\"${CURRENT_VERSION}\"/VERSION=\"${NEW_VERSION}\"/" install.sh
 rm -f install.sh.bak

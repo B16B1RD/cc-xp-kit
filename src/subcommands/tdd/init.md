@@ -19,15 +19,18 @@ description: TDD開発環境の初期化とGitセットアップ
 ## 実行内容
 
 1. **プロジェクト用ディレクトリの作成**
+
 ```bash
 mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
-```
+```text
 
 2. **CLAUDE.mdの作成/更新**
+
 - 既存ファイルがあれば、TDD 情報を先頭に追加
 - なければ新規作成
 
 内容:
+
 ```markdown
 # TDD開発環境
 
@@ -51,10 +54,11 @@ Kent BeckのTDD哲学に基づいた開発環境です。
 - `/tdd-quick` - クイックスタート
 
 [既存の内容があればここに保持]
-```
+```text
 
 3. **セッション管理ファイル**
 `.claude/agile-artifacts/tdd-logs/session.json`:
+
 ```json
 {
   "initialized": "[現在日時]",
@@ -64,9 +68,10 @@ Kent BeckのTDD哲学に基づいた開発環境です。
     "enabled": true
   }
 }
-```
+```text
 
 4. **Git初期化**
+
 ```bash
 # 未初期化の場合のみ
 if [ ! -d .git ]; then
@@ -86,11 +91,11 @@ fi
 # 初期コミット
 git add .
 git commit -m "[INIT] TDD development environment setup"
-```
+```text
 
 ## 完了メッセージ
 
-```
+```text
 ✅ TDD開発環境を初期化しました！
 
 作成内容:
@@ -101,4 +106,4 @@ git commit -m "[INIT] TDD development environment setup"
 
 次のステップ:
 /tdd:story "作りたいものの説明"
-```
+```text

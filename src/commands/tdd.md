@@ -10,12 +10,15 @@ Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援し�
 ## 使い方
 
 ### 初めての方
+
 ```bash
 /tdd-quick "作りたいものを3行で説明"
-```
+```text
+
 これだけで環境構築から TDD 実行まで自動で行います。
 
 ### 通常の流れ
+
 ```bash
 /tdd:init              # 環境初期化
 /tdd:story "要望"      # ストーリー作成
@@ -23,7 +26,7 @@ Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援し�
 /tdd:run               # TDD実行（イテレーション単位）
 /tdd:status            # 進捗確認
 /tdd:review 1          # レビュー
-```
+```text
 
 ## コマンド一覧
 
@@ -39,6 +42,7 @@ Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援し�
 ## オプション
 
 ### tdd:run のオプション
+
 - （デフォルト）- イテレーション全体を連続実行
 - `--step` - 単一ステップのみ実行
 - `--micro` - ステップごとに確認しながら実行
@@ -46,28 +50,33 @@ Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援し�
 - `--resume` - 中断箇所から再開
 
 ### tdd:status のオプション
+
 - `-v` - 詳細表示
 - `--simple` - 最小表示（デフォルト）
 
 ## 💡 特徴
 
 ### Kent Beck TDD
+
 - 🔴 RED → 🟢 GREEN → 🔵 REFACTOR
 - 2-5 分のマイクロサイクル
 - Fake It 戦略で素早く実装
 
 ### 必須ゲート
+
 - ✅ 動作確認（自動実行）
 - ✅ 受け入れ基準チェック
 - ✅ フィードバック収集
 - ✅ Git コミット
 
 ### プログレッシブ表示
+
 必要な情報を必要なときに。詳細が必要なら `-v` オプションを使用。
 
 ## 📚 詳細情報
 
 共通リソースは `~/.claude/commands/shared/` を参照：
+
 - kent-beck-principles.md - TDD 原則
 - mandatory-gates.md - 必須チェックポイント
 - project-verification.md - 動作確認方法
@@ -77,16 +86,18 @@ Kent Beck 流 TDD で、小さく始めて大きく育てる開発を支援し�
 ## 🎯 次のアクション
 
 新規プロジェクトで:
+
 ```bash
 cd my-new-project
 /tdd-quick "シンプルなTODOアプリを作りたい"
-```
+```text
 
 既存プロジェクトで:
+
 ```bash
 cd existing-project
 /tdd:init
-```
+```text
 
 ## 📍 インストールタイプ: ユーザー用
 

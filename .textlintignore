@@ -1,0 +1,15 @@
+# スラッシュコマンドファイル（動的コンテンツ記法のため）
+src/commands/*.md
+src/subcommands/**/*.md
+examples/advanced-commands/*.md
+
+# 技術仕様書（Claude Code仕様準拠のため）
+docs/slash-command-spec.md
+src/shared/error-handling.md
+
+# プロジェクト情報（GitHub記法使用のため）
+README.md
+CLAUDE.md
+
+# Node.js関連
+node_modules/

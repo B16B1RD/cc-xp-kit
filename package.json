@@ -1,0 +1,32 @@
+{
+  "name": "cc-tdd-kit",
+  "version": "0.1.10",
+  "description": "Claude Code用のTDD開発キット",
+  "private": true,
+  "scripts": {
+    "lint:md": "markdownlint \"**/*.md\"",
+    "lint:text": "textlint \"**/*.md\"",
+    "lint": "npm run lint:md && npm run lint:text",
+    "lint:fix": "markdownlint --fix \"**/*.md\" && textlint --fix \"**/*.md\"",
+    "test": "bash tests/run-tests.sh",
+    "precommit": "npm run lint"
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.37.0",
+    "textlint": "^13.3.2",
+    "textlint-rule-preset-ja-spacing": "^2.4.3",
+    "textlint-rule-preset-ja-technical-writing": "^7.0.0"
+  },
+  "keywords": [
+    "claude-code",
+    "tdd",
+    "kent-beck",
+    "development-tools"
+  ],
+  "author": "B16B1RD",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/B16B1RD/cc-tdd-kit.git"
+  }
+}

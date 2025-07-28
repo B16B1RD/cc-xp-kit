@@ -2,7 +2,7 @@
 
 ## 概要
 
-Claude Code のスラッシュコマンドは、頻繁に使用するプロンプトをMarkdownファイルとして定義し、`/`コマンドで簡単に実行できる機能です。
+Claude Code のスラッシュコマンドは、頻繁に使用するプロンプトを Markdown ファイルとして定義し、`/`コマンドで簡単に実行できる機能です。
 
 ## ファイル構造と配置
 
@@ -22,7 +22,7 @@ Claude Code のスラッシュコマンドは、頻繁に使用するプロン�
 
 - **拡張子**: `.md` (Markdown)
 - **エンコーディング**: UTF-8
-- **改行コード**: LF推奨
+- **改行コード**: LF 推奨
 
 ### 命名規則
 
@@ -31,7 +31,7 @@ Claude Code のスラッシュコマンドは、頻繁に使用するプロン�
 - **正規化**: 小文字、ハイフンをアンダースコアに変換
 
 例:
-```
+
 .claude/commands/
 ├── tdd.md                  # /tdd
 ├── tdd-quick.md           # /tdd-quick
@@ -39,7 +39,6 @@ Claude Code のスラッシュコマンドは、頻繁に使用するプロン�
     ├── init.md            # /tdd:init
     ├── story.md           # /tdd:story
     └── plan.md            # /tdd:plan
-```
 
 ## YAML Frontmatter
 
@@ -51,7 +50,6 @@ allowed-tools: [ツールリスト]
 description: コマンドの簡潔な説明
 argument-hint: 期待される引数の形式
 ---
-```
 
 ### allowed-tools フィールド
 
@@ -64,39 +62,39 @@ argument-hint: 期待される引数の形式
 #### ツール別の例
 
 **ファイル操作:**
+
 ```yaml
 allowed-tools: 
   - Edit                    # すべての編集を許可
   - Read(*)                 # すべてのファイル読み取りを許可
   - Write(src/*)            # src/内への書き込みのみ
   - MultiEdit               # 複数ファイルの一括編集
-```
 
 **Bashコマンド:**
+
 ```yaml
 allowed-tools:
   - Bash(*)                 # すべてのコマンド（リスキー）
   - Bash(ls *)              # lsコマンドのみ
   - Bash(git add:*)         # git addの任意の引数
   - Bash(npm install)       # npm installのみ（引数なし）
-```
 
 **検索ツール:**
+
 ```yaml
 allowed-tools:
   - Grep                    # すべてのGrep操作
   - Glob(*.js)              # JavaScriptファイルのみ
   - LS                      # ディレクトリリスト
-```
 
 **その他のツール:**
+
 ```yaml
 allowed-tools:
   - WebSearch               # Web検索
   - WebFetch                # URL取得
   - Task                    # エージェントタスク
   - TodoWrite               # TODOリスト管理
-```
 
 ### 複合的な許可設定
 
@@ -116,7 +114,6 @@ allowed-tools:
 description: Git操作と開発支援の統合コマンド
 argument-hint: "[commit message]"
 ---
-```
 
 ## 動的コンテンツ
 
@@ -133,7 +130,6 @@ argument-hint: "issue-number"
 # Issue #$ARGUMENTS の修正
 
 要求されたイシュー番号: $ARGUMENTS
-```
 
 使用例: `/fix-issue 123` → `$ARGUMENTS` が `123` に置換
 
@@ -153,7 +149,6 @@ allowed-tools: Bash(git status), Bash(git diff HEAD)
 
 ### 変更内容:
 !`git diff HEAD`
-```
 
 **重要**: `allowed-tools` での許可が必須
 
@@ -171,7 +166,6 @@ allowed-tools: Bash(git status), Bash(git diff HEAD)
 
 ## 複数ファイル参照:
 @src/index.js @src/utils.js
-```
 
 - ファイル: 内容を表示
 - ディレクトリ: ファイルリストを表示
@@ -201,7 +195,6 @@ description: インテリジェントなGitコミット作成
 ## タスク
 
 上記の変更に基づいて、適切なコミットメッセージを作成してコミットしてください。
-```
 
 ### 2. プロジェクト分析コマンド
 
@@ -227,7 +220,6 @@ argument-hint: "[detailed|summary]"
 
 ## package.json
 @package.json
-```
 
 ### 3. テスト実行とレポート
 
@@ -250,7 +242,6 @@ description: テスト実行と結果分析
 
 ## レポート詳細
 @coverage/lcov-report/index.html
-```
 
 ## セキュリティベストプラクティス
 
@@ -264,7 +255,6 @@ allowed-tools: Bash(*)
 allowed-tools: 
   - Bash(npm test)
   - Bash(npm run build)
-```
 
 ### 2. パス制限
 
@@ -274,7 +264,6 @@ allowed-tools:
   - Edit(src/*)
   - Read(*)
   - Write(dist/*)
-```
 
 ### 3. 危険なコマンドの回避
 
@@ -284,7 +273,6 @@ allowed-tools: Bash(rm -rf *)
 
 # 安全な代替
 allowed-tools: Bash(rm dist/bundle.js)
-```
 
 ## トラブルシューティング
 

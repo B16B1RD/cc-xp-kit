@@ -21,37 +21,48 @@ argument-hint: "[focus-area]"
 ## 📁 プロジェクト構造
 
 ### ルートディレクトリ
+
 !`ls -la`
 
 ### 主要なディレクトリ構造
-```
+
+```text
 !`find . -type d -name node_modules -prune -o -type d -print | head -20`
-```
+```text
 
 ### 設定ファイル
-!`find . -type f -name "*.json" -o -name "*.md" -o -name "*.yml" -o -name "*.yaml" | grep -E "(package|README|config)" | head -20`
+
+!`find . -type f -name "*.json" -o -name "*.md" -o -name "*.yml" \|
+  grep -E "(package|README|config)" | head -20`
 
 ## 📊 コード統計
 
-- JavaScript/TypeScriptファイル数: !`find . -type f -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" | wc -l`
+- JavaScript/TypeScriptファイル数:
+  !`find . -type f -name "*.js" -o -name "*.ts" -o -name "*.jsx" \|
+    wc -l`
 
 ## 📚 ドキュメント
 
 ### README.md
+
 @README.md
 
 ### CLAUDE.md（存在する場合）
+
 @CLAUDE.md
 
 ### package.json
+
 @package.json
 
 ## 🌐 Git情報
 
 ### リモートリポジトリ
+
 !`git remote -v`
 
 ### ブランチ一覧
+
 !`git branch -a`
 
 ## 🎯 コンテキスト分析
@@ -80,6 +91,7 @@ argument-hint: "[focus-area]"
 ## 💡 次のステップ
 
 このコンテキストを基に:
+
 - 適切な開発アプローチを提案
 - 必要なツールやコマンドを特定
 - 潜在的な問題点を指摘

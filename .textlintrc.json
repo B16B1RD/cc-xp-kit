@@ -7,11 +7,10 @@
         "space": "always"
       }
     },
-    "preset-ja-technical-writing": true,
-    "@textlint-ja/preset-ai-writing": {
-      "ai-tech-writing-guideline": {
-        "severity": "info"
-      }
+    "preset-ja-technical-writing": {
+      "ja-no-successive-word": false,
+      "max-ten": false,
+      "no-mix-dearu-desumasu": false
     }
   }
 }

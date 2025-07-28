@@ -3,6 +3,7 @@
 ## 🌐 Webアプリケーション
 
 ### サーバー起動（バックグラウンド）
+
 ```bash
 # Python HTTPサーバー
 if ! lsof -ti:8000 >/dev/null 2>&1; then
@@ -13,9 +14,10 @@ fi
 if ! lsof -ti:5173 >/dev/null 2>&1; then
   nohup npm run dev > /dev/null 2>&1 & disown
 fi
-```
+```text
 
 ### 確認手順
+
 1. Playwright MCP で `http://localhost:8000` を開く
 2. 0.5 秒待機して描画を待つ
 3. スクリーンショットを取得
@@ -24,17 +26,19 @@ fi
 ## 🖥️ CLIツール
 
 ### 動作確認
+
 ```bash
 # ヘルプ表示
 timeout 3s ./my-tool --help 2>&1
 
 # 実際のコマンド実行
 timeout 5s ./my-tool command args 2>&1 | head -20
-```
+```text
 
 ## 🔌 API
 
 ### エンドポイント確認
+
 ```bash
 # ヘルスチェック
 curl -m 2 http://localhost:3000/api/health 2>&1
@@ -43,4 +47,4 @@ curl -m 2 http://localhost:3000/api/health 2>&1
 curl -m 3 -X POST http://localhost:3000/api/items \
   -H "Content-Type: application/json" \
   -d '{"test": "data"}' 2>&1
-```
+```text

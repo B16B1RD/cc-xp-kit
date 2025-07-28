@@ -19,31 +19,34 @@ argument-hint: "[quick|full]"
 ## 📊 プロジェクト基本情報
 
 ### プロジェクトタイプ
+
 - Node.js プロジェクト: !`test -f package.json && echo "✅ Yes" || echo "❌ No"`
 - 言語: !`test -f tsconfig.json && echo "TypeScript" || echo "JavaScript"`
 
 ### プロジェクト設定
+
 @package.json
 
 ## 🧪 テスト状況
 
 ### テストファイル数
+
 !`find . -name "*.test.*" -o -name "*.spec.*" | wc -l` 個のテストファイル
 
 ### テスト実行結果
-```
+
 !`npm test 2>&1 | tail -20`
-```
 
 ## 🔍 コード品質
 
 ### Lintチェック
-```
+
 !`npm run lint 2>&1 | tail -10`
-```
 
 ### TODOコメント
-Grepを使用してTODOコメントを検索:
+
+Grep を使用して TODO コメントを検索:
+
 - `// TODO`
 - `# TODO`
 - `/* TODO`
@@ -51,6 +54,7 @@ Grepを使用してTODOコメントを検索:
 ## 📝 Git状態
 
 ### 変更ファイル
+
 !`git status --short`
 
 ## 🎯 推奨アクション

@@ -13,15 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ベストプラクティス集 (`docs/best-practices.md`)
 - 高度なコマンド使用例 (`examples/advanced-commands/`)
   - プロジェクト健康診断コマンド (`health-check.md`)
-  - インテリジェントGitコミットコマンド (`smart-commit.md`)
+  - インテリジェント Git コミットコマンド (`smart-commit.md`)
   - プロジェクトコンテキスト収集コマンド (`context-gather.md`)
-- すべてのスラッシュコマンドにYAML frontmatter追加
+- すべてのスラッシュコマンドに YAML frontmatter 追加
 - 開発ブランチ運用ルールの明文化
 - リリース管理とバージョン管理ルールの策定
 
 ### Changed
 
-- `/tdd:status` コマンドに動的コンテンツ機能を追加（Git状況のリアルタイム表示）
+- `/tdd:status` コマンドに動的コンテンツ機能を追加（Git 状況のリアルタイム表示）
 - 全スラッシュコマンドでセキュリティ強化（必要最小限の`allowed-tools`指定）
 
 ### Technical Details
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2025-07-25
 
-### Added
+### Features
 
 - 初回リリース
 - Kent Beck 流 TDD の完全サポート
@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ユーザー用/プロジェクト用の選択可能なインストール
 - 日本語対応（メッセージ、ドキュメント）
 
-### Technical Details
+### Technical Implementation
 
 - Red→Green→Refactor サイクルの厳密な実施
 - Fake It 戦略（60%以上）の推奨
