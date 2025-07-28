@@ -76,3 +76,43 @@ shellcheck install.sh
 - ShellCheck によるシェルスクリプト品質チェック
 - インストール/アンインストール機能の統合テスト
 - ファイル整合性チェック
+
+## 開発ブランチ運用
+
+このプロジェクトでは常に開発ブランチで作業を行います：
+
+```bash
+# 新機能開発
+git checkout -b feature/feature-name
+
+# バグ修正
+git checkout -b fix/bug-description
+
+# ドキュメント更新
+git checkout -b docs/update-description
+```
+
+準備ができたら main ブランチにマージします。
+
+## スラッシュコマンド仕様
+
+### YAML Frontmatter
+すべてのスラッシュコマンドに以下の frontmatter を含めます：
+
+```yaml
+---
+allowed-tools: [必要最小限のツール]
+description: コマンドの簡潔な説明
+argument-hint: 期待される引数の形式
+---
+```
+
+### 動的コンテンツ機能
+- `$ARGUMENTS` - ユーザー入力を埋め込み
+- `!`記法 - Bashコマンド実行結果を埋め込み（要 allowed-tools）
+- `@`記法 - ファイル内容を参照
+
+### ドキュメント
+- `docs/slash-command-spec.md` - 完全な仕様書
+- `docs/best-practices.md` - ベストプラクティス集
+- `examples/advanced-commands/` - 高度な使用例
