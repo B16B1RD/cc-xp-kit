@@ -7,27 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.11] - 2025-07-29
+
 ### Added
 
-- スラッシュコマンド完全仕様書 (`docs/slash-command-spec.md`)
-- ベストプラクティス集 (`docs/best-practices.md`)
-- 高度なコマンド使用例 (`examples/advanced-commands/`)
-  - プロジェクト健康診断コマンド (`health-check.md`)
-  - インテリジェント Git コミットコマンド (`smart-commit.md`)
-  - プロジェクトコンテキスト収集コマンド (`context-gather.md`)
-- すべてのスラッシュコマンドに YAML frontmatter 追加
-- 開発ブランチ運用ルールの明文化
-- リリース管理とバージョン管理ルールの策定
+- `/tdd-quick` に「機能改善」選択肢を追加（4 つの継続オプション）
+- 機能改善を選択した際の詳細な改善点収集システム（5 つの質問）
+- 一時ファイル用ディレクトリ (`tmp/`) の作成と lint 除外設定
+- Kent Beck 流の完全なフィードバックループの実装
 
-### Changed
+### Enhanced
 
-- `/tdd:status` コマンドに動的コンテンツ機能を追加（Git 状況のリアルタイム表示）
-- 全スラッシュコマンドでセキュリティ強化（必要最小限の`allowed-tools`指定）
+- `/tdd:run` コマンドのフィードバック収集機能を大幅強化
+  - 動作確認の具体的案内（プロジェクトタイプ別手順）
+  - 実際の動作確認を前提とした 3 つの質問形式
+  - 回答例付きでユーザー理解を促進
+  - フィードバック未収集時の厳格な警告とガイダンス
+- TDD 原則の厳格な遵守を強制
+  - 段階的実行の強制（一気に完成版作成を禁止）
+  - Fake It 戦略の優先（60%以上）
+  - 各 TDD サイクル後の必須チェックポイント
+- `/tdd-quick` の継続サイクル改善
+  - 継続開発/機能追加/機能改善/完了の 4 つの選択肢
+  - 改善点を新しいストーリーに自動変換する仕組み
+
+### Fixed
+
+- 受け入れ基準更新の具体的指示を追加
+- ストーリーファイルとイテレーションファイルの更新問題を解決
+- フィードバック収集の完全な必須化
 
 ### Technical Details
 
-- YAML frontmatter による `allowed-tools`, `description`, `argument-hint` の明示
-- 動的コンテンツ機能: `$ARGUMENTS`, `!`記法, `@`記法の活用
+- markdownlint と textlint から `tmp/` ディレクトリを除外
+- pre-commit フックの調整
+- Kent Beck TDD 原則に基づく厳格なワークフロー実装
 - Claude Code 公式仕様への完全準拠
 
 ## [0.1.0] - 2025-07-25
