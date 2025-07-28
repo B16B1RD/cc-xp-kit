@@ -54,7 +54,7 @@ build/
 .env.*.local
 
 # Temporary files
-tmp/
+tmp/          # Claude への情報提供用一時ファイル置き場
 temp/
 *.tmp
 *.temp
