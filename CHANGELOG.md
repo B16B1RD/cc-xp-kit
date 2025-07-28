@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - 🔧 **Markdown lint errors**
-  - MD010: Makefileのハードタブをスペースに変換
-  - GitHub Actions CIでのマークダウンリントエラーを解消
+  - MD010: Makefile のハードタブをスペースに変換
+  - GitHub Actions CI でのマークダウンリントエラーを解消
 
 ## [0.2.0] - 2025-01-15
 
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🌍 **言語別モダンプラクティス対応**
   - Python (uv, src/layout, pytest)
   - JavaScript/TypeScript (pnpm, ESM, Vite)
-  - Rust (cargo標準, clippy)
+  - Rust (cargo 標準, clippy)
   - Go (modules, 標準プロジェクト構造)
   - 汎用/デフォルト設定
 
@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - プライマリ言語の自動選択
 
 - 🔧 **コンテキスト認識型コマンド実行**
-  - 現在のディレクトリに応じた適切なコマンド実行
+  - 現在のディレクトリに応じたコンテキスト別コマンド実行
   - 言語別テスト・リント・ビルドコマンド
   - プラクティスファイルからの設定読み込み
 
@@ -46,23 +46,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - プロジェクトレベル設定 (.claude/language-practice.md)
   - サブプロジェクト設定 (モノレポ対応)
 
-- 🎯 **新サブコマンド**
+- **新サブコマンド**
   - `/tdd:detect` - プロジェクト構造の詳細分析
   - 混合プロジェクトとモノレポの詳細表示
 
 ### Changed
 
-- ⚡ **init コマンドの大幅強化**
+- **init コマンドの大幅強化**
   - 言語自動検出と最適化された初期設定
   - 言語別 .gitignore 生成
   - プロジェクトタイプ別 CLAUDE.md 生成
 
-- 🚀 **run コマンドの進化**
+- **run コマンドの進化**
   - 言語別コマンドの自動選択
   - プラクティスファイルベースの実行
   - 必須ゲートでのリント自動実行
 
-- 🔍 **project-verification の言語対応**
+- **project-verification の言語対応**
   - 各言語の環境確認
   - 言語別開発サーバー起動
   - 混合プロジェクトの統合検証
@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Enhanced
 
 - 📖 **agile-artifacts のGit管理最適化**
-  - stories, iterations, reviews は Git管理対象
+  - stories, iterations, reviews は Git 管理対象
   - tdd-logs のみ個人用として除外
   - チーム開発とプライバシーの両立
 
