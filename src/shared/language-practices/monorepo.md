@@ -82,22 +82,22 @@ SERVICES := $(wildcard services/*)
 PACKAGES := $(wildcard packages/*)
 
 install-all:
-	@for dir in $(APPS) $(SERVICES) $(PACKAGES); do \
-		echo "Installing $$dir..."; \
-		$(MAKE) -C $$dir install || exit 1; \
-	done
+    @for dir in $(APPS) $(SERVICES) $(PACKAGES); do \
+        echo "Installing $$dir..."; \
+        $(MAKE) -C $$dir install || exit 1; \
+    done
 
 test-all:
-	@for dir in $(APPS) $(SERVICES) $(PACKAGES); do \
-		echo "Testing $$dir..."; \
-		$(MAKE) -C $$dir test || exit 1; \
-	done
+    @for dir in $(APPS) $(SERVICES) $(PACKAGES); do \
+        echo "Testing $$dir..."; \
+        $(MAKE) -C $$dir test || exit 1; \
+    done
 
 lint-all:
-	@for dir in $(APPS) $(SERVICES) $(PACKAGES); do \
-		echo "Linting $$dir..."; \
-		$(MAKE) -C $$dir lint || exit 1; \
-	done
+    @for dir in $(APPS) $(SERVICES) $(PACKAGES); do \
+        echo "Linting $$dir..."; \
+        $(MAKE) -C $$dir lint || exit 1; \
+    done
 ```
 
 ## 言語混在時の設定継承

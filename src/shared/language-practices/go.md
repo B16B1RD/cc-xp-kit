@@ -128,16 +128,16 @@ Thumbs.db
 .PHONY: build test lint clean
 
 build:
-	go build -ldflags="-s -w" -o bin/app ./cmd/api
+    go build -ldflags="-s -w" -o bin/app ./cmd/api
 
 test:
-	go test -v -race -coverprofile=coverage.out ./...
+    go test -v -race -coverprofile=coverage.out ./...
 
 lint:
-	golangci-lint run
+    golangci-lint run
 
 clean:
-	rm -rf bin/ coverage.out
+    rm -rf bin/ coverage.out
 ```
 
 ## プロジェクト初期化

@@ -44,39 +44,39 @@ project/
 
 # 全言語の依存関係インストール
 install:
-	cd backend && uv install
-	cd frontend && pnpm install
+    cd backend && uv install
+    cd frontend && pnpm install
 
 # 全言語のテスト実行
 test:
-	cd backend && uv run pytest
-	cd frontend && pnpm test
+    cd backend && uv run pytest
+    cd frontend && pnpm test
 
 # 全言語のリント実行
 lint:
-	cd backend && uv run ruff check
-	cd frontend && pnpm lint
+    cd backend && uv run ruff check
+    cd frontend && pnpm lint
 
 # 型チェック（該当言語のみ）
 typecheck:
-	cd backend && uv run mypy .
-	cd frontend && pnpm typecheck
+    cd backend && uv run mypy .
+    cd frontend && pnpm typecheck
 
 # 開発サーバー起動（並列）
 dev:
-	docker-compose up -d || \
-	(cd backend && uv run uvicorn main:app --reload --port 8000 &) && \
-	(cd frontend && pnpm dev --port 3000 &)
+    docker-compose up -d || \
+    (cd backend && uv run uvicorn main:app --reload --port 8000 &) && \
+    (cd frontend && pnpm dev --port 3000 &)
 
 # ビルド
 build:
-	cd backend && uv build
-	cd frontend && pnpm build
+    cd backend && uv build
+    cd frontend && pnpm build
 
 # クリーンアップ
 clean:
-	cd backend && rm -rf dist/ .pytest_cache/ __pycache__/
-	cd frontend && rm -rf dist/ node_modules/.cache/
+    cd backend && rm -rf dist/ .pytest_cache/ __pycache__/
+    cd frontend && rm -rf dist/ node_modules/.cache/
 ```
 
 ## 言語別設定
