@@ -109,12 +109,7 @@ install_tdd_kit() {
     local shared_files=(
         "kent-beck-principles.md"
         "mandatory-gates.md"
-        "error-handling.md"
         "commit-rules.md"
-        "quality-gates.md"
-        "project-structure-generator.md"
-        "cognitive-enhancement.md"
-        "claude-md-generator.md"
     )
     
     for file in "${shared_files[@]}"; do
