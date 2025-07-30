@@ -20,13 +20,11 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 
 まず現在日付と検索範囲を確認します：
 
-Bashツールで以下を実行して日付情報を取得：
+Bashツールで以下を実行して年情報を取得：
 ```
 CURRENT_DATE=$(date +"%Y-%m-%d")
 CURRENT_YEAR=$(date +%Y)
 PREV_YEAR=$((CURRENT_YEAR - 1))
-echo "現在日付: $CURRENT_DATE"
-echo "検索対象年範囲: $PREV_YEAR-$CURRENT_YEAR"
 ```
 
 #### Step 1: プロジェクトタイプの判定
