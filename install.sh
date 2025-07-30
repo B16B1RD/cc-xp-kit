@@ -199,9 +199,12 @@ EOF
 uninstall_tdd_kit() {
     echo -e "${YELLOW}🗑️  cc-tdd-kit をアンインストールします${NC}"
     
+    local found_installation=false
+    
     # 設定ファイルから情報を読み取る
     for dir in "$HOME/.claude/commands" ".claude/commands"; do
         if [ -f "$dir/.cc-tdd-kit.json" ]; then
+            found_installation=true
             echo -e "${BLUE}アンインストール対象: $dir${NC}"
             read -p "本当にアンインストールしますか？ [y/N]: " confirm
             
@@ -214,16 +217,27 @@ uninstall_tdd_kit() {
                 rm -f "$dir/.cc-tdd-kit.json"
                 
                 # ディレクトリが空なら削除
-                if [ -z "$(ls -A "$dir")" ]; then
-                    rmdir "$dir"
+                if [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
+                    rmdir "$dir" 2>/dev/null || true
+                    # 親の.claudeディレクトリも空なら削除
+                    if [ -d "$(dirname "$dir")" ] && [ -z "$(ls -A "$(dirname "$dir")" 2>/dev/null)" ]; then
+                        rmdir "$(dirname "$dir")" 2>/dev/null || true
+                    fi
                 fi
                 
                 echo -e "${GREEN}✅ アンインストール完了${NC}"
+                return 0
             else
                 echo "アンインストールをキャンセルしました"
+                return 1
             fi
         fi
     done
+    
+    if [ "$found_installation" = false ]; then
+        echo -e "${RED}❌ cc-tdd-kit のインストールが見つかりません${NC}"
+        return 1
+    fi
 }
 
 # アップデート機能
