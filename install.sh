@@ -301,7 +301,7 @@ main() {
             echo -e "   ${GREEN}cd my-project && claude${NC}"
             echo
             echo "2. クイックスタート:"
-            echo -e "   ${GREEN}/tdd-quick \"作りたいものを3行で説明\"${NC}"
+            echo -e "   ${GREEN}/tdd-quick \"作りたいものを説明\"${NC}"
             echo
             echo "3. 通常の使い方:"
             echo -e "   ${GREEN}/tdd:init${NC}"
