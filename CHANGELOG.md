@@ -11,86 +11,122 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 今後追加される機能をここに記載
 
-## [0.2.2] - 2025-01-28
-
-### Fixed
-
-- 📝 **Documentation quality improvements**
-  - textlint 準拠（README.md, CHANGELOG.md, CLAUDE.md）
-  - 全角・半角間スペースの統一
-  - 弱い表現や機械的表現の改善
-  - MD047: ファイル末尾改行の統一
-  - GitHub Actions CI でのマークダウンリントエラー解消
-
-### Enhanced
-
-- 📋 **Release management**
-  - リリース管理・タグ付けガイドラインを CLAUDE.md に追加
-  - Semantic Versioning に基づく正式なプロセス確立
-  - タグ付け後の追加変更への対処法明示
-
-## [0.2.1] - 2025-01-28
-
-### Fixed
-
-- 🔧 **Markdown lint errors**
-  - MD010: Makefile のハードタブをスペースに変換
-  - GitHub Actions CI でのマークダウンリントエラーを解消
-
-## [0.2.0] - 2025-01-15
+## [0.1.12] - 2025-07-30
 
 ### Added
 
-- 🌍 **言語別モダンプラクティス対応**
-  - Python (uv, src/layout, pytest)
-  - JavaScript/TypeScript (pnpm, ESM, Vite)
-  - Rust (cargo 標準, clippy)
-  - Go (modules, 標準プロジェクト構造)
-  - 汎用/デフォルト設定
+- 🚀 **スラッシュコマンドのClaude Code仕様準拠**
+  - `/tdd-quick`コマンドにYAMLフロントマター追加
+  - 実行可能な形式への完全準拠
 
-- 🏗️ **プロジェクトタイプ自動検出**
-  - 単一言語プロジェクト
-  - **混合言語プロジェクト** (例: Python + TypeScript)
-  - モノレポプロジェクト
-  - プライマリ言語の自動選択
+- 📁 **プロジェクト構造ジェネレーター機能**
+  - モダンなWeb App、API Server、CLI Tool構造の自動生成
+  - 言語別の最適なディレクトリ構造とファイル配置
 
-- 🔧 **コンテキスト認識型コマンド実行**
-  - 現在のディレクトリに応じたコンテキスト別コマンド実行
-  - 言語別テスト・リント・ビルドコマンド
-  - プラクティスファイルからの設定読み込み
+- 📝 **CLAUDE.md自動生成機能**
+  - プロジェクトタイプに応じた最適な設定生成
+  - 基本コマンドとアーキテクチャ情報の自動記載
 
-- 📁 **階層的設定システム**
-  - グローバル設定 (言語別プラクティス)
-  - プロジェクトレベル設定 (.claude/language-practice.md)
-  - サブプロジェクト設定 (モノレポ対応)
+- ✅ **品質ゲート機能**
+  - 包括的な品質チェック機能の追加
+  - テスト、リント、ビルドの統合実行
 
-- **新サブコマンド**
-  - `/tdd:detect` - プロジェクト構造の詳細分析
-  - 混合プロジェクトとモノレポの詳細表示
+### Fixed
 
-### Changed
+- 🔧 **src/shared/ファイルの形式変換**
+  - bash関数からドキュメント形式への変換
+  - Claude Codeの実行モデルへの完全準拠
 
-- **init コマンドの大幅強化**
-  - 言語自動検出と最適化された初期設定
-  - 言語別 .gitignore 生成
-  - プロジェクトタイプ別 CLAUDE.md 生成
+### Removed
 
-- **run コマンドの進化**
-  - 言語別コマンドの自動選択
-  - プラクティスファイルベースの実行
-  - 必須ゲートでのリント自動実行
+- 📦 **npm関連ファイルの削除**
+  - package.jsonとpackage-lock.jsonを削除
+  - 依存関係の簡素化
 
-- **project-verification の言語対応**
-  - 各言語の環境確認
-  - 言語別開発サーバー起動
-  - 混合プロジェクトの統合検証
+## [0.1.11] - 2025-07-29
+
+### Fixed
+
+- 🔧 **ShellCheck SC2038エラーを修正**
+- 🔄 **GitHub Actions markdownlintをnpm scriptに変更**
+
+### Added
+
+- 🎯 **/tdd-quickに機能改善選択肢と詳細収集機能を追加**
+- 💬 **/tdd:runのフィードバック収集機能を大幅に強化**
+- 📂 **一時ファイル用ディレクトリ (tmp/) を追加**
+- 📜 **スラッシュコマンド仕様書とベストプラクティスを追加**
+- 🔄 **リリース自動化スクリプトを追加**
 
 ### Enhanced
 
-- 📖 **agile-artifacts のGit管理最適化**
-  - stories, iterations, reviews は Git 管理対象
-  - tdd-logs のみ個人用として除外
-  - チーム開発とプライバシーの両立
+- 🔁 **Kent Beck流の完全なフィードバックループを/tdd-quickに実装**
+- 📋 **リリース管理ルールとCLAUDE.md開発ブランチ運用を追加**
+
+## [0.1.10] - 2025-07-28
+
+### Fixed
+
+- 🌐 **GitHub Actionsでのレート制限エラー対策を実装**
+
+## [0.1.9] - 2025-07-28
+
+### Changed
+
+- 📄 **不要なドキュメントファイルを削除しREADMEを簡潔化**
+
+## [0.1.8] - 2025-07-25
+
+### Fixed
+
+- 📝 **Markdownの太字表記を修正（鉤括弧内で正しく表示されるように）**
+
+## [0.1.7] - 2025-07-25
+
+### Enhanced
+
+- 📖 **README.mdでカスタムスラッシュコマンドのインストールを明確化**
+
+## [0.1.6] - 2025-07-25
+
+### Fixed
+
+- 📄 **CLAUDE.mdの末尾に改行を追加してmarkdownlint要件に準拠**
+
+## [0.1.5] - 2025-07-25
+
+### Added
+
+- 📝 **CLAUDE.mdファイルを追加しプロジェクト概要とTDD原則を文書化**
+
+## [0.1.4] - 2025-07-25
+
+### Fixed
+
+- 🔧 **Markdownlintエラーを修正**
+
+## [0.1.3] - 2025-07-25
+
+### Changed
+
+- 🔢 **バージョンを0.1.3に更新**
+
+## [0.1.2] - 2025-07-25
+
+### Enhanced
+
+- 📋 **Markdownlintルールを開発文書向けに最適化**
+
+## [0.1.1] - 2025-07-25
+
+### Fixed
+
+- 🔧 **GitHub Actionsのブランチ設定を修正**
+- ⚠️ **ShellCheckの警告を修正し、Markdownlint設定を追加**
+
+### Added
+
+- 📁 **binディレクトリをgitignoreに追加**
 
 ## [0.1.0] - 2025-07-25
 
@@ -122,5 +158,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Git 統合（TDD/STRUCT/FEAT 等のコミットタグ）
 - Playwright MCP との連携（Web 確認）
 
-[Unreleased]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.12...HEAD
+[0.1.12]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.11...v0.1.12
+[0.1.11]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.10...v0.1.11
+[0.1.10]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.9...v0.1.10
+[0.1.9]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.8...v0.1.9
+[0.1.8]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.7...v0.1.8
+[0.1.7]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.5...v0.1.6
+[0.1.5]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.4...v0.1.5
+[0.1.4]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/B16B1RD/cc-tdd-kit/releases/tag/v0.1.0
