@@ -8,233 +8,38 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 
 要望: $ARGUMENTS
 
-## 実行内容
+## 指示
 
-### 1. 本質分析（5つのなぜ）
+以下を実行してください：
 
-要望の背景にある本質的なニーズを探ります。
+1. **要望を分析**してプロジェクトタイプを判定してください（web-app/api-server/cli-tool）。
 
-### 2. プロジェクトタイプ判定と動的技術選定
+2. **技術スタックを選択**してください。重要な制約：
+   - **JavaScriptプロジェクト**: bunまたはpnpmを使用してください。**npmは避けてください**。
+   - **Pythonプロジェクト**: uvまたはpoetryを使用してください。**pipは避けてください**。
+   - **その他の言語**: 最新のモダンなツールを優先してください。
 
-**段階的に考えます：**
+3. **`.claude/agile-artifacts/project-config.json`** を作成して選択した技術スタックを記録してください。
 
-#### Step 1: プロジェクトタイプの判定
+4. **ユーザーストーリー**を3つのリリースに分けて作成してください：
+   - Release 0: 最初の30分で見えるもの（2-3ストーリー）
+   - Release 1: 基本的な価値（3-4ストーリー）
+   - Release 2: 継続的な価値（3-4ストーリー）
 
-要求内容から最適なプロジェクトタイプを判定：
+5. **`.claude/agile-artifacts/stories/project-stories.md`** にストーリーを保存してください。
 
-- **Web アプリケーション**: ウェブ、ブラウザ、UI、ゲーム、HTML関連
-- **API サーバー**: API、サーバー、データベース、認証、バックエンド関連  
-- **CLI ツール**: コマンド、ツール、スクリプト、自動化関連
-- **データ分析**: 分析、機械学習、データ処理、可視化関連
-- **システムツール**: システム、パフォーマンス、低レベル処理関連
-- **モバイルアプリ**: モバイル、アプリ、React Native、Flutter関連
-
-#### Step 2: 言語・技術スタックの動的検索と選択肢提示
-
-判定されたプロジェクトタイプに基づいて、**最新技術動向を検索**：
-
-**Web検索による最新技術情報の取得:**
-
-- パフォーマンス重視: 「latest [プロジェクトタイプ] package manager performance comparison」
-- 開発者体験重視: 「recent developer experience [プロジェクトタイプ] tooling latest modern」
-- ベンチマーク比較: 「latest [言語] build tool speed benchmark」
-- 採用トレンド: 「modern development workflow [プロジェクトタイプ] trends recent」
-- 年非依存検索: 「latest modern [プロジェクトタイプ] best practices current」
-
-**プロジェクトタイプ別の推奨構成:**
-
-### JavaScript/TypeScript プロジェクト（Web App/API/CLI）
-
-```text
-📦 パッケージマネージャー:
-1. bun - 最速、オールインワン（ランタイム+パッケージマネージャー） ⚡推奨
-2. pnpm - 高速、ディスク効率的、ワークスペース対応
-3. npm - 互換性最優先の場合のみ
-
-🔧 ビルドツール:
-1. esbuild/swc - ミリ秒単位のビルド速度 ⚡推奨
-2. vite - 優れた開発体験、HMR対応
-3. webpack - レガシープロジェクト用
-
-🧪 テストフレームワーク:
-1. vitest - Vite統合、超高速実行 ⚡推奨
-2. jest + swc - 高速トランスパイル版
-3. jest - 標準構成
-```
-
-### Python プロジェクト（API/データ分析/CLI）
-
-```text
-📦 パッケージマネージャー:
-1. uv - Rust実装、10-100x高速 ⚡推奨
-2. poetry - モダンな依存関係管理
-3. pip - 互換性重視の場合のみ
-
-🔧 ビルド・タスクランナー:
-1. rye/hatch - モダンプロジェクト管理 ⚡推奨
-2. make + pyproject.toml - シンプル構成
-3. setuptools - レガシー用
-
-🧪 テストフレームワーク:
-1. pytest + pytest-xdist - 並列実行対応 ⚡推奨
-2. pytest - 標準構成
-3. unittest - 組み込み標準
-```
-
-あなたの選択（**デフォルト=1: 最速モダンツール自動選択**）:
-
-**重要**: 選択なしの場合、以下の優先順位で自動選択されます：
-- **第1優先**: 最速のモダンツール（⚡推奨マーク付き）
-- **第2優先**: 高性能ツール（パフォーマンス重視）
-- **最終手段のみ**: レガシーツール（互換性最優先時）
-
-**JavaScript/TypeScript**: bun → pnpm → npm の順
-**Python**: uv → poetry → pip の順
-
-## 🤖 自動選択実装手順
-
-**ユーザーからの入力がない場合の処理**:
-
-1. **デフォルト値の適用**: 各技術カテゴリで選択肢1番（⚡推奨ツール）を自動選択
-2. **project-config.json作成**: 以下のデフォルト値を使用
-
-**JavaScript/TypeScript プロジェクト用デフォルト設定**:
-
-```json
-{
-  "project_type": "web-app",
-  "selected_stack": {
-    "package_manager": "bun",
-    "build_tool": "esbuild",
-    "test_framework": "vitest",
-    "language": "javascript",
-    "additional_tools": ["lint", "format", "type-check"]
-  },
-  "selection_rationale": {
-    "performance_priority": "高速性重視",
-    "team_experience": "モダンツール自動選択",
-    "project_constraints": "なし"
-  }
-}
-```
-
-**Python プロジェクト用デフォルト設定**:
-
-```json
-{
-  "project_type": "api-server",
-  "selected_stack": {
-    "package_manager": "uv",
-    "build_tool": "rye",
-    "test_framework": "pytest",
-    "language": "python",
-    "additional_tools": ["lint", "format", "type-check"]
-  },
-  "selection_rationale": {
-    "performance_priority": "高速性重視",
-    "team_experience": "モダンツール自動選択",
-    "project_constraints": "なし"
-  }
-}
-```
-
-**⚠️ npm/pip は明示的選択時のみ**:
-
-- ユーザーが「3」を明示的に選択した場合のみ使用
-- デフォルトでは絶対に選択されない
-
-### Step 4: 選択結果の保存
-
-ユーザーの選択に基づいて `.claude/agile-artifacts/project-config.json` を作成：
-
-**⚠️ 重要：選択なしの場合は上記デフォルト設定を使用**
-
-```json
-{
-  "project_type": "判定結果",
-  "selected_stack": {
-    "package_manager": "bun または uv（デフォルト優先）",
-    "build_tool": "esbuild または rye（デフォルト優先）",
-    "test_framework": "vitest または pytest（デフォルト優先）", 
-    "language": "javascript または python",
-    "additional_tools": ["lint", "format", "type-check"]
-  },
-  "selection_rationale": {
-    "performance_priority": "高速性重視/安定性重視/実験性重視",
-    "team_experience": "考慮事項",
-    "project_constraints": "特別な制約"
-  }
-}
-```
-
-### 3. 技術選定の最新情報検索
-
-選択された技術スタックについて、より詳細な最新情報を検索：
-
-- 公式ドキュメントの最新バージョン情報
-- ベストプラクティスとアンチパターン
-- パフォーマンス特性と制約事項
-- チーム導入時の注意点
-
-### 4. ストーリー分割
-
-以下の 3 つのリリースに分けて、段階的に価値を提供：
-
-- **Release 0**: 最初の 30 分で見えるもの（2-3 ストーリー）
-- **Release 1**: 基本的な価値（3-4 ストーリー）  
-- **Release 2**: 継続的な価値（3-4 ストーリー）
-
-### 3. ストーリー形式
-
-```text
-Story X.Y: [簡潔なタイトル]
-As a [役割]
-I want [機能]
-So that [価値]
-
-見積もり: XX分
-受け入れ基準:
-- [ ] 具体的で検証可能な条件1
-- [ ] 具体的で検証可能な条件2
-- [ ] 具体的で検証可能な条件3
-
-確認履歴:
-- [ ] 実装時の動作確認
-- [ ] 統合時の確認
-```
-
-### 5. ファイル作成
-
-以下の2つのファイルを作成：
-
-**A. プロジェクト設定**: `.claude/agile-artifacts/project-config.json`
-
-- プロジェクトタイプ判定結果
-- 技術スタック情報
-- 要件特性（deployment方法等）
-
-**B. ユーザーストーリー**: `.claude/agile-artifacts/stories/project-stories.md`
-
-- 本質分析の結果
-- ペルソナと成功指標
-- リリース計画（プロジェクトタイプ最適化済み）
-- 各ストーリーの詳細
-- プロジェクトタイプ別の確認方法
-
-### 6. コミット
-
-Bashツールで以下を実行してストーリーファイルをコミット：
-
-```bash
-git add .claude/agile-artifacts/
-git commit -m "[BEHAVIOR] Create user stories with project type analysis"
-```
+6. **Gitコミット**を実行してストーリーファイルをコミットしてください：
+   ```bash
+   git add .claude/agile-artifacts/
+   git commit -m "[BEHAVIOR] Create user stories with modern tech stack"
+   ```
 
 ## 原則
 
 - **YAGNI**: 今必要ない機能は含めない
 - **検証可能**: 曖昧な基準を避ける
 - **段階的**: 小さく始めて大きく育てる
+- **モダンツール優先**: npm/pipは避け、高速なツールを使用
 
 ## 完了後
 
@@ -243,7 +48,7 @@ git commit -m "[BEHAVIOR] Create user stories with project type analysis"
 
 🎯 プロジェクト判定: [Web App/API/CLI]
 🛠️ 技術スタック: [選択された技術群]
-📊 ストーリー総数: X個、推定: Y時間
+📊 ストーリー総数: X個
 
-次: /tdd:init (判定結果ベースでモダン環境構築)
+次: /tdd:init (モダン環境構築)
 ```
