@@ -18,15 +18,6 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 
 **段階的に考えます：**
 
-まず現在日付と検索範囲を確認します：
-
-Bashツールで以下を実行して年情報を取得：
-```
-CURRENT_DATE=$(date +"%Y-%m-%d")
-CURRENT_YEAR=$(date +%Y)
-PREV_YEAR=$((CURRENT_YEAR - 1))
-```
-
 #### Step 1: プロジェクトタイプの判定
 
 要求内容から最適なプロジェクトタイプを判定：
@@ -62,10 +53,10 @@ which pip && echo "✓ pip installed" || echo "✗ pip not found"
 
 判定されたプロジェクトタイプとインストール済みツールに基づいて、**最新技術動向を検索**：
 
-**Web検索による最新技術情報の取得（複数年範囲対応）:**
-- パフォーマンス重視: 「${PREV_YEAR} ${CURRENT_YEAR} [プロジェクトタイプ] package manager performance comparison modern」
+**Web検索による最新技術情報の取得:**
+- パフォーマンス重視: 「latest [プロジェクトタイプ] package manager performance comparison」
 - 開発者体験重視: 「recent developer experience [プロジェクトタイプ] tooling latest modern」
-- ベンチマーク比較: 「${PREV_YEAR} ${CURRENT_YEAR} [言語] build tool speed benchmark latest」
+- ベンチマーク比較: 「latest [言語] build tool speed benchmark」
 - 採用トレンド: 「modern development workflow [プロジェクトタイプ] trends recent」
 - 年非依存検索: 「latest modern [プロジェクトタイプ] best practices current」
 
