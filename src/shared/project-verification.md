@@ -1,6 +1,7 @@
 # プロジェクトタイプ別動作確認
 
 ## 言語・プロジェクトタイプの自動検出
+
 ```bash
 # 言語検出ロジックを読み込み
 source ~/.claude/commands/shared/language-detector.md
@@ -20,6 +21,7 @@ echo "📖 適用プラクティス: $PRACTICE_FILE"
 ## 🐍 Python プロジェクト
 
 ### 開発サーバー起動
+
 ```bash
 # プラクティスファイルから実行コマンドを取得
 RUN_CMD=$(grep '^run:' "$PRACTICE_FILE" | cut -d'"' -f2 2>/dev/null)
@@ -39,6 +41,7 @@ sleep 2
 ```
 
 ### 確認手順
+
 ```bash
 # テスト実行
 TEST_CMD=$(grep '^test:' "$PRACTICE_FILE" | cut -d'"' -f2 2>/dev/null || echo "python -m pytest")
@@ -54,6 +57,7 @@ eval "$LINT_CMD" 2>&1 | head -10
 ## 🟨 JavaScript/TypeScript プロジェクト
 
 ### 開発サーバー起動
+
 ```bash
 # パッケージマネージャーの検出
 if [ -f "pnpm-lock.yaml" ]; then
@@ -79,6 +83,7 @@ fi
 ```
 
 ### 確認手順
+
 ```bash
 # テスト実行
 TEST_CMD=$(grep '^test:' "$PRACTICE_FILE" | cut -d'"' -f2 2>/dev/null || echo "$PKG_MGR test")
@@ -92,7 +97,8 @@ eval "$LINT_CMD" 2>&1 | head -10
 
 # TypeScript チェック（該当する場合）
 if [ -f "tsconfig.json" ]; then
-    TYPECHECK_CMD=$(grep '^typecheck:' "$PRACTICE_FILE" | cut -d'"' -f2 2>/dev/null || echo "$PKG_MGR run typecheck")
+    TYPECHECK_CMD=$(grep '^typecheck:' "$PRACTICE_FILE" | cut -d'"' -f2 2>/dev/null || \
+                    echo "$PKG_MGR run typecheck")
     echo "🔧 型チェック: $TYPECHECK_CMD"
     eval "$TYPECHECK_CMD" 2>&1 | head -10
 fi
@@ -101,6 +107,7 @@ fi
 ## 🦀 Rust プロジェクト
 
 ### 確認手順
+
 ```bash
 if [ ! -f "Cargo.toml" ]; then
     echo "❌ Cargo.toml が見つかりません"
@@ -129,6 +136,7 @@ cargo fmt --check 2>&1 | head -5
 ## 🐹 Go プロジェクト
 
 ### 確認手順
+
 ```bash
 if [ ! -f "go.mod" ]; then
     echo "❌ go.mod が見つかりません"
@@ -158,6 +166,7 @@ fi
 ## 🏗️ モノレポプロジェクト
 
 ### サブプロジェクト検証
+
 ```bash
 echo "🏗️ モノレポプロジェクト検証"
 
@@ -217,6 +226,7 @@ done
 ## 🔀 混合言語プロジェクト
 
 ### 統合検証
+
 ```bash
 echo "🔀 混合言語プロジェクト検証"
 

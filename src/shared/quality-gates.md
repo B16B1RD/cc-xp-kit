@@ -139,7 +139,8 @@ run_web_app_quality_checks() {
         
         # セキュリティ監査
         if command -v npm >/dev/null 2>&1; then
-            local audit_result=$(npm audit --audit-level=high 2>/dev/null | grep "found.*vulnerabilities" || echo "0 vulnerabilities")
+            local audit_result=$(npm audit --audit-level=high 2>/dev/null | \
+                              grep "found.*vulnerabilities" || echo "0 vulnerabilities")
             echo "🔒 セキュリティ監査: $audit_result"
             
             if echo "$audit_result" | grep -q "high\|critical"; then
@@ -184,7 +185,8 @@ check_web_performance() {
     # 未使用ファイル検出
     if command -v find >/dev/null 2>&1; then
         local unused_files=$(find src -name "*.js" -o -name "*.ts" | while read -r file; do
-            if ! grep -r "$(basename "$file" .js | sed 's/.ts$//')" src --exclude="$file" >/dev/null 2>&1; then
+            if ! grep -r "$(basename "$file" .js | sed 's/.ts$//')" src \
+                        --exclude="$file" >/dev/null 2>&1; then
                 echo "$file"
             fi
         done)
@@ -254,7 +256,9 @@ check_api_security() {
     
     # ハードコードされたシークレット検出
     if command -v grep >/dev/null 2>&1; then
-        local secrets=$(grep -r "password\|secret\|key.*=" src --include="*.js" --include="*.ts" 2>/dev/null | grep -v "process.env" | head -5)
+        local secrets=$(grep -r "password\|secret\|key.*=" src \
+                            --include="*.js" --include="*.ts" 2>/dev/null | \
+                            grep -v "process.env" | head -5)
         if [ -n "$secrets" ]; then
             echo "🚨 ハードコードされた機密情報の可能性:"
             echo "$secrets"
@@ -290,7 +294,8 @@ check_api_performance() {
     
     # 接続プール設定確認
     if [ -f package.json ]; then
-        local db_packages=$(grep -o '"[^"]*":\s*"[^"]*"' package.json | grep -E "mysql|postgres|mongo|redis" | head -3)
+        local db_packages=$(grep -o '"[^"]*":\s*"[^"]*"' package.json | \
+                             grep -E "mysql|postgres|mongo|redis" | head -3)
         if [ -n "$db_packages" ]; then
             echo "🗄️  データベースパッケージ: $db_packages"
             echo "💡 接続プール設定が適切に行われているか確認してください"
@@ -544,7 +549,10 @@ check_code_complexity() {
     echo "🧮 コード複雑度確認..."
     
     # 簡易的な複雑度チェック（行数ベース）
-    local large_files=$(find src -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.rs" -o -name "*.go" 2>/dev/null | xargs wc -l 2>/dev/null | awk '$1 > 200 {print $2 " (" $1 " lines)"}')
+    local large_files=$(find src -name "*.js" -o -name "*.ts" -o -name "*.py" \
+                             -o -name "*.rs" -o -name "*.go" 2>/dev/null | \
+                         xargs wc -l 2>/dev/null | \
+                         awk '$1 > 200 {print $2 " (" $1 " lines)"}')
     
     if [ -n "$large_files" ]; then
         echo "⚠️  大きなファイルが検出されました:"

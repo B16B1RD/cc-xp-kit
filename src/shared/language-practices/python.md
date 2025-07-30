@@ -1,6 +1,7 @@
 # Python モダンプラクティス
 
 ## パッケージ管理
+
 ```yaml
 primary: uv          # 10-100倍高速な次世代パッケージマネージャー
 fallback: pip        # uvが利用不可の場合
@@ -8,7 +9,8 @@ lockfile: uv.lock    # 依存関係のロックファイル
 ```
 
 ## プロジェクト構造
-```
+
+```text
 project/
 ├── src/
 │   └── project_name/    # パッケージ本体
@@ -25,6 +27,7 @@ project/
 ```
 
 ## テストフレームワーク
+
 ```yaml
 primary: pytest
 options: --cov=src --cov-report=term-missing
@@ -34,6 +37,7 @@ alternatives:
 ```
 
 ## 開発ツール
+
 ```yaml
 linter: ruff          # 高速な Python リンター
 formatter: ruff       # コードフォーマッター機能も内蔵
@@ -42,6 +46,7 @@ docstring: pydocstyle # docstring スタイルチェック
 ```
 
 ## 実行コマンド
+
 ```bash
 # 環境セットアップ
 init: "uv venv && uv pip install -e ."
@@ -67,6 +72,7 @@ update_deps: "uv lock --upgrade"
 ```
 
 ## Git 無視パターン
+
 ```gitignore
 # Python
 __pycache__/
@@ -101,6 +107,7 @@ dist/
 ```
 
 ## ベストプラクティス
+
 - **src レイアウト**: テストと本体コードを明確に分離
 - **型ヒント**: Python 3.9+ の型アノテーションを積極的に使用
 - **仮想環境**: uvが自動的に管理（.venv/）

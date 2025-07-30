@@ -3,6 +3,7 @@
 ## 検出フロー
 
 ### 1. プロジェクトタイプの判定
+
 ```bash
 detect_project_type() {
     local project_root=$(pwd)
@@ -93,6 +94,7 @@ detect_project_type() {
 ```
 
 ### 2. 混合プロジェクトの言語一覧取得
+
 ```bash
 get_mixed_languages() {
     local languages=()
@@ -135,6 +137,7 @@ get_primary_language() {
 ```
 
 ### 3. サブプロジェクトの検出（モノレポ用）
+
 ```bash
 detect_subprojects() {
     local subprojects=()
@@ -170,6 +173,7 @@ detect_language_from_file() {
 ```
 
 ### 3. 現在のコンテキストの検出
+
 ```bash
 get_current_context() {
     local current_dir=$(pwd)
@@ -192,6 +196,7 @@ get_current_context() {
 ```
 
 ### 4. プラクティスファイルの解決
+
 ```bash
 resolve_practice_file() {
     local language="$1"
@@ -215,6 +220,7 @@ resolve_practice_file() {
 ```
 
 ### 5. カスタム設定の読み込み
+
 ```bash
 load_custom_practice() {
     local project_root="$1"
@@ -240,6 +246,7 @@ load_custom_practice() {
 ## 使用例
 
 ### 基本的な使用
+
 ```bash
 PROJECT_TYPE=$(detect_project_type)
 echo "検出されたプロジェクトタイプ: $PROJECT_TYPE"
@@ -256,6 +263,7 @@ esac
 ```
 
 ### コンテキスト認識
+
 ```bash
 CURRENT_CONTEXT=$(get_current_context)
 CONTEXT_DIR=$(echo "$CURRENT_CONTEXT" | cut -d: -f1)
@@ -265,6 +273,7 @@ echo "現在のコンテキスト: $CONTEXT_DIR ($CONTEXT_LANG)"
 ```
 
 ### プラクティス適用
+
 ```bash
 PRACTICE_FILE=$(resolve_practice_file "$CONTEXT_LANG" "user")
 echo "適用されるプラクティス: $PRACTICE_FILE"

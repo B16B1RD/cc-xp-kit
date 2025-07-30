@@ -10,6 +10,7 @@ allowed-tools: ["Bash", "Write", "Read", "LS"]
 ## 実行内容
 
 1. **言語・プロジェクトタイプの検出**
+
 ```bash
 # 言語検出ロジックを読み込み
 source ~/.claude/commands/shared/language-detector.md
@@ -36,12 +37,14 @@ case "$PROJECT_TYPE" in
 esac
 ```
 
-2. **プロジェクト用ディレクトリの作成**
+1. **プロジェクト用ディレクトリの作成**
+
 ```bash
 mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
 ```
 
-3. **CLAUDE.mdの作成/更新**
+1. **CLAUDE.mdの作成/更新**
+
 ```bash
 # 言語別プラクティスファイルを読み込み
 PRACTICE_FILE=$(resolve_practice_file "$PROJECT_TYPE" "user")
@@ -200,7 +203,8 @@ else
 fi
 ```
 
-4. **セッション管理ファイル**
+1. **セッション管理ファイル**
+
 ```bash
 # セッション管理ファイルの作成
 cat > .claude/agile-artifacts/tdd-logs/session.json << EOF
@@ -217,7 +221,8 @@ cat > .claude/agile-artifacts/tdd-logs/session.json << EOF
 EOF
 ```
 
-5. **Git初期化と言語別設定**
+1. **Git初期化と言語別設定**
+
 ```bash
 # 未初期化の場合のみ
 if [ ! -d .git ]; then

@@ -1,6 +1,7 @@
 # モノレポ プラクティス
 
 ## プロジェクトタイプ
+
 ```yaml
 type: monorepo
 structure: multi-language
@@ -8,6 +9,7 @@ management: unified
 ```
 
 ## 検出パターン
+
 ```yaml
 language_markers:
   - "**/package.json"      # JavaScript/TypeScript
@@ -21,7 +23,8 @@ language_markers:
 ```
 
 ## 推奨ディレクトリ構造
-```
+
+```text
 monorepo/
 ├── .claude/
 │   ├── language-practice.md    # ルートレベル共通設定
@@ -57,6 +60,7 @@ monorepo/
 ```
 
 ## ルートレベルコマンド
+
 ```bash
 # 全体操作
 install_all: "make install-all"
@@ -73,6 +77,7 @@ deps_graph: "make deps-graph"
 ```
 
 ## Makefile テンプレート（ルート）
+
 ```makefile
 .PHONY: install-all test-all lint-all build-all
 
@@ -101,6 +106,7 @@ lint-all:
 ```
 
 ## 言語混在時の設定継承
+
 ```yaml
 inheritance_chain:
   1: "~/.claude/commands/shared/language-practices/{language}.md"
@@ -109,6 +115,7 @@ inheritance_chain:
 ```
 
 ## CI/CD 戦略
+
 ```yaml
 strategy: "影響を受けたサービスのみビルド・デプロイ"
 change_detection:
@@ -118,6 +125,7 @@ parallel_execution: true
 ```
 
 ## 共通設定
+
 ```yaml
 # Git
 commit_convention: conventional
@@ -134,6 +142,7 @@ rust_toolchain: "rust-toolchain.toml で統一"
 ```
 
 ## ベストプラクティス
+
 - **依存関係の明確化**: 各サービス間の依存を最小限に
 - **共通コードの抽出**: packages/ に共有コードを配置
 - **独立したデプロイ**: 各サービスは独立してデプロイ可能に

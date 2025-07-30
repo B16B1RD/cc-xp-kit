@@ -11,9 +11,11 @@ allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 ## 実行モード
 
 ### デフォルト: イテレーション全体の連続実行 🎯
+
 オプションなしの場合、現在のイテレーションの全ステップを自動実行。
 
 ### オプション
+
 - `--step`: 単一ステップのみ実行して終了
 - `--micro`: ステップごとに確認しながら実行
 - `--step X.Y`: 特定ステップから開始
@@ -22,6 +24,7 @@ allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 ## 実行フロー
 
 ### 1. プロジェクトコンテキストの検出
+
 ```bash
 # 言語検出ロジックを読み込み
 source ~/.claude/commands/shared/language-detector.md
@@ -48,11 +51,13 @@ fi
 ```
 
 ### 2. 準備
+
 - 最新のイテレーションファイルを読み込み
 - 前回フィードバックの確認（未収集なら警告）
 - 言語別コマンドの準備
 
 ### 3. 言語別コマンドの準備
+
 ```bash
 # プラクティスファイルから言語別コマンドを抽出
 extract_commands() {
@@ -83,7 +88,8 @@ echo "  - リント: $LINT_CMD"
 ### 4. 実行モードに応じた処理
 
 #### イテレーション全体実行（デフォルト）
-```
+
+```text
 🚀 イテレーション N 連続実行を開始します
 ────────────────────────────────────────
   📋 総ステップ数: X個
@@ -95,7 +101,8 @@ echo "  - リント: $LINT_CMD"
 ```
 
 #### 単一ステップ実行（--step）
-```
+
+```text
 🔄 単一ステップモードで実行します
 次の未完了ステップのみを実行して終了します。
 ```
@@ -103,9 +110,11 @@ echo "  - リント: $LINT_CMD"
 ### 5. 各ステップの実行
 
 #### 🔴 RED（テスト作成）
+
 Kent Beck 視点で最小限のテストを作成。
 
 言語別テスト実行:
+
 ```bash
 # コンテキストに応じたディレクトリに移動
 if [ "$CONTEXT_DIR" != "." ]; then
@@ -127,6 +136,7 @@ fi
 ```
 
 #### 🟢 GREEN（最小実装）
+
 必ず Fake It から始める。実装後のテスト実行:
 
 ```bash
@@ -156,12 +166,14 @@ fi
 ```
 
 コミット:
+
 ```bash
 git add .
 git commit -m "[BEHAVIOR] Step X.Y: Fake It implementation"
 ```
 
 #### 🔵 REFACTOR（必要時）
+
 構造的変更のみ（振る舞いは変えない）。リファクタ後の確認:
 
 ```bash
@@ -194,6 +206,7 @@ git commit -m "[STRUCTURE] Step X.Y: Extract method"
 ```
 
 ### 4. 必須チェック（各ステップ後）
+
 参照: `~/.claude/commands/shared/mandatory-gates.md`
 
 - **動作確認**: プロジェクトタイプに応じて実施
@@ -202,6 +215,7 @@ git commit -m "[STRUCTURE] Step X.Y: Extract method"
   - API: curl でレスポンス確認
 
 - **受け入れ基準**: ストーリーファイルを更新
+
 ```bash
 sed -i 's/\[ \]/\[x\]/' project-stories.md
 ```
@@ -211,10 +225,12 @@ sed -i 's/\[ \]/\[x\]/' project-stories.md
 ### 5. モードに応じた完了処理
 
 #### イテレーション完了時（デフォルト）
+
 すべてのステップ完了後、フィードバック収集を実行。
 
 #### 単一ステップ完了時（--step）
-```
+
+```text
 ✅ Step X.Y 完了
 次のステップを実行するには: /tdd:run --step
 ```
@@ -222,7 +238,8 @@ sed -i 's/\[ \]/\[x\]/' project-stories.md
 ### 6. フィードバック収集（イテレーション完了時のみ）
 
 #### 簡素版（1分で完了）
-```
+
+```text
 💭 3つの質問：
 
 1. 期待通りでしたか？ [5段階 + コメント]
@@ -233,23 +250,28 @@ sed -i 's/\[ \]/\[x\]/' project-stories.md
 すべて回答されるまで完了としない。
 
 ### 7. フィードバック保存
+
 `.claude/agile-artifacts/reviews/iteration-N-feedback.md`:
+
 ```bash
 git commit -m "[BEHAVIOR] Save iteration N feedback"
 ```
 
 ## エラー対応
+
 参照: `~/.claude/commands/shared/error-handling.md`
 
 エラー時は 3 つの質問に答えてから対応。
 
 ## プロジェクトタイプ別確認
+
 参照: `~/.claude/commands/shared/project-verification.md`
 
 ## 完了メッセージ
 
 ### イテレーション完了時
-```
+
+```text
 🎉 イテレーション N 完了！
 技術実装: 100%
 フィードバック: 収集済み
@@ -258,7 +280,8 @@ git commit -m "[BEHAVIOR] Save iteration N feedback"
 ```
 
 ### 単一ステップ完了時
-```
+
+```text
 ✅ Step X.Y 完了！
 進捗: X/Y ステップ完了
 

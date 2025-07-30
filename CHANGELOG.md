@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 今後の予定
 
 - 今後追加される機能をここに記載
+
 ## [0.1.12] - 2025-07-30
 
 ### Added
@@ -126,7 +127,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - 📁 **binディレクトリをgitignoreに追加**
->>>>>>> feature/fix-slash-commands-and-shared-files
 
 ## [0.1.0] - 2025-07-25
 

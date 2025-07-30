@@ -1,6 +1,7 @@
 # JavaScript/TypeScript モダンプラクティス
 
 ## パッケージ管理
+
 ```yaml
 primary: pnpm         # 高速でディスク効率的
 alternatives:
@@ -11,7 +12,8 @@ lockfile: pnpm-lock.yaml
 ```
 
 ## プロジェクト構造
-```
+
+```text
 project/
 ├── src/
 │   ├── components/      # UIコンポーネント（Reactなど）
@@ -31,6 +33,7 @@ project/
 ```
 
 ## テストフレームワーク
+
 ```yaml
 primary: vitest       # Vite ベースの高速テストランナー
 alternatives:
@@ -40,6 +43,7 @@ e2e: playwright       # E2Eテスト
 ```
 
 ## 開発ツール
+
 ```yaml
 bundler: vite         # 高速な開発サーバーとビルドツール
 linter: eslint        # JavaScript/TypeScript リンター
@@ -48,6 +52,7 @@ type_checker: tsc     # TypeScript コンパイラ
 ```
 
 ## 実行コマンド
+
 ```bash
 # 環境セットアップ
 init: "pnpm install"
@@ -78,6 +83,7 @@ update_deps: "pnpm update"
 ```
 
 ## Git 無視パターン
+
 ```gitignore
 # 依存関係
 node_modules/
@@ -119,6 +125,7 @@ yarn-debug.log*
 ```
 
 ## ベストプラクティス
+
 - **ESモジュール**: `"type": "module"` を package.json に設定
 - **TypeScript**: 厳格モード（strict: true）を有効化
 - **パスエイリアス**: `@/` で src ディレクトリを参照

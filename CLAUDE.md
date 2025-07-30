@@ -11,11 +11,13 @@ Kent Beck 流の TDD 原則に基づいて、Red → Green → Refactor サイ�
 ## 基本コマンド
 
 ### テスト実行
+
 ```bash
 bash tests/run-tests.sh
 ```
 
 ### インストールテスト
+
 ```bash
 # ユーザー用インストール (1を選択)
 bash install.sh
@@ -28,6 +30,7 @@ bash install.sh uninstall
 ```
 
 ### コード品質チェック（ShellCheck利用可能時）
+
 ```bash
 shellcheck install.sh
 ```
@@ -35,6 +38,7 @@ shellcheck install.sh
 ## アーキテクチャ
 
 ### 主要ディレクトリ構造
+
 - `src/commands/` - メインコマンド（`/tdd`, `/tdd-quick`）
 - `src/subcommands/tdd/` - TDD サブコマンド（`init`、`story`、`plan`、`run`、`status`、`review`）
 - `src/shared/` - 共通リソース（Kent Beck 原則、必須ゲート、プロジェクト検証など）
@@ -42,11 +46,13 @@ shellcheck install.sh
 - `examples/` - 使用例（api-server, cli-tool, web-app）
 
 ### 設計原則
+
 - **Tidy First原則** - 構造的変更（[STRUCTURE]）と振る舞いの変更（[BEHAVIOR]）を厳格に分離
 - **必須ゲート** - 各ステップで動作確認、受け入れ基準チェック、Git コミットを強制
 - **プログレッシブ表示** - 必要な情報を必要なときに表示（`-v` オプションで詳細表示）
 
 ### TDD ワークフロー
+
 1. `/tdd:init` - 環境初期化と Git 初期化
 2. `/tdd:story` - ユーザーストーリー作成
 3. `/tdd:plan` - 90 分イテレーション計画
@@ -55,18 +61,21 @@ shellcheck install.sh
 6. `/tdd:review` - 品質分析とフィードバック
 
 ### インストールタイプ
+
 - **ユーザー用** - `~/.claude/commands/` で全プロジェクトで利用可能
 - **プロジェクト用** - `.claude/commands/` でプロジェクト固有カスタマイズ可能
 
 ## データ管理
 
 各プロジェクトに `.claude/agile-artifacts/` ディレクトリが作成され、以下を管理します。
+
 - `stories/` - ユーザーストーリー（Git 管理対象）
 - `iterations/` - イテレーション計画（Git 管理対象）
 - `reviews/` - レビューとフィードバック（Git 管理対象）
 - `tdd-logs/` - 実行ログ（Git 管理対象外、個人用）
 
 ### Git管理方針
+
 - チーム共有価値の高い情報（stories, iterations, reviews）は Git 管理
 - 個人的な実行ログ（tdd-logs）は`.gitignore`で除外
 - プロジェクトの成長過程と学習内容を追跡可能に
@@ -88,12 +97,15 @@ shellcheck install.sh
 ## リリース管理
 
 ### バージョニング
+
 [Semantic Versioning](https://semver.org/) に準拠します。
+
 - **MAJOR** - 破壊的変更（例: 0.x.x → 1.0.0）
 - **MINOR** - 新機能追加（例: 0.1.x → 0.2.0）  
 - **PATCH** - バグ修正・改善（例: 0.1.0 → 0.1.1）
 
 ### リリースプロセス
+
 1. **コード変更**
    - 全テストが通ることを確認
    - Markdown lint エラーがないことを確認
@@ -108,6 +120,7 @@ shellcheck install.sh
    - タグメッセージには簡潔な変更概要を含める
 
 4. **実行手順**
+
    ```bash
    # 1. 変更をコミット
    git add -A
@@ -127,10 +140,13 @@ shellcheck install.sh
    ```
 
 ### タグ付け後の追加変更
+
 タグ付け後に追加のコミットが発生した場合の対処法です。
+
 - パッチバージョンとして新しいタグを作成（推奨）
 - 例: v0.2.0 → v0.2.1（リント修正など）
 
 ### GitHub Actions
+
 - Markdown lint エラーは必ずローカルで修正してからプッシュ
 - CI が通らない状態でのタグ付けは避ける

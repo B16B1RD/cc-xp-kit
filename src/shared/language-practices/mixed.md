@@ -1,6 +1,7 @@
 # 混合言語プロジェクト プラクティス
 
 ## プロジェクトタイプ
+
 ```yaml
 type: mixed
 structure: single-project-multi-language
@@ -8,6 +9,7 @@ management: unified-root
 ```
 
 ## 一般的な構成例
+
 ```yaml
 common_patterns:
   - "Python + TypeScript (FastAPI + React)"
@@ -18,7 +20,8 @@ common_patterns:
 ```
 
 ## 推奨ディレクトリ構造
-```
+
+```text
 project/
 ├── backend/              # バックエンド言語
 │   ├── pyproject.toml   # Python の場合
@@ -39,6 +42,7 @@ project/
 ```
 
 ## 統合コマンド（Makefile例）
+
 ```makefile
 .PHONY: install test lint build dev clean
 
@@ -82,6 +86,7 @@ clean:
 ## 言語別設定
 
 ### Python (Backend)
+
 ```yaml
 directory: ./backend
 package_manager: uv
@@ -94,6 +99,7 @@ config_files:
 ```
 
 ### TypeScript/JavaScript (Frontend)
+
 ```yaml
 directory: ./frontend
 package_manager: pnpm
@@ -108,6 +114,7 @@ config_files:
 ```
 
 ## 実行コマンドパターン
+
 ```bash
 # 言語別実行（プライマリ言語を自動選択）
 test: "cd backend && uv run pytest"
@@ -122,6 +129,7 @@ typecheck_all: "make typecheck"
 ```
 
 ## Git 管理
+
 ```gitignore
 # Python
 backend/__pycache__/
@@ -145,6 +153,7 @@ frontend/.turbo/
 ```
 
 ## プライマリ言語の決定
+
 ```yaml
 priority_order:
   1. python      # ML/Data系で多用
@@ -155,12 +164,14 @@ priority_order:
 ```
 
 ## 開発フロー
+
 1. **初期化**: 各言語ディレクトリで個別にセットアップ
 2. **開発**: Make/スクリプトで統合コマンド実行
 3. **テスト**: 各言語のテストを統合実行
 4. **CI/CD**: 変更検出で必要な言語のみビルド
 
 ## ベストプラクティス
+
 - **統合Makefile**: 全言語のタスクを統一インターフェースで管理
 - **Docker Compose**: 開発環境の統合管理
 - **共有スキーマ**: API仕様やデータ型を共有ディレクトリで管理

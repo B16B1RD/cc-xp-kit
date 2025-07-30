@@ -1,6 +1,7 @@
 # Rust モダンプラクティス
 
 ## パッケージ管理
+
 ```yaml
 primary: cargo        # Rust 標準のビルドシステム
 registry: crates.io   # 公式パッケージレジストリ
@@ -8,7 +9,8 @@ lockfile: Cargo.lock  # 依存関係のロックファイル
 ```
 
 ## プロジェクト構造
-```
+
+```text
 project/
 ├── src/
 │   ├── lib.rs          # ライブラリのエントリーポイント
@@ -28,6 +30,7 @@ project/
 ```
 
 ## テストフレームワーク
+
 ```yaml
 unit_test: "組み込み #[test]"
 integration_test: tests/
@@ -36,6 +39,7 @@ property_test: proptest # プロパティベーステスト
 ```
 
 ## 開発ツール
+
 ```yaml
 formatter: rustfmt     # 公式フォーマッター
 linter: clippy        # 公式リンター
@@ -44,6 +48,7 @@ audit: cargo-audit    # セキュリティ監査
 ```
 
 ## 実行コマンド
+
 ```bash
 # ビルド・実行
 build: "cargo build"
@@ -79,6 +84,7 @@ publish: "cargo publish"
 ```
 
 ## Git 無視パターン
+
 ```gitignore
 # ビルド成果物
 /target/
@@ -102,6 +108,7 @@ publish: "cargo publish"
 ```
 
 ## ベストプラクティス
+
 - **エラーハンドリング**: `Result<T, E>` と `?` 演算子を活用
 - **所有権**: 借用チェッカーを活かした安全なメモリ管理
 - **並行性**: `Arc<Mutex<T>>` より `channels` を優先
@@ -112,6 +119,7 @@ publish: "cargo publish"
 - **ベンチマーク**: パフォーマンスクリティカルなコードは計測
 
 ## Cargo.toml の推奨設定
+
 ```toml
 [profile.release]
 opt-level = 3

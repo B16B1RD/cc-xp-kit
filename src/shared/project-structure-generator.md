@@ -9,7 +9,8 @@
 ### Web Application 構造
 
 **ディレクトリ構成**:
-```
+
+```text
 project/
 ├── src/
 │   ├── components/      # UIコンポーネント
@@ -32,6 +33,7 @@ project/
 ```
 
 **必要な設定ファイル**:
+
 - **package.json**: Vite + Vitest + ESLint + Prettier
 - **TypeScript**: 厳格モードで最新機能を活用
 - **開発サーバー**: ホットリロード対応
@@ -45,7 +47,8 @@ project/
 ## API Server 構造
 
 **ディレクトリ構成**:
-```
+
+```text
 project/
 ├── src/
 │   ├── routes/          # エンドポイント定義
@@ -69,12 +72,14 @@ project/
 ```
 
 **必要な設定ファイル**:
+
 - **package.json**: Express + Vitest + セキュリティミドルウェア
 - **環境変数**: ポート、データベースURL、JWT秘密鍵
 - **ミドルウェア**: Helmet、CORS、圧縮、エラーハンドリング
 - **テスト環境**: Supertest + Vitest でAPI統合テスト
 
 **重要な技術要素**:
+
 - **セキュリティ**: Helmet.js、CORS設定、入力検証
 - **パフォーマンス**: 圧縮、接続プール、キャッシュ戦略
 - **モニタリング**: ヘルスチェックエンドポイント
@@ -83,7 +88,8 @@ project/
 ## CLI Tool 構造
 
 **ディレクトリ構成**:
-```
+
+```text
 project/
 ├── src/
 │   ├── commands/        # 各CLIコマンド実装
@@ -102,12 +108,14 @@ project/
 ```
 
 **必要な設定ファイル**:
+
 - **package.json**: Commander.js + Chalk + Inquirer
 - **bin設定**: 実行可能ファイルの指定
 - **TypeScript**: CLI開発に最適化された設定
 - **テスト環境**: CLIコマンドの自動テスト
 
 **重要な技術要素**:
+
 - **コマンドパターン**: 各機能を独立したコマンドに分離
 - **引数解析**: Commander.jsによる堅牢な引数処理
 - **ユーザー体験**: Chalk（色付き出力）、Ora（スピナー）
@@ -119,16 +127,19 @@ project/
 ### package.json パターン
 
 **Web Application用**:
+
 - Scripts: `dev`, `build`, `preview`, `test`, `test:ui`, `test:coverage`, `lint`, `format`, `typecheck`
 - 主要依存関係: Vite, Vitest, ESLint, Prettier
 - TypeScript使用時: `typescript`, `@types/node`を追加
 
 **API Server用**:
+
 - Scripts: `dev`, `start`, `test`, `test:watch`, `test:coverage`, `lint`, `format`
 - 主要依存関係: Express, Helmet, CORS, Compression, Dotenv
 - 開発依存関係: Vitest, Supertest, ESLint, Prettier
 
 **CLI Tool用**:
+
 - Scripts: `dev`, `build`, `test`, `test:watch`, `lint`, `format`
 - Bin設定: 実行可能ファイルの指定
 - 主要依存関係: Commander, Chalk, Ora, Inquirer
@@ -136,6 +147,7 @@ project/
 ### TypeScript設定パターン
 
 **推奨設定**:
+
 - **Target**: ES2022（モダンJS機能を活用）
 - **Module**: ESNext（最新モジュールシステム）
 - **Strict**: true（厳格な型チェック）
@@ -143,6 +155,7 @@ project/
 - **JSX支援**: React JSX対応
 
 **最適化オプション**:
+
 - `skipLibCheck`: ライブラリ型チェックをスキップ
 - `isolatedModules`: ファイル単位でのコンパイル
 - `noUnusedLocals/Parameters`: 未使用変数の検出
@@ -150,11 +163,13 @@ project/
 ### Vite設定パターン
 
 **基本設定**:
+
 - **Alias**: `@` → `src/`のパス解決
 - **Test**: Vitest統合（globals、jsdom環境）
 - **Build**: 最適化とminification
 
 **開発環境**:
+
 - ホットリロード対応
 - ソースマップ生成
 - プロキシ設定（API開発時）
@@ -162,20 +177,24 @@ project/
 ## プロジェクトタイプ別選択指針
 
 ### Web Application
+
 **選択基準**: ブラウザ、UI、ゲーム、インタラクティブアプリ
 **特徴**: フロントエンド重視、リアルタイム性、ユーザー体験
 
 ### API Server
+
 **選択基準**: サーバー、データベース、認証、バックエンド処理
 **特徴**: データ処理、セキュリティ、スケーラビリティ
 
 ### CLI Tool
+
 **選択基準**: コマンド、ツール、自動化、スクリプト
 **特徴**: コマンドライン操作、バッチ処理、開発効率化
 
 ## 実装ガイドライン
 
 ### 環境構築の順序
+
 1. **プロジェクトタイプ判定**: 要望内容の分析
 2. **ディレクトリ作成**: 標準的な構造の生成
 3. **設定ファイル**: package.json, tsconfig.json等の配置
@@ -184,6 +203,7 @@ project/
 6. **品質ツール**: Lint、Format設定
 
 ### カスタマイズ方針
+
 - **最小構成から開始**: 必要最小限のファイルのみ
 - **段階的拡張**: 開発進行に応じて機能追加
 - **プロジェクト固有調整**: 要件に合わせた設定変更

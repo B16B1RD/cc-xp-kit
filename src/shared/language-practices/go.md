@@ -1,6 +1,7 @@
 # Go モダンプラクティス
 
 ## パッケージ管理
+
 ```yaml
 primary: "go modules"   # Go 1.11+ の標準
 vendoring: optional     # 依存関係のベンダリング
@@ -8,7 +9,8 @@ lockfile: go.sum        # チェックサムによる整合性確認
 ```
 
 ## プロジェクト構造
-```
+
+```text
 project/
 ├── cmd/                 # メインアプリケーション
 │   ├── api/            # API サーバー
@@ -32,6 +34,7 @@ project/
 ```
 
 ## テストフレームワーク
+
 ```yaml
 unit_test: "標準 testing パッケージ"
 assertion: testify/assert  # アサーションライブラリ
@@ -41,6 +44,7 @@ benchmark: "testing.B"
 ```
 
 ## 開発ツール
+
 ```yaml
 formatter: gofmt         # 標準フォーマッター
 imports: goimports       # import 文の整理
@@ -49,6 +53,7 @@ race_detector: "go test -race"
 ```
 
 ## 実行コマンド
+
 ```bash
 # ビルド・実行
 build: "go build -o bin/app ./cmd/api"
@@ -81,6 +86,7 @@ clean: "go clean -cache -testcache"
 ```
 
 ## Git 無視パターン
+
 ```gitignore
 # バイナリ
 *.exe
@@ -115,6 +121,7 @@ Thumbs.db
 ```
 
 ## ベストプラクティス
+
 - **パッケージ設計**: 小さく焦点を絞ったパッケージ
 - **インターフェース**: 実装ではなくインターフェースに依存
 - **エラーハンドリング**: エラーは値として扱う
@@ -124,6 +131,7 @@ Thumbs.db
 - **埋め込み**: 継承の代わりに埋め込みを使用
 
 ## Makefile テンプレート
+
 ```makefile
 .PHONY: build test lint clean
 
@@ -141,6 +149,7 @@ clean:
 ```
 
 ## プロジェクト初期化
+
 ```bash
 # 新規プロジェクト
 go mod init github.com/user/project
