@@ -217,16 +217,86 @@ git commit -m "[STRUCTURE] Step X.Y: Extract method"
 - **受け入れ基準**: ストーリーファイルを更新
 
 ```bash
-sed -i 's/\[ \]/\[x\]/' project-stories.md
+# 現在のステップを特定（例：Story 1.2）
+CURRENT_STORY=$(echo "$CURRENT_STEP" | cut -d: -f1)
+
+# 特定のストーリーのチェックボックスを更新  
+update_story_progress() {
+    local story_id="$1"
+    local criteria_line="$2"
+    
+    # ストーリーファイルで該当する行を更新
+    sed -i "/$story_id:/,/^$/s/- \[ \] ${criteria_line}/- \[x\] ${criteria_line}/" .claude/agile-artifacts/stories/project-stories.md
+    
+    echo "✅ Story ${story_id} の受け入れ基準を更新: ${criteria_line}"
+}
+
+# 実際のステップに応じた更新実行
+update_story_progress "$CURRENT_STORY" "実装時の動作確認"
 ```
 
-- **進捗更新**: イテレーションファイルの保存
+- **進捗更新**: イテレーションファイルの必須ゲート更新
 
-### 5. モードに応じた完了処理
+```bash
+# イテレーションファイルの対応するステップを更新
+update_iteration_progress() {
+    local step_id="$1"
+    
+    # 該当ステップの完了マークを更新
+    sed -i "/Step ${step_id}:/,/^$/s/- \[ \]/- \[x\]/" .claude/agile-artifacts/iterations/iteration-*.md
+    
+    echo "✅ Iteration Step ${step_id} 完了マーク更新"
+}
+
+update_iteration_progress "$CURRENT_STEP"
+```
+
+### 5. 完了確認と継続判定
+
+各ステップ完了後、必須確認を実行：
+
+```bash
+# ストーリー完了確認
+check_story_completion() {
+    local story_id="$1"
+    
+    # ストーリーファイル内の該当ストーリーのチェック状況を確認
+    unchecked_count=$(grep -A 10 "^**${story_id}:" .claude/agile-artifacts/stories/project-stories.md | grep -c "- \[ \]")
+    
+    if [ $unchecked_count -gt 0 ]; then
+        echo "❌ Story ${story_id} に未完了の受け入れ基準があります（${unchecked_count}個）"
+        echo "🚫 次のステップに進むには、全ての受け入れ基準を完了してください"
+        exit 1
+    else
+        echo "✅ Story ${story_id} の全ての受け入れ基準が完了しています"
+    fi
+}
+
+# イテレーション完了確認
+check_iteration_completion() {
+    local iteration="$1"
+    
+    # 必須ゲートの完了確認
+    unchecked_gates=$(grep -A 20 "## 必須ゲート" .claude/agile-artifacts/iterations/iteration-${iteration}.md | grep -c "- \[ \]")
+    
+    if [ $unchecked_gates -gt 0 ]; then
+        echo "❌ Iteration ${iteration} に未完了の必須ゲートがあります（${unchecked_gates}個）"
+        echo "🚫 レビューに進むには、全ての必須ゲートを通過してください"
+        exit 1
+    else
+        echo "✅ Iteration ${iteration} の全ての必須ゲートが完了しています"
+    fi
+}
+
+# 各ステップ後に実行
+check_story_completion "$CURRENT_STORY"
+```
+
+### 6. モードに応じた完了処理
 
 #### イテレーション完了時（デフォルト）
 
-すべてのステップ完了後、フィードバック収集を実行。
+全ステップ・全必須ゲート完了後、フィードバック収集を実行。
 
 #### 単一ステップ完了時（--step）
 
