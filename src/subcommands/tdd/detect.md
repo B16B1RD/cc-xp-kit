@@ -6,28 +6,34 @@
 
 ### 1. 言語・プロジェクトタイプの詳細分析
 
-```bash
-# 言語検出ロジックを読み込み
-source ~/.claude/commands/shared/language-detector.md
+**プロジェクト構造分析を実行**
 
-echo "🔍 プロジェクト構造分析"
-echo "=========================="
+Bashツールで以下を順次実行してプロジェクト情報を取得：
 
-# プロジェクトタイプを検出
-PROJECT_TYPE=$(detect_project_type)
-echo "📊 プロジェクトタイプ: $PROJECT_TYPE"
+1. **言語検出ロジック読み込み**：
+   ```
+   source ~/.claude/commands/shared/language-detector.md
+   ```
 
-# 現在のコンテキストを検出
-CURRENT_CONTEXT=$(get_current_context)
-CONTEXT_DIR=$(echo "$CURRENT_CONTEXT" | cut -d: -f1)
-CONTEXT_LANG=$(echo "$CURRENT_CONTEXT" | cut -d: -f2)
+2. **プロジェクトタイプ検出**：
+   ```
+   PROJECT_TYPE=$(detect_project_type)
+   echo "📊 プロジェクトタイプ: $PROJECT_TYPE"
+   ```
 
-echo "📍 現在のコンテキスト: $CONTEXT_DIR ($CONTEXT_LANG)"
+3. **現在コンテキスト取得**：
+   ```
+   CURRENT_CONTEXT=$(get_current_context)
+   CONTEXT_DIR=$(echo "$CURRENT_CONTEXT" | cut -d: -f1)
+   CONTEXT_LANG=$(echo "$CURRENT_CONTEXT" | cut -d: -f2)
+   echo "📍 現在のコンテキスト: $CONTEXT_DIR ($CONTEXT_LANG)"
+   ```
 
-# 適用するプラクティス
-PRACTICE_FILE=$(resolve_practice_file "$CONTEXT_LANG" "user")
-echo "📖 適用プラクティス: $PRACTICE_FILE"
-```
+4. **適用プラクティス決定**：
+   ```
+   PRACTICE_FILE=$(resolve_practice_file "$CONTEXT_LANG" "user")
+   echo "📖 適用プラクティス: $PRACTICE_FILE"
+   ```
 
 ### 2. ファイル構造の詳細表示
 
