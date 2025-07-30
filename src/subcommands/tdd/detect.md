@@ -30,7 +30,8 @@ Bashツールで以下を順次実行してプロジェクト情報を取得：
    ```
 
 4. **適用プラクティス決定**：
-   ```
+
+   ```bash
    PRACTICE_FILE=$(resolve_practice_file "$CONTEXT_LANG" "user")
    echo "📖 適用プラクティス: $PRACTICE_FILE"
    ```

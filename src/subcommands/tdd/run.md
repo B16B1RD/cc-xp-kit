@@ -59,11 +59,13 @@ Bashツールで以下を実行：
 Bashツールで以下を実行：
 
 ### 1. コマンド抽出関数定義
+
 **関数名**: `extract_commands`
 **機能**: プラクティスファイルから特定コマンドタイプを抽出
 **抽出コマンド**: `grep "^$command_type:" "$practice_file" | cut -d'"' -f2`
 
 ### 2. 各種コマンドの取得
+
 - **TEST_CMD**: テストコマンドを抽出
 - **LINT_CMD**: リントコマンドを抽出
 - **BUILD_CMD**: ビルドコマンドを抽出
@@ -72,14 +74,18 @@ Bashツールで以下を実行：
 - **DEV_CMD**: 開発コマンドを抽出
 
 ### 3. フォールバック設定
+
 - テストコマンド未設定時：エラーメッセージ表示
 - リントコマンド未設定時：エラーメッセージ表示
 
 ### 4. サーバーコマンド優先度決定
+
 **優先度順**: DEV_CMD > START_CMD > RUN_CMD
+
 - 最初に見つかったコマンドをSERVER_CMDに設定
 
 ### 5. コマンド情報表示
+
 - 必須コマンド：テスト、リント
 - オプションコマンド：ビルド、サーバー（バックグラウンド実行指定）
 
@@ -116,6 +122,7 @@ Kent Beck 視点で最小限のテストを作成。**REDフェーズ強制化**
 Bashツールを使用して以下を順次実行：
 
 1. **REDフェーズ開始**：
+
    ```
    echo "🔴 RED フェーズ: 失敗するテストの作成"
    ```
@@ -153,6 +160,7 @@ Bashツールを使用して以下を順次実行：
 Bashツールを使用して以下を順次実行：
 
 1. **GREENフェーズ開始**：
+
    ```
    echo "🟢 GREEN フェーズ: 最小実装でテストを通す"
    echo "💡 Fake It戦略: まずはハードコーディングで実装"
@@ -185,6 +193,7 @@ Bashツールを使用して以下を順次実行：
 
 **GREENフェーズコミット**：
 Bashツールで以下を実行：
+
 ```
 git add .
 git commit -m "[BEHAVIOR] Step X.Y: Fake It implementation"
@@ -199,6 +208,7 @@ git commit -m "[BEHAVIOR] Step X.Y: Fake It implementation"
 Bashツールを使用して以下を順次実行：
 
 1. **REFACTORフェーズ開始**：
+
    ```
    echo "🔵 REFACTOR フェーズ: 構造的改善（振る舞いは変更しない）"
    echo "⚠️ 重要: 機能追加ではなく、コードの構造のみを改善"
@@ -238,6 +248,7 @@ Bashツールを使用して以下を順次実行：
      - プロセス終了
 
 7. **リファクタ成功時のコミット**：
+
    ```
    git add .
    git commit -m "[STRUCTURE] Step X.Y: Refactor for better structure"
@@ -259,10 +270,12 @@ Bashツールで以下の関数を実装・実行：
 ### 1. サーバー起動機能
 
 **プロジェクトタイプ判定**：
+
 - Web/APIプロジェクトの場合のみサーバー起動
 - CLIプロジェクトはサーバー不要
 
 **サーバー起動慣列**：
+
 1. 起動メッセージ表示：`echo "🚀 サーバーバックグラウンド起動中..."`
 2. コマンド表示：`echo "📝 コマンド: $SERVER_CMD"`
 3. バックグラウンド実行：`nohup bash -c "$SERVER_CMD" > server.log 2>&1 &`
@@ -276,17 +289,20 @@ Bashツールで以下の関数を実装・実行：
 ### 2. ポート検出機能
 
 **一般的ポートチェック**：
+
 - ポートリスト：3000, 8000, 8080, 5000, 4000, 9000
 - チェックコマンド：`netstat -tuln | grep ":$port "`
 - 発見時：URL表示と環境変数設定
 
 **ログファイルから検索**：
+
 - キーワード："port", "listen"
 - 抽出コマンド：`grep -i "port\|listen" server.log | grep -o "[0-9]\{4,5\}"`
 
 ### 3. サーバー停止機能
 
 **停止慣列**：
+
 1. PID生存確認：`kill -0 "$SERVER_PID"`
 2. 停止メッセージ表示
 3. 通常停止：`kill "$SERVER_PID"`
@@ -303,10 +319,12 @@ Bashツールで以下の機能を実装・実行：
 ### ストーリー・イテレーション同期関数
 
 **基本パラメータ**：
+
 - `current_step`: 現在のステップ（例："1.2"）
 - `phase`: フェーズ名（RED/GREEN/REFACTOR）
 
 **Step情報解析**：
+
 - ストーリーID抽出：`echo "$current_step" | sed 's/\([0-9]\+\)\..*/\1/'`
 - イテレーション番号：ストーリーIDと同じ値を使用
 
@@ -315,11 +333,13 @@ Bashツールで以下の機能を実装・実行：
 **対象ファイル**：`.claude/agile-artifacts/stories/project-stories.md`
 
 **更新コマンド**：
+
 ```
 sed -i "/\*\*Story.*$story/,/^\*\*Story\|^$/s/- \[ \] .*${criteria}/- \[x\] ${criteria}/" "$story_file"
 ```
 
 **フェーズ別更新内容**：
+
 - RED: "テスト失敗確認"
 - GREEN: "実装完了", "テスト成功"  
 - REFACTOR: "リファクタリング完了"
@@ -329,6 +349,7 @@ sed -i "/\*\*Story.*$story/,/^\*\*Story\|^$/s/- \[ \] .*${criteria}/- \[x\] ${cr
 **対象ファイル**：`.claude/agile-artifacts/iterations/iteration-${iteration}.md`
 
 **ステップ進捗更新**：
+
 ```
 sed -i "/Step.*$step/,/^###\|^$/s/- \[ \]/- \[x\]/g" "$iteration_file"
 ```

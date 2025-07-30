@@ -34,6 +34,7 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 判定されたプロジェクトタイプに基づいて、**最新技術動向を検索**：
 
 **Web検索による最新技術情報の取得:**
+
 - パフォーマンス重視: 「latest [プロジェクトタイプ] package manager performance comparison」
 - 開発者体験重視: 「recent developer experience [プロジェクトタイプ] tooling latest modern」
 - ベンチマーク比較: 「latest [言語] build tool speed benchmark」
@@ -81,6 +82,7 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 ```
 
 あなたの選択（デフォルト=1）:
+
 - 未入力の場合、最速のモダンツールを自動選択
 - インストール済みの最速ツールを優先
 
@@ -147,11 +149,13 @@ So that [価値]
 以下の2つのファイルを作成：
 
 **A. プロジェクト設定**: `.claude/agile-artifacts/project-config.json`
+
 - プロジェクトタイプ判定結果
 - 技術スタック情報
 - 要件特性（deployment方法等）
 
 **B. ユーザーストーリー**: `.claude/agile-artifacts/stories/project-stories.md`
+
 - 本質分析の結果
 - ペルソナと成功指標
 - リリース計画（プロジェクトタイプ最適化済み）
@@ -161,7 +165,8 @@ So that [価値]
 ### 6. コミット
 
 Bashツールで以下を実行してストーリーファイルをコミット：
-```
+
+```bash
 git add .claude/agile-artifacts/
 git commit -m "[BEHAVIOR] Create user stories with project type analysis"
 ```

@@ -14,6 +14,7 @@ allowed-tools: ["Bash", "Write", "Read", "LS"]
 最初に `/tdd:story` で作成されたプロジェクト設定を読み込みます：
 
 `.claude/agile-artifacts/project-config.json` を読み取り、以下の情報を取得：
+
 - `project_type`: web-app/api-server/cli-tool
 - `tech_stack`: 使用技術スタック
 - `requirements`: 特別な要件
@@ -33,41 +34,53 @@ mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
 project-config.jsonから選択された技術スタックに基づいて、適切な開発環境を構築：
 
 #### JavaScript/TypeScript プロジェクト
+
 **パッケージマネージャー別対応:**
+
 - **pnpm**: `pnpm init` → `pnpm-workspace.yaml` → 依存関係インストール
 - **npm**: `npm init` → `package.json` → 依存関係インストール  
 - **bun**: `bun init` → Bunfile設定 → 依存関係インストール
 
 **プロジェクトタイプ別設定:**
+
 - Web App: ビルドツール(Vite/Turbo) + テスト(Vitest/Jest) + 型(TypeScript)
 - API Server: フレームワーク(Express/Fastify) + テスト + OpenAPI
 - CLI Tool: CLI frameworks + テスト + 実行可能ファイル設定
 
 #### Python プロジェクト
+
 **パッケージマネージャー別対応:**
+
 - **uv**: `uv init` → `pyproject.toml` → 仮想環境 + 依存関係
 - **poetry**: `poetry init` → `pyproject.toml` → 仮想環境構築
 - **pip**: `pip` → `requirements.txt` → venv設定
 
 **プロジェクトタイプ別設定:**
+
 - Web App: FastAPI/Flask + pytest + ruff/black
 - Data Analysis: Jupyter + pandas/numpy + pytest
 - CLI Tool: Click/Typer + pytest + パッケージング
 
 #### Rust プロジェクト
+
 **Cargo標準構成:**
+
 - `cargo init` → `Cargo.toml` → 基本プロジェクト構造
 - プロジェクトタイプ別依存関係追加
 - 標準テスト環境設定
 
 #### Go プロジェクト  
+
 **Go modules標準構成:**
+
 - `go mod init` → `go.mod` → 基本構造
 - プロジェクトタイプ別パッケージ追加
 - 標準テスト環境設定
 
 #### その他言語対応
+
 **設定ファイルベース:**
+
 - プロジェクト設定から言語を判定
 - 該当言語の標準的なプロジェクト初期化
 - 言語固有のベストプラクティス適用
@@ -77,6 +90,7 @@ project-config.jsonから選択された技術スタックに基づいて、適�
 プロジェクトタイプに応じた初期ファイルを生成：
 
 **Web アプリケーション例：**
+
 - `package.json` - Vite/Vitest/TypeScript設定
 - `vite.config.js` - テスト設定含む
 - `index.html` - 基本HTMLテンプレート
@@ -84,6 +98,7 @@ project-config.jsonから選択された技術スタックに基づいて、適�
 - `tests/` - テスト用ディレクトリ
 
 **共通設定：**
+
 - Kent Beck TDD 原則に基づくテスト設定
 - モダンなlint/format設定（ESLint + Prettier）
 - 必要な dev dependencies
@@ -101,13 +116,14 @@ git init
 プロジェクト設定から判定した言語に応じて適切な.gitignoreを生成：
 
 - **JavaScript/TypeScript**: node_modules, dist, .env, coverage, pnpm-lock.yaml等
-- **Python**: __pycache__, .venv, *.pyc, .pytest_cache, .coverage等  
+- **Python**: \_\_pycache\_\_, .venv, \*.pyc, .pytest_cache, .coverage等
 - **Rust**: target/, *.rs.bk, Cargo.lock(ライブラリでは除外)等
 - **Go**: bin/, *.exe, vendor/, go.sum(場合による)等
-- **Java**: build/, *.class, .gradle/, target/)等
+- **Java**: build/, *.class, .gradle/, target/等
 - **C#**: bin/, obj/, *.user, packages/等
 
 **共通パターン:**
+
 - OS生成ファイル (.DS_Store, Thumbs.db)
 - IDE設定 (.vscode/, .idea/)
 - TDD個人ログ (.claude/agile-artifacts/tdd-logs/)
@@ -125,6 +141,7 @@ git init
 - **Go**: go test, go build等の標準コマンド
 
 **含む内容:**
+
 - プロジェクトタイプ別のTDD戦略
 - 選択された技術スタック詳細
 - 言語固有のテスト実行コマンド

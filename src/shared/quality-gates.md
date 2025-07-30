@@ -534,7 +534,8 @@ check_test_coverage() {
     case "$project_type" in
         javascript)
             if command -v [PACKAGE_MANAGER] >/dev/null 2>&1 && grep -q "coverage" package.json; then
-                [PACKAGE_MANAGER] run test:coverage 2>/dev/null || [PACKAGE_MANAGER] test -- --coverage 2>/dev/null
+                [PACKAGE_MANAGER] run test:coverage 2>/dev/null || \
+                [PACKAGE_MANAGER] test -- --coverage 2>/dev/null
             fi
             ;;
         python)
