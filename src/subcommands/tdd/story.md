@@ -91,18 +91,72 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 **JavaScript/TypeScript**: bun → pnpm → npm の順
 **Python**: uv → poetry → pip の順
 
-#### Step 4: 選択結果の保存
+## 🤖 自動選択実装手順
+
+**ユーザーからの入力がない場合の処理**:
+
+1. **デフォルト値の適用**: 各技術カテゴリで選択肢1番（⚡推奨ツール）を自動選択
+2. **project-config.json作成**: 以下のデフォルト値を使用
+
+**JavaScript/TypeScript プロジェクト用デフォルト設定**:
+
+```json
+{
+  "project_type": "web-app",
+  "selected_stack": {
+    "package_manager": "bun",
+    "build_tool": "esbuild",
+    "test_framework": "vitest",
+    "language": "javascript",
+    "additional_tools": ["lint", "format", "type-check"]
+  },
+  "selection_rationale": {
+    "performance_priority": "高速性重視",
+    "team_experience": "モダンツール自動選択",
+    "project_constraints": "なし"
+  }
+}
+```
+
+**Python プロジェクト用デフォルト設定**:
+
+```json
+{
+  "project_type": "api-server",
+  "selected_stack": {
+    "package_manager": "uv",
+    "build_tool": "rye",
+    "test_framework": "pytest",
+    "language": "python",
+    "additional_tools": ["lint", "format", "type-check"]
+  },
+  "selection_rationale": {
+    "performance_priority": "高速性重視",
+    "team_experience": "モダンツール自動選択",
+    "project_constraints": "なし"
+  }
+}
+```
+
+**⚠️ npm/pip は明示的選択時のみ**:
+
+- ユーザーが「3」を明示的に選択した場合のみ使用
+- デフォルトでは絶対に選択されない
+
+### Step 4: 選択結果の保存
 
 ユーザーの選択に基づいて `.claude/agile-artifacts/project-config.json` を作成：
+
+**⚠️ 重要：選択なしの場合は上記デフォルト設定を使用**
 
 ```json
 {
   "project_type": "判定結果",
   "selected_stack": {
-    "package_manager": "ユーザー選択結果",
-    "build_tool": "ユーザー選択結果",
-    "test_framework": "ユーザー選択結果", 
-    "language": "ユーザー選択結果",
+    "package_manager": "bun または uv（デフォルト優先）",
+    "build_tool": "esbuild または rye（デフォルト優先）",
+    "test_framework": "vitest または pytest（デフォルト優先）", 
+    "language": "javascript または python",
     "additional_tools": ["lint", "format", "type-check"]
   },
   "selection_rationale": {

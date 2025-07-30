@@ -16,8 +16,15 @@ allowed-tools: ["Bash", "Write", "Read", "LS"]
 `.claude/agile-artifacts/project-config.json` を読み取り、以下の情報を取得：
 
 - `project_type`: web-app/api-server/cli-tool
-- `tech_stack`: 使用技術スタック
-- `requirements`: 特別な要件
+- `selected_stack.package_manager`: bun/pnpm/uv/poetry（**デフォルト：最速ツール**）
+- `selected_stack.build_tool`: esbuild/vite/rye/hatch
+- `selected_stack.test_framework`: vitest/jest/pytest
+- `selected_stack.language`: javascript/python/rust/go
+
+**⚠️ フォールバック処理**：
+- project-config.jsonが存在しない場合：JavaScript + bun をデフォルト使用
+- package_managerが未指定の場合：言語別デフォルト（JS→bun, Python→uv）を適用
+- npm/pipは明示的指定がない限り使用しない
 
 ### 2. プロジェクトディレクトリ作成
 
@@ -35,11 +42,17 @@ project-config.jsonから選択された技術スタックに基づいて、適�
 
 #### JavaScript/TypeScript プロジェクト
 
+**パッケージマネージャー選択ロジック:**
+
+1. **設定ファイル読み込み**: `selected_stack.package_manager` を確認
+2. **デフォルト適用**: 未指定または不正値の場合は `bun` を使用
+3. **環境構築実行**: 選択されたツールで初期化
+
 **パッケージマネージャー別対応（優先順位順）:**
 
-- **bun** ⚡: `bun init` → Bunfile設定 → 依存関係インストール（最速）
+- **bun** ⚡: `bun init` → Bunfile設定 → 依存関係インストール（**デフォルト**）
 - **pnpm** 🚀: `pnpm init` → `pnpm-workspace.yaml` → 依存関係インストール（高速・効率的）
-- **npm** 📦: `npm init` → `package.json` → 依存関係インストール（互換性重視時のみ）
+- **npm** 📦: `npm init` → `package.json` → 依存関係インストール（**明示的選択時のみ**）
 
 **プロジェクトタイプ別設定:**
 
@@ -49,11 +62,17 @@ project-config.jsonから選択された技術スタックに基づいて、適�
 
 #### Python プロジェクト
 
+**パッケージマネージャー選択ロジック:**
+
+1. **設定ファイル読み込み**: `selected_stack.package_manager` を確認
+2. **デフォルト適用**: 未指定または不正値の場合は `uv` を使用
+3. **環境構築実行**: 選択されたツールで初期化
+
 **パッケージマネージャー別対応（優先順位順）:**
 
-- **uv** ⚡: `uv init` → `pyproject.toml` → 仮想環境 + 依存関係（Rust実装、10-100x高速）
+- **uv** ⚡: `uv init` → `pyproject.toml` → 仮想環境 + 依存関係（**デフォルト**）
 - **poetry** 🚀: `poetry init` → `pyproject.toml` → 仮想環境構築（モダンな依存関係管理）
-- **pip** 📦: `pip` → `requirements.txt` → venv設定（互換性重視時のみ）
+- **pip** 📦: `pip` → `requirements.txt` → venv設定（**明示的選択時のみ**）
 
 **プロジェクトタイプ別設定:**
 
