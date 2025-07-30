@@ -97,7 +97,6 @@ download_file() {
 install_tdd_kit() {
     echo -e "\n${BLUE}📦 ディレクトリを作成中...${NC}"
     mkdir -p "$INSTALL_DIR/shared"
-    mkdir -p "$INSTALL_DIR/shared/language-practices"
     mkdir -p "$INSTALL_DIR/tdd"
     
     # 一時ディレクトリの作成
@@ -110,10 +109,8 @@ install_tdd_kit() {
     local shared_files=(
         "kent-beck-principles.md"
         "mandatory-gates.md"
-        "project-verification.md"
         "error-handling.md"
         "commit-rules.md"
-        "language-detector.md"
         "quality-gates.md"
         "project-structure-generator.md"
         "cognitive-enhancement.md"
@@ -133,29 +130,6 @@ install_tdd_kit() {
         [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
     done
     
-    # language-practices ファイルのダウンロード
-    local language_practice_files=(
-        "default.md"
-        "go.md"
-        "javascript.md"
-        "mixed.md"
-        "monorepo.md"
-        "python.md"
-        "rust.md"
-    )
-    
-    for file in "${language_practice_files[@]}"; do
-        echo -n "  - shared/language-practices/$file ... "
-        if download_file "$REPO_URL/raw/$BRANCH/src/shared/language-practices/$file" "$INSTALL_DIR/shared/language-practices/$file"; then
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC}"
-            echo -e "${RED}❌ ダウンロード失敗: language-practices/$file${NC}"
-            exit 1
-        fi
-        # GitHub Actions でのレート制限対策
-        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
-    done
     
     # メインコマンドのダウンロード
     local main_files=(
