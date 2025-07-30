@@ -31,36 +31,76 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 - **システムツール**: システム、パフォーマンス、低レベル処理関連
 - **モバイルアプリ**: モバイル、アプリ、React Native、Flutter関連
 
-#### Step 2: 言語・技術スタックの動的検索と選択肢提示
+#### Step 2: インストール済みツールの検出
 
-判定されたプロジェクトタイプに対して、**現在年の最新技術動向を検索**：
+**利用可能なツールを事前チェック：**
+```bash
+# JavaScript/TypeScript系
+which bun && echo "✓ bun installed" || echo "✗ bun not found"
+which pnpm && echo "✓ pnpm installed" || echo "✗ pnpm not found"
+which npm && echo "✓ npm installed" || echo "✗ npm not found"
 
-**Web検索による最新技術情報の取得:**
-- 「{現在年} [プロジェクトタイプ] 最新 技術スタック おすすめ」で検索
-- パッケージマネージャー、ビルドツール、テストフレームワークの最新動向を調査
-- 複数の技術選択肢を収集
-
-**ユーザーへの選択肢提示:**
-
-各技術カテゴリで3段階の選択肢を提示：
-
-```text
-🎯 [プロジェクトタイプ] の技術スタック選択
-
-📦 パッケージマネージャー:
-1. 推奨: [最新で実績ある選択肢] - 理由: 高速・安定
-2. 安定: [枯れた技術] - 理由: 互換性・採用実績
-3. 実験的: [先端技術] - 理由: 最新機能・将来性
-
-🔧 ビルドツール: [同様の3択]
-🧪 テストフレームワーク: [同様の3択]
-📝 言語/型システム: [同様の3択]
-
-あなたの選択: 各カテゴリで 1, 2, 3 のいずれかを選択してください
-例: パッケージマネージャー=1, ビルドツール=2, テスト=1, 言語=1
+# Python系
+which uv && echo "✓ uv installed" || echo "✗ uv not found"
+which poetry && echo "✓ poetry installed" || echo "✗ poetry not found"
+which pip && echo "✓ pip installed" || echo "✗ pip not found"
 ```
 
-#### Step 3: 選択結果の保存
+#### Step 3: 言語・技術スタックの動的検索と選択肢提示
+
+判定されたプロジェクトタイプとインストール済みツールに基づいて、**最新技術動向を検索**：
+
+**Web検索による最新技術情報の取得:**
+- パフォーマンス重視: 「[プロジェクトタイプ] package manager performance comparison modern」
+- 開発者体験重視: 「developer experience [プロジェクトタイプ] tooling latest」
+- ベンチマーク比較: 「[言語] build tool speed benchmark」
+- 採用トレンド: 「modern development workflow [プロジェクトタイプ] adoption trends」
+
+**プロジェクトタイプ別の推奨構成:**
+
+### JavaScript/TypeScript プロジェクト（Web App/API/CLI）
+
+```text
+📦 パッケージマネージャー（検出済み: [インストール済みツール]）:
+1. bun - 最速、オールインワン（ランタイム+パッケージマネージャー） ⚡推奨
+2. pnpm - 高速、ディスク効率的、ワークスペース対応
+3. npm - 互換性最優先の場合のみ
+
+🔧 ビルドツール:
+1. esbuild/swc - ミリ秒単位のビルド速度 ⚡推奨
+2. vite - 優れた開発体験、HMR対応
+3. webpack - レガシープロジェクト用
+
+🧪 テストフレームワーク:
+1. vitest - Vite統合、超高速実行 ⚡推奨
+2. jest + swc - 高速トランスパイル版
+3. jest - 標準構成
+```
+
+### Python プロジェクト（API/データ分析/CLI）
+
+```text
+📦 パッケージマネージャー（検出済み: [インストール済みツール]）:
+1. uv - Rust実装、10-100x高速 ⚡推奨
+2. poetry - モダンな依存関係管理
+3. pip - 互換性重視の場合のみ
+
+🔧 ビルド・タスクランナー:
+1. rye/hatch - モダンプロジェクト管理 ⚡推奨
+2. make + pyproject.toml - シンプル構成
+3. setuptools - レガシー用
+
+🧪 テストフレームワーク:
+1. pytest + pytest-xdist - 並列実行対応 ⚡推奨
+2. pytest - 標準構成
+3. unittest - 組み込み標準
+```
+
+あなたの選択（デフォルト=1）:
+- 未入力の場合、最速のモダンツールを自動選択
+- インストール済みの最速ツールを優先
+
+#### Step 4: 選択結果の保存
 
 ユーザーの選択に基づいて `.claude/agile-artifacts/project-config.json` を作成：
 
