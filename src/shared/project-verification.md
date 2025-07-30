@@ -199,7 +199,7 @@ for subproject in "${SUBPROJECTS[@]}"; do
             if [ -f "package.json" ]; then
                 echo "🟨 Node.js環境確認"
                 node --version 2>&1
-                npm --version 2>&1
+                [PACKAGE_MANAGER] --version 2>&1
             fi
             ;;
         rust)
@@ -268,7 +268,7 @@ for lang in "${MIXED_LANGUAGES[@]}"; do
             if [ -f "package.json" ]; then
                 # Node.js環境確認
                 node --version 2>&1
-                npm --version 2>&1
+                [PACKAGE_MANAGER] --version 2>&1
                 
                 # テスト実行
                 test_cmd=$(grep '^test:' "$lang_practice" | cut -d'"' -f2 2>/dev/null)
@@ -318,7 +318,7 @@ fi
 
 # Vite/Node.js
 if ! lsof -ti:5173 >/dev/null 2>&1; then
-  nohup npm run dev > /dev/null 2>&1 & disown
+  nohup [PACKAGE_MANAGER] run dev > /dev/null 2>&1 & disown
 fi
 ```text
 

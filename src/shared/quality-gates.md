@@ -131,21 +131,21 @@ run_web_app_quality_checks() {
         ((errors++))
     else
         # 依存関係チェック
-        if ! npm ls >/dev/null 2>&1; then
+        if ! [PACKAGE_MANAGER] ls >/dev/null 2>&1; then
             echo "⚠️  依存関係に問題があります"
-            echo "   npm install を実行してください"
+            echo "   [PACKAGE_MANAGER] install を実行してください"
             ((errors++))
         fi
         
         # セキュリティ監査
-        if command -v npm >/dev/null 2>&1; then
-            local audit_result=$(npm audit --audit-level=high 2>/dev/null | \
+        if command -v [PACKAGE_MANAGER] >/dev/null 2>&1; then
+            local audit_result=$([PACKAGE_MANAGER] audit --audit-level=high 2>/dev/null | \
                               grep "found.*vulnerabilities" || echo "0 vulnerabilities")
             echo "🔒 セキュリティ監査: $audit_result"
             
             if echo "$audit_result" | grep -q "high\|critical"; then
                 echo "⚠️  高リスクの脆弱性が検出されました"
-                echo "   npm audit fix を実行することを推奨します"
+                echo "   [PACKAGE_MANAGER] audit fix を実行することを推奨します"
             fi
         fi
     fi
@@ -429,7 +429,7 @@ run_tests_silent() {
     
     case "$project_type" in
         javascript)
-            npm test >/dev/null 2>&1
+            [PACKAGE_MANAGER] test >/dev/null 2>&1
             ;;
         python)
             python -m pytest >/dev/null 2>&1 || python -m unittest discover >/dev/null 2>&1
@@ -455,7 +455,7 @@ run_tests_with_output() {
     case "$project_type" in
         javascript)
             if [ -f package.json ]; then
-                npm test
+                [PACKAGE_MANAGER] test
             else
                 echo "package.json not found"
                 return 1
@@ -533,8 +533,8 @@ check_test_coverage() {
     
     case "$project_type" in
         javascript)
-            if command -v npm >/dev/null 2>&1 && grep -q "coverage" package.json; then
-                npm run test:coverage 2>/dev/null || npm test -- --coverage 2>/dev/null
+            if command -v [PACKAGE_MANAGER] >/dev/null 2>&1 && grep -q "coverage" package.json; then
+                [PACKAGE_MANAGER] run test:coverage 2>/dev/null || [PACKAGE_MANAGER] test -- --coverage 2>/dev/null
             fi
             ;;
         python)
@@ -568,8 +568,8 @@ run_static_analysis() {
     
     case "$project_type" in
         javascript)
-            if command -v npm >/dev/null 2>&1 && grep -q "eslint" package.json; then
-                npm run lint 2>/dev/null || npx eslint src 2>/dev/null
+            if command -v [PACKAGE_MANAGER] >/dev/null 2>&1 && grep -q "eslint" package.json; then
+                [PACKAGE_MANAGER] run lint 2>/dev/null || [PACKAGE_MANAGER] x eslint src 2>/dev/null
             fi
             ;;
         python)

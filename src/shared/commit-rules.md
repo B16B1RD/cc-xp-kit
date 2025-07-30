@@ -31,7 +31,7 @@ git commit -m "[INIT] Add test framework"
 - テスト実行（タイムアウト対策）:
 
   ```bash
-  npm test -- --watchAll=false --forceExit 2>&1
+  [PACKAGE_MANAGER] test -- --watchAll=false --forceExit 2>&1
   ```
 
 - すべてのテストが通ってからコミット
