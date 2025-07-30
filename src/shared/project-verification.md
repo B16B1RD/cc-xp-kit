@@ -67,7 +67,8 @@ elif [ -f "bun.lockb" ]; then
 elif [ -f "yarn.lock" ]; then
     PKG_MGR="yarn"
 else
-    PKG_MGR="npm"
+    # JavaScript プラクティスの primary 設定に合わせてデフォルトを pnpm に
+    PKG_MGR="pnpm"
 fi
 
 # 開発サーバー起動

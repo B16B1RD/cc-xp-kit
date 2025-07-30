@@ -35,11 +35,11 @@ project-config.jsonから選択された技術スタックに基づいて、適�
 
 #### JavaScript/TypeScript プロジェクト
 
-**パッケージマネージャー別対応:**
+**パッケージマネージャー別対応（優先順位順）:**
 
-- **pnpm**: `pnpm init` → `pnpm-workspace.yaml` → 依存関係インストール
-- **npm**: `npm init` → `package.json` → 依存関係インストール  
-- **bun**: `bun init` → Bunfile設定 → 依存関係インストール
+- **bun** ⚡: `bun init` → Bunfile設定 → 依存関係インストール（最速）
+- **pnpm** 🚀: `pnpm init` → `pnpm-workspace.yaml` → 依存関係インストール（高速・効率的）
+- **npm** 📦: `npm init` → `package.json` → 依存関係インストール（互換性重視時のみ）
 
 **プロジェクトタイプ別設定:**
 
@@ -49,11 +49,11 @@ project-config.jsonから選択された技術スタックに基づいて、適�
 
 #### Python プロジェクト
 
-**パッケージマネージャー別対応:**
+**パッケージマネージャー別対応（優先順位順）:**
 
-- **uv**: `uv init` → `pyproject.toml` → 仮想環境 + 依存関係
-- **poetry**: `poetry init` → `pyproject.toml` → 仮想環境構築
-- **pip**: `pip` → `requirements.txt` → venv設定
+- **uv** ⚡: `uv init` → `pyproject.toml` → 仮想環境 + 依存関係（Rust実装、10-100x高速）
+- **poetry** 🚀: `poetry init` → `pyproject.toml` → 仮想環境構築（モダンな依存関係管理）
+- **pip** 📦: `pip` → `requirements.txt` → venv設定（互換性重視時のみ）
 
 **プロジェクトタイプ別設定:**
 
@@ -135,7 +135,7 @@ git init
 
 **言語別TDD戦略とコマンド:**
 
-- **JavaScript/TypeScript**: 選択されたパッケージマネージャー(pnpm/npm/bun)のコマンド
+- **JavaScript/TypeScript**: 選択されたパッケージマネージャー(bun/pnpm/npm)のコマンド
 - **Python**: 選択されたツール(uv/poetry/pip)のテスト・実行コマンド
 - **Rust**: cargo test, cargo build等の標準コマンド
 - **Go**: go test, go build等の標準コマンド
