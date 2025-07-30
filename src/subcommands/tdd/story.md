@@ -29,29 +29,9 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 - **システムツール**: システム、パフォーマンス、低レベル処理関連
 - **モバイルアプリ**: モバイル、アプリ、React Native、Flutter関連
 
-#### Step 2: インストール済みツールの検出
+#### Step 2: 言語・技術スタックの動的検索と選択肢提示
 
-**利用可能なツールを事前チェック：**
-
-Bashツールで以下のコマンドを順次実行してインストール済みツールを確認：
-
-**JavaScript/TypeScript系ツール確認：**
-```
-which bun && echo "✓ bun installed" || echo "✗ bun not found"
-which pnpm && echo "✓ pnpm installed" || echo "✗ pnpm not found"
-which npm && echo "✓ npm installed" || echo "✗ npm not found"
-```
-
-**Python系ツール確認：**
-```
-which uv && echo "✓ uv installed" || echo "✗ uv not found"
-which poetry && echo "✓ poetry installed" || echo "✗ poetry not found"  
-which pip && echo "✓ pip installed" || echo "✗ pip not found"
-```
-
-#### Step 3: 言語・技術スタックの動的検索と選択肢提示
-
-判定されたプロジェクトタイプとインストール済みツールに基づいて、**最新技術動向を検索**：
+判定されたプロジェクトタイプに基づいて、**最新技術動向を検索**：
 
 **Web検索による最新技術情報の取得:**
 - パフォーマンス重視: 「latest [プロジェクトタイプ] package manager performance comparison」
@@ -65,7 +45,7 @@ which pip && echo "✓ pip installed" || echo "✗ pip not found"
 ### JavaScript/TypeScript プロジェクト（Web App/API/CLI）
 
 ```text
-📦 パッケージマネージャー（検出済み: [インストール済みツール]）:
+📦 パッケージマネージャー:
 1. bun - 最速、オールインワン（ランタイム+パッケージマネージャー） ⚡推奨
 2. pnpm - 高速、ディスク効率的、ワークスペース対応
 3. npm - 互換性最優先の場合のみ
@@ -84,7 +64,7 @@ which pip && echo "✓ pip installed" || echo "✗ pip not found"
 ### Python プロジェクト（API/データ分析/CLI）
 
 ```text
-📦 パッケージマネージャー（検出済み: [インストール済みツール]）:
+📦 パッケージマネージャー:
 1. uv - Rust実装、10-100x高速 ⚡推奨
 2. poetry - モダンな依存関係管理
 3. pip - 互換性重視の場合のみ
