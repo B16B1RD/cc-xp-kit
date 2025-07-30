@@ -28,30 +28,51 @@ allowed-tools: ["Bash", "Write", "Read", "LS"]
 mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
 ```
 
-### 3. プロジェクトタイプ別のモダン環境構築
+### 3. 動的技術スタック環境構築
 
 **段階的に考えます：**
 
-判定されたプロジェクトタイプに応じて2025年最新のモダン開発環境を構築：
+project-config.jsonから選択された技術スタックに基づいて、適切な開発環境を構築：
 
-#### Web アプリケーション（Vite + Vitest）
-- `package.json` 作成（Vite + Vitest + TypeScript + Canvas）
-- `vite.config.js` 設定
-- `index.html` テンプレート
-- `src/` ディレクトリ構造
-- `.gitignore` (Node.js用)
+#### JavaScript/TypeScript プロジェクト
+**パッケージマネージャー別対応:**
+- **pnpm**: `pnpm init` → `pnpm-workspace.yaml` → 依存関係インストール
+- **npm**: `npm init` → `package.json` → 依存関係インストール  
+- **bun**: `bun init` → Bunfile設定 → 依存関係インストール
 
-#### API サーバー（Express + Jest/Vitest）
-- `package.json` 作成（Express + Jest/Vitest + OpenAPI）
-- 基本API構造とルーティング
-- テスト用設定ファイル
-- `.gitignore` (Node.js用)
+**プロジェクトタイプ別設定:**
+- Web App: ビルドツール(Vite/Turbo) + テスト(Vitest/Jest) + 型(TypeScript)
+- API Server: フレームワーク(Express/Fastify) + テスト + OpenAPI
+- CLI Tool: CLI frameworks + テスト + 実行可能ファイル設定
 
-#### CLI ツール（Node.js + Commander）
-- `package.json` 作成（Commander.js + テストフレームワーク）
-- CLI エントリポイント
-- コマンド構造の雛形
-- `.gitignore` (Node.js用)
+#### Python プロジェクト
+**パッケージマネージャー別対応:**
+- **uv**: `uv init` → `pyproject.toml` → 仮想環境 + 依存関係
+- **poetry**: `poetry init` → `pyproject.toml` → 仮想環境構築
+- **pip**: `pip` → `requirements.txt` → venv設定
+
+**プロジェクトタイプ別設定:**
+- Web App: FastAPI/Flask + pytest + ruff/black
+- Data Analysis: Jupyter + pandas/numpy + pytest
+- CLI Tool: Click/Typer + pytest + パッケージング
+
+#### Rust プロジェクト
+**Cargo標準構成:**
+- `cargo init` → `Cargo.toml` → 基本プロジェクト構造
+- プロジェクトタイプ別依存関係追加
+- 標準テスト環境設定
+
+#### Go プロジェクト  
+**Go modules標準構成:**
+- `go mod init` → `go.mod` → 基本構造
+- プロジェクトタイプ別パッケージ追加
+- 標準テスト環境設定
+
+#### その他言語対応
+**設定ファイルベース:**
+- プロジェクト設定から言語を判定
+- 該当言語の標準的なプロジェクト初期化
+- 言語固有のベストプラクティス適用
 
 ### 4. 技術スタック別セットアップファイル作成
 
@@ -69,7 +90,7 @@ mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
 - モダンなlint/format設定（ESLint + Prettier）
 - 必要な dev dependencies
 
-### 5. Git初期化と設定
+### 5. Git初期化と言語別設定
 
 プロジェクトが未初期化の場合：
 
@@ -77,21 +98,42 @@ mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
 git init
 ```
 
-適切な `.gitignore` を作成（プロジェクトタイプ別）：
-- 共通パターン（OS, IDE, ログファイル）
-- プロジェクト特有パターン（node_modules等）
-- TDD個人ログの除外（`.claude/agile-artifacts/tdd-logs/`）
+**言語・技術スタック別 `.gitignore` 作成:**
 
-### 6. プロジェクト固有CLAUDE.md生成
+プロジェクト設定から判定した言語に応じて適切な.gitignoreを生成：
 
-プロジェクト設定に基づいたCLAUDE.mdを作成：
+- **JavaScript/TypeScript**: node_modules, dist, .env, coverage, pnpm-lock.yaml等
+- **Python**: __pycache__, .venv, *.pyc, .pytest_cache, .coverage等  
+- **Rust**: target/, *.rs.bk, Cargo.lock(ライブラリでは除外)等
+- **Go**: bin/, *.exe, vendor/, go.sum(場合による)等
+- **Java**: build/, *.class, .gradle/, target/)等
+- **C#**: bin/, obj/, *.user, packages/等
 
+**共通パターン:**
+- OS生成ファイル (.DS_Store, Thumbs.db)
+- IDE設定 (.vscode/, .idea/)
+- TDD個人ログ (.claude/agile-artifacts/tdd-logs/)
+- 環境設定 (.env, .env.local)
+
+### 6. 言語・技術スタック別CLAUDE.md生成
+
+選択された技術スタックに基づいたCLAUDE.mdを作成：
+
+**言語別TDD戦略とコマンド:**
+
+- **JavaScript/TypeScript**: 選択されたパッケージマネージャー(pnpm/npm/bun)のコマンド
+- **Python**: 選択されたツール(uv/poetry/pip)のテスト・実行コマンド
+- **Rust**: cargo test, cargo build等の標準コマンド
+- **Go**: go test, go build等の標準コマンド
+
+**含む内容:**
 - プロジェクトタイプ別のTDD戦略
-- 技術スタック情報
-- テスト実行コマンド
+- 選択された技術スタック詳細
+- 言語固有のテスト実行コマンド
 - ビルド/デプロイメント手順
-- 品質基準とゲート
+- 言語別品質基準とゲート
 
+**既存ファイルの処理:**
 既存のCLAUDE.mdがある場合は、TDD関連部分のみ更新して既存設定を保持。
 
 ### 7. セッション管理ファイル

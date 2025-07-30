@@ -92,32 +92,32 @@
 
 ```bash
 # 開発サーバー起動
-npm run dev          # 開発サーバー
-npm run build        # 本番ビルド
-npm run preview      # ビルド結果プレビュー
+[PACKAGE_MANAGER] run dev          # 開発サーバー
+[PACKAGE_MANAGER] run build        # 本番ビルド
+[PACKAGE_MANAGER] run preview      # ビルド結果プレビュー
 
 # テスト実行
-npm test             # 全テスト実行
-npm run test:watch   # テスト監視モード
-npm run test:ui      # テストUI表示
+[PACKAGE_MANAGER] test             # 全テスト実行
+[PACKAGE_MANAGER] run test:watch   # テスト監視モード
+[PACKAGE_MANAGER] run test:ui      # テストUI表示
 
 # コード品質
-npm run lint         # ESLint実行
-npm run format       # Prettier実行
-npm run typecheck    # TypeScript型チェック
+[PACKAGE_MANAGER] run lint         # ESLint実行
+[PACKAGE_MANAGER] run format       # Prettier実行
+[PACKAGE_MANAGER] run typecheck    # TypeScript型チェック
 ```
 
 **API Server**:
 
 ```bash
 # サーバー起動
-npm run dev          # 開発サーバー（ホットリロード）
-npm start            # 本番サーバー
+[PACKAGE_MANAGER] run dev          # 開発サーバー（ホットリロード）
+[PACKAGE_MANAGER] start            # 本番サーバー
 
 # テスト実行
-npm test             # 全テスト実行
-npm run test:watch   # テスト監視モード
-npm run test:coverage # カバレッジ計測
+[PACKAGE_MANAGER] test             # 全テスト実行
+[PACKAGE_MANAGER] run test:watch   # テスト監視モード
+[PACKAGE_MANAGER] run test:coverage # カバレッジ計測
 
 # ヘルスチェック
 curl http://localhost:3000/health
@@ -131,8 +131,8 @@ node src/cli.js help         # ヘルプ表示
 node src/cli.js --version    # バージョン確認
 
 # テスト実行
-npm test                     # 全テスト実行
-npm run test:watch           # テスト監視モード
+[PACKAGE_MANAGER] test                     # 全テスト実行
+[PACKAGE_MANAGER] run test:watch           # テスト監視モード
 ```
 
 ```bash
@@ -346,24 +346,24 @@ get_architecture_description() {
 # 依存関係の再インストール
 
 rm -rf node_modules package-lock.json
-npm install
+[PACKAGE_MANAGER] install
 
 # キャッシュクリア
 
-npm run build -- --clean
+[PACKAGE_MANAGER] run build -- --clean
 
 # テスト失敗
 
 # テスト環境の確認
 
-npm run test -- --verbose
-npm run test -- --coverage
+[PACKAGE_MANAGER] run test -- --verbose
+[PACKAGE_MANAGER] run test -- --coverage
 
 # パフォーマンス問題
 
 # バンドルサイズ分析
 
-npm run build -- --analyze
+[PACKAGE_MANAGER] run build -- --analyze
 
 ```
 
@@ -384,14 +384,14 @@ printenv | grep NODE_ENV
 
 # 接続テスト
 
-npm run db:test
-npm run migrate:status
+[PACKAGE_MANAGER] run db:test
+[PACKAGE_MANAGER] run migrate:status
 
 **パフォーマンス問題**
 
 # プロファイリング
 
-npm run profile
+[PACKAGE_MANAGER] run profile
 
 ```
 
@@ -406,13 +406,13 @@ chmod +x src/cli.js
 
 # グローバルインストール
 
-npm link
+[PACKAGE_MANAGER] link
 
 # 依存関係エラー
 
 # シンボリックリンク確認
 
-npm ls -g --depth=0
+[PACKAGE_MANAGER] ls -g --depth=0
 ```
 
 ## 実装ガイドライン
