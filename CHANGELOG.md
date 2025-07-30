@@ -1,174 +1,92 @@
-# Changelog
+# 更新履歴
 
-All notable changes to cc-tdd-kit will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
-
-### 今後の予定
-
-- 今後追加される機能をここに記載
+cc-tdd-kit の主要な変更をお知らせします。
 
 ## [0.1.12] - 2025-07-30
 
 ### Added
 
-- 🚀 **スラッシュコマンドのClaude Code仕様準拠**
-  - `/tdd-quick`コマンドにYAMLフロントマター追加
-  - 実行可能な形式への完全準拠
+- 🚀 **Claude Code 完全対応**
+  - スラッシュコマンドが正式にClaude Code仕様に準拠
+  - より安定した実行環境を提供
 
-- 📁 **プロジェクト構造ジェネレーター機能**
-  - モダンなWeb App、API Server、CLI Tool構造の自動生成
-  - 言語別の最適なディレクトリ構造とファイル配置
+- 📁 **プロジェクト構造自動生成**
+  - Web App、API Server、CLI Toolの最適な構造を自動生成
+  - 言語別のベストプラクティスに準拠したディレクトリ構造
 
-- 📝 **CLAUDE.md自動生成機能**
-  - プロジェクトタイプに応じた最適な設定生成
-  - 基本コマンドとアーキテクチャ情報の自動記載
+- 📝 **プロジェクト固有のCLAUDE.md自動生成**
+  - プロジェクトタイプに応じた最適なClaude設定を生成
+  - 基本コマンドやアーキテクチャ情報を自動記載
 
-- ✅ **品質ゲート機能**
-  - 包括的な品質チェック機能の追加
-  - テスト、リント、ビルドの統合実行
-
-### Fixed
-
-- 🔧 **src/shared/ファイルの形式変換**
-  - bash関数からドキュメント形式への変換
-  - Claude Codeの実行モデルへの完全準拠
-
-### Removed
-
-- 📦 **npm関連ファイルの削除**
-  - package.jsonとpackage-lock.jsonを削除
-  - 依存関係の簡素化
-
-## [0.1.11] - 2025-07-29
-
-### Fixed
-
-- 🔧 **ShellCheck SC2038エラーを修正**
-- 🔄 **GitHub Actions markdownlintをnpm scriptに変更**
-
-### Added
-
-- 🎯 **/tdd-quickに機能改善選択肢と詳細収集機能を追加**
-- 💬 **/tdd:runのフィードバック収集機能を大幅に強化**
-- 📂 **一時ファイル用ディレクトリ (tmp/) を追加**
-- 📜 **スラッシュコマンド仕様書とベストプラクティスを追加**
-- 🔄 **リリース自動化スクリプトを追加**
+- ✅ **統合品質ゲート**
+  - テスト、リント、ビルドを包括的にチェック
+  - TDDサイクルの各段階での品質保証を強化
 
 ### Enhanced
 
-- 🔁 **Kent Beck流の完全なフィードバックループを/tdd-quickに実装**
-- 📋 **リリース管理ルールとCLAUDE.md開発ブランチ運用を追加**
+- 🔧 **実行安定性の向上**
+  - 内部実装の最適化によりパフォーマンスが向上
+  - エラー処理の改善
+
+## [0.1.11] - 2025-07-29
+
+### Added
+
+- 🎯 **tdd-quickコマンドの機能拡張**
+  - 機能改善の選択肢と詳細収集機能を追加
+  - より細かいニーズに対応
+
+- 💬 **フィードバックシステムの強化**
+  - tdd:runコマンドでのフィードバック収集を大幅改善
+  - Kent Beck流の完全なフィードバックループを実装
+
+- 📜 **開発ガイダンスの充実**
+  - スラッシュコマンドのベストプラクティス追加
+  - リリース管理の自動化
 
 ## [0.1.10] - 2025-07-28
 
 ### Fixed
 
-- 🌐 **GitHub Actionsでのレート制限エラー対策を実装**
+- 🌐 **安定性の向上**
+  - インストール時のネットワーク関連エラー対策を実装
 
 ## [0.1.9] - 2025-07-28
 
-### Changed
-
-- 📄 **不要なドキュメントファイルを削除しREADMEを簡潔化**
-
-## [0.1.8] - 2025-07-25
-
-### Fixed
-
-- 📝 **Markdownの太字表記を修正（鉤括弧内で正しく表示されるように）**
-
-## [0.1.7] - 2025-07-25
-
 ### Enhanced
 
-- 📖 **README.mdでカスタムスラッシュコマンドのインストールを明確化**
-
-## [0.1.6] - 2025-07-25
-
-### Fixed
-
-- 📄 **CLAUDE.mdの末尾に改行を追加してmarkdownlint要件に準拠**
-
-## [0.1.5] - 2025-07-25
-
-### Added
-
-- 📝 **CLAUDE.mdファイルを追加しプロジェクト概要とTDD原則を文書化**
-
-## [0.1.4] - 2025-07-25
-
-### Fixed
-
-- 🔧 **Markdownlintエラーを修正**
-
-## [0.1.3] - 2025-07-25
-
-### Changed
-
-- 🔢 **バージョンを0.1.3に更新**
-
-## [0.1.2] - 2025-07-25
-
-### Enhanced
-
-- 📋 **Markdownlintルールを開発文書向けに最適化**
-
-## [0.1.1] - 2025-07-25
-
-### Fixed
-
-- 🔧 **GitHub Actionsのブランチ設定を修正**
-- ⚠️ **ShellCheckの警告を修正し、Markdownlint設定を追加**
-
-### Added
-
-- 📁 **binディレクトリをgitignoreに追加**
+- 📄 **使いやすさの向上**
+  - ドキュメントを簡潔化し、重要な情報に集約
 
 ## [0.1.0] - 2025-07-25
 
-### Features
+### 🎉 初回リリース
 
-- 初回リリース
-- Kent Beck 流 TDD の完全サポート
-- `/tdd-quick` コマンドによるクイックスタート機能
-- 7 つの TDD コマンドのサポート
-  - init: 環境初期化
-  - story: ユーザーストーリー作成
-  - plan: イテレーション計画
-  - run: TDD 実行
-  - status: 進捗確認
-  - review: レビューと改善
-- イテレーション単位での自動実行機能
-- プロジェクトタイプ（Web/CLI/API）の自動判定
-- 必須ゲートによる品質保証
-- フィードバック駆動の継続的改善
-- タイムアウト対策を含む堅牢な実行環境
-- ユーザー用/プロジェクト用の選択可能なインストール
-- 日本語対応（メッセージ、ドキュメント）
+cc-tdd-kit の最初のリリースです！Kent Beck 流 TDD を Claude Code で実践するための完全なツールキットを提供します。
 
-### Technical Implementation
+#### 主要機能
+
+- **🚀 クイックスタート**: `/tdd-quick` コマンドで即座にTDD開発を開始
+- **📋 完全なTDDワークフロー**: 6つの専用コマンドでRed→Green→Refactorサイクルを完全サポート
+  - `init`: プロジェクト環境の初期化
+  - `story`: ユーザーストーリーの作成
+  - `plan`: 90分イテレーションの計画
+  - `run`: TDD実行（連続モード・ステップモード）
+  - `status`: 開発進捗の確認
+  - `review`: コード品質の分析とフィードバック
+
+#### 特徴
+
+- **🎯 Kent Beck 原則に完全準拠**: Fake It戦略、Triangulation、Obvious Implementationを適切に使い分け
+- **🔄 Tidy First 原則**: 構造変更と振る舞い変更を厳格に分離
+- **📊 必須ゲート**: 各段階での品質チェックを自動実行
+- **🌐 プロジェクトタイプ自動判定**: Web App、API Server、CLI Toolを自動識別
+- **📱 柔軟なインストール**: ユーザー用（全プロジェクト対応）とプロジェクト用を選択可能
+- **🇯🇵 日本語完全対応**: UI、メッセージ、ドキュメントすべて日本語
+
+#### 技術的実装
 
 - Red→Green→Refactor サイクルの厳密な実施
-- Fake It 戦略（60%以上）の推奨
-- Tidy First 原則（構造と振る舞いの分離）
-- Git 統合（TDD/STRUCT/FEAT 等のコミットタグ）
-- Playwright MCP との連携（Web 確認）
-
-[Unreleased]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.12...HEAD
-[0.1.12]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.11...v0.1.12
-[0.1.11]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.10...v0.1.11
-[0.1.10]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.9...v0.1.10
-[0.1.9]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.8...v0.1.9
-[0.1.8]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.7...v0.1.8
-[0.1.7]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.6...v0.1.7
-[0.1.6]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.5...v0.1.6
-[0.1.5]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.4...v0.1.5
-[0.1.4]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.3...v0.1.4
-[0.1.3]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.2...v0.1.3
-[0.1.2]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/B16B1RD/cc-tdd-kit/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/B16B1RD/cc-tdd-kit/releases/tag/v0.1.0
+- Git統合によるマイルストーン記録（TDD/STRUCT/FEATタグ）
+- フィードバック駆動の継続的改善
+- タイムアウト対策を含む堅牢な実行環境
