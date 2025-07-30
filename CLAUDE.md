@@ -5,9 +5,15 @@ This file provides guidance to Claude Code when working with code in this reposi
 ## 🧠 Claude認知能力強化プロトコル
 
 ### 📅 日付認識プロトコル (CRITICAL)
-- **現在日時**: 必ず `date` コマンドで能動的に取得して確認
-- Web検索前に `date +%Y` で現在年を確認してから「YYYY年最新」で検索
-- 日付言及時は `date +"%Y-%m-%d"` で実際の日付を検証
+- **現在日時**: 必ず `date +"%Y-%m-%d"` コマンドで年月日を完全取得
+- **検索範囲計算**: 過去1年程度をカバーする複数年検索を実施
+  ```bash
+  CURRENT_YEAR=$(date +%Y)
+  PREV_YEAR=$((CURRENT_YEAR - 1))
+  SEARCH_RANGE="${PREV_YEAR} ${CURRENT_YEAR}"
+  ```
+- **季節対応検索**: 年初（1-3月）は前年中心、年末（10-12月）は翌年予測も含む
+- **Web検索クエリ**: 「recent modern latest」など年非依存キーワードを優先使用
 - 環境情報の受動的確認ではなく、Bashコマンドでの能動的検証を徹底
 
 ### 🎯 論理思考プロトコル (MANDATORY)

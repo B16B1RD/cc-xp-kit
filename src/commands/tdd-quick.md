@@ -2,7 +2,7 @@
 allowed-tools:
   - Task
 description: "TDD開発を即座に開始する統合コマンド - Kent Beck流完全フィードバックループ"
-argument-hint: "作りたいものを3行で説明"
+argument-hint: "作りたいものを詳しく説明してください（簡潔でも詳細でも構いません）"
 ---
 
 # TDD クイックスタート
