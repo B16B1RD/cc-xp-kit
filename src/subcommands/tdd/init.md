@@ -7,7 +7,7 @@ allowed-tools: ["Bash", "Write", "Read", "LS"]
 
 **段階的に考えます：**
 
-まず現在年を取得します：`date +%Y` で2025年であることを確認。
+まず現在年を取得します：`date +%Y` で現在年を確認。
 
 ## 実行内容
 
@@ -142,7 +142,7 @@ TDD実行追跡用のセッション管理ファイルを作成：
 
 ```json
 {
-  "initialized": "2025-XX-XX...",
+  "initialized": "{現在年}-XX-XX...",
   "project_type": "判定結果",
   "tech_stack": "選択された技術群",
   "sessions": [],
@@ -179,7 +179,7 @@ git commit -m "[BEHAVIOR] Setup modern TDD environment for [プロジェクト�
 
 ## 原則
 
-- **最新技術**: 2025年の最新ベストプラクティスを適用
+- **最新技術**: 現在年の最新ベストプラクティスを適用
 - **モダンツール**: 高速で開発者体験の良いツールを選択
 - **Kent Beck TDD**: 厳格なRed→Green→Refactorサイクル
 - **プロジェクト最適化**: 各プロジェクトタイプに最適化された設定
