@@ -1,7 +1,6 @@
 ---
 allowed-tools:
-  - Bash(test -f package.json && echo "true" || echo "false")
-  - Bash(test -f tsconfig.json && echo "TypeScript" || echo "JavaScript")
+  - Bash
   - Bash(npm test 2>&1 | tail -20)
   - Bash(npm run lint 2>&1 | tail -10)
   - Bash(git status --short)
@@ -20,8 +19,10 @@ argument-hint: "[quick|full]"
 
 ### プロジェクトタイプ
 
-- Node.js プロジェクト: !`test -f package.json && echo "✅ Yes" || echo "❌ No"`
-- 言語: !`test -f tsconfig.json && echo "TypeScript" || echo "JavaScript"`
+Bashツールで以下を実行してプロジェクト情報を取得：
+
+- Node.jsプロジェクト確認: `test -f package.json && echo "✅ Yes" || echo "❌ No"`
+- 言語判定: `test -f tsconfig.json && echo "TypeScript" || echo "JavaScript"`
 
 ### プロジェクト設定
 

@@ -19,7 +19,9 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 **段階的に考えます：**
 
 まず現在日付と検索範囲を確認します：
-```bash
+
+Bashツールで以下を実行して日付情報を取得：
+```
 CURRENT_DATE=$(date +"%Y-%m-%d")
 CURRENT_YEAR=$(date +%Y)
 PREV_YEAR=$((CURRENT_YEAR - 1))
@@ -41,15 +43,20 @@ echo "検索対象年範囲: $PREV_YEAR-$CURRENT_YEAR"
 #### Step 2: インストール済みツールの検出
 
 **利用可能なツールを事前チェック：**
-```bash
-# JavaScript/TypeScript系
+
+Bashツールで以下のコマンドを順次実行してインストール済みツールを確認：
+
+**JavaScript/TypeScript系ツール確認：**
+```
 which bun && echo "✓ bun installed" || echo "✗ bun not found"
 which pnpm && echo "✓ pnpm installed" || echo "✗ pnpm not found"
 which npm && echo "✓ npm installed" || echo "✗ npm not found"
+```
 
-# Python系
+**Python系ツール確認：**
+```
 which uv && echo "✓ uv installed" || echo "✗ uv not found"
-which poetry && echo "✓ poetry installed" || echo "✗ poetry not found"
+which poetry && echo "✓ poetry installed" || echo "✗ poetry not found"  
 which pip && echo "✓ pip installed" || echo "✗ pip not found"
 ```
 
@@ -184,7 +191,8 @@ So that [価値]
 
 ### 6. コミット
 
-```bash
+Bashツールで以下を実行してストーリーファイルをコミット：
+```
 git add .claude/agile-artifacts/
 git commit -m "[BEHAVIOR] Create user stories with project type analysis"
 ```

@@ -116,12 +116,17 @@ description: 現在の作業状況を把握
 ```yaml
 ---
 allowed-tools:
-  - Bash(test -f package.json && echo "Node.js" || echo "Other")
+  - Bash
   - Read(*)
 description: プロジェクトタイプを判定
 ---
 
-# プロジェクトタイプ: !`test -f package.json && echo "Node.js" || echo "Other"`
+# プロジェクトタイプ判定
+
+Bashツールで以下を実行してプロジェクトタイプを判定：
+```
+test -f package.json && echo "Node.js" || echo "Other"
+```
 
 @package.json
 ```text
@@ -228,11 +233,15 @@ allowed-tools: Bash(test -f tsconfig.json && npm run typecheck)
 
 ```yaml
 ---
-allowed-tools: Bash(which node || echo "ERROR: Node.js is not installed")
+allowed-tools: ["Bash"]
 ---
 
 # 環境チェック
-!`which node || echo "ERROR: Node.js is not installed"`
+
+Bashツールで以下を実行してNode.js環境確認：
+```
+which node || echo "ERROR: Node.js is not installed"
+```
 ```text
 
 ### フォールバック戦略
@@ -240,12 +249,16 @@ allowed-tools: Bash(which node || echo "ERROR: Node.js is not installed")
 ```yaml
 ---
 allowed-tools: 
-  - Bash(npm test || echo "Tests failed, checking logs...")
+  - Bash
   - Read(test-logs/*)
 ---
 
 # テスト実行
-!`npm test || echo "Tests failed, checking logs..."`
+
+Bashツールで以下を実行：
+```
+npm test || echo "Tests failed, checking logs..."
+```
 
 失敗時のログ:
 @test-logs/latest.log
@@ -295,14 +308,14 @@ argument-hint: "component-name [options]"
 
 ```yaml
 ---
-allowed-tools: Bash(echo "Would run: npm deploy")
+allowed-tools: ["Bash"]
 argument-hint: "[--dry-run]"
 ---
 
 $ARGUMENTS
 
 実際のデプロイ: `npm deploy`
-Dry-run: !`echo "Would run: npm deploy"`
+Dry-run: Bashツールで実行 `echo "Would run: npm deploy"`
 ```text
 
 2. **デバッグ情報の出力**
@@ -326,7 +339,7 @@ allowed-tools: Bash(env | grep NODE), Bash(pwd)
 ```yaml
 allowed-tools:
   - Bash(find . -name "*.js" -exec grep -l "TODO" {} \;)
-  - Bash(xargs -I {} sh -c 'echo "File: {}" && grep -n "TODO" {}')
+  - Bash
 ```text
 
 ✅ 代わりに:
