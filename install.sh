@@ -152,12 +152,9 @@ install_tdd_kit() {
     
     # サブコマンドのダウンロード
     local subcommands=(
-        "init.md"
-        "plan.md"
         "run.md"
         "status.md"
         "review.md"
-        "story.md"
         "fix.md"
         "detect.md"
         "feedback.md"
@@ -302,12 +299,11 @@ main() {
             echo "1. プロジェクトディレクトリで Claude Code を開始:"
             echo -e "   ${GREEN}cd my-project && claude${NC}"
             echo
-            echo "2. Kent Beck純正TDD開発:"
-            echo -e "   ${GREEN}/tdd \"作りたいもの\"${NC}     # 真のアジャイル開発開始"
+            echo "2. 統合TDD開発（v0.2.0 新機能）:"
+            echo -e "   ${GREEN}/tdd \"作りたいもの\"${NC}     # 統合開発（環境構築→ストーリー→計画→実装案内を一括実行）"
             echo
-            echo "3. アジャイル実践コマンド:"
-            echo -e "   ${GREEN}/tdd:story \"要望\"${NC}       # ユーザーストーリー作成"
-            echo -e "   ${GREEN}/tdd:run 機能名${NC}          # テストファーストTDD実行"
+            echo "3. TDD実践コマンド:"
+            echo -e "   ${GREEN}/tdd:run 機能名${NC}          # Kent Beck純正TDD実装"
             echo -e "   ${GREEN}/tdd:feedback immediate${NC}  # 継続的フィードバック"
             echo -e "   ${GREEN}/tdd:status${NC}              # 価値中心進捗確認"
             echo -e "   ${GREEN}/tdd:review${NC}              # アジャイル価値レビュー"
@@ -315,9 +311,9 @@ main() {
             echo -e "${BLUE}詳細: /tdd${NC}"
             echo
             if [ "$INSTALL_TYPE" = "user" ]; then
-                echo "✨ 真のKent Beck TDD + アジャイル原則で開発できます！"
+                echo "✨ v0.2.0統合コマンドで開発効率が大幅向上！ /tdd一発で開発準備完了！"
             else
-                echo "✨ このプロジェクト専用に真のTDD環境が構築されました！"
+                echo "✨ このプロジェクト専用にv0.2.0統合TDD環境が構築されました！"
             fi
             echo
             echo -e "${GREEN}Happy Agile TDD! 🚀${NC}"

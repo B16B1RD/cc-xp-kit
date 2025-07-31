@@ -80,7 +80,7 @@ if [ -f .claude/agile-artifacts/stories/user-stories.md ]; then
   done
 else
   echo "  ⚠️ ユーザーストーリー未作成"
-  echo "  推奨: /tdd:story で価値定義を開始"
+  echo "  推奨: /tdd [要望] で統合開発開始"
 fi
 ```
 
@@ -230,8 +230,7 @@ echo "=================="
 # 状況に応じた推奨アクション
 if [ "$BEHAVIOR_COMMITS" -eq 0 ]; then
   echo "  🎯 開発開始推奨:"
-  echo "    ├─ /tdd:story で価値定義"
-  echo "    ├─ /tdd:init で環境構築"
+  echo "    ├─ /tdd [要望] で統合開発開始"
   echo "    └─ /tdd:run [機能名] で実装開始"
 elif [ "$TODAY_BEHAVIOR" -eq 0 ]; then
   echo "  📈 価値創造推奨:"
