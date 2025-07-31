@@ -1,202 +1,259 @@
 ---
-description: "MVPファーストユーザーストーリー作成 - 5分→15分→30分の価値段階設計"
+description: "真のアジャイルユーザーストーリー作成 - アジャイル宣言とKent Beck XP原則準拠"
 argument-hint: "作りたいものを説明してください（例: テトリスゲーム、計算機アプリ）"
 allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 ---
 
-# MVPファーストストーリー作成
+# 真のアジャイルユーザーストーリー作成
 
 要望: $ARGUMENTS
 
-## 🎯 3段階開発モデル（Spike → MVP → Product）
+## 🎯 アジャイル宣言の4つの価値
 
-**Kent Beck Spike + Eric Ries MVP 統合哲学**:
-- **段階1 (5分)**: **Spike** - 探索と学習（バグ修正不要）
-- **段階2 (15分)**: **MVP** - 仮説検証と成長基盤（バグ修正推奨）
-- **段階3 (30分)**: **Product** - 持続可能な製品（バグ修正必須）
+### 1. 個人と対話 > プロセスとツール
+**実践**: ユーザーとの直接対話でストーリーを作成
+
+### 2. 動くソフトウェア > 包括的ドキュメント  
+**実践**: 動作確認可能な最小機能から開始
+
+### 3. 顧客との協働 > 契約交渉
+**実践**: ユーザーフィードバックによる継続的改善
+
+### 4. 変化への対応 > 計画に従うこと
+**実践**: 短いサイクルでの適応的計画
 
 ## 指示
 
-以下の3段階でユーザーストーリーを作成してください：
+以下の**真のアジャイル原則**でユーザーストーリーを作成してください：
 
-### 🔍 Spike段階: 5分探索価値の定義
+### 📋 Phase 1: 本物のユーザーストーリー作成
 
-**「5分で何が見えるか？」を明確化**してください：
+#### アジャイル標準形式の適用
 
-**要望分析と最小体験の抽出**:
-- 要望から**最も本質的な体験**を1つ抽出
-- 技術的な実装ではなく**ユーザーが感じる価値**で表現
-- 「動いている！」と実感できる最小の状態を定義
+**要望を分析**し、以下の形式でユーザーストーリーを作成してください：
 
-**例**:
-- **テトリス** → 「画面に色付きの正方形1つが表示される」
-- **計算機** → 「2+2=4が画面に表示される」  
-- **チャットアプリ** → 「Hello Worldメッセージが表示される」
-- **APIサーバー** → 「{status: 'working'}が返る」
-- **ブログ** → 「Hello World記事が1つ表示される」
-
-### 🎯 MVP段階: 15分仮説検証の定義
-
-**「15分でユーザーが何をできるか？」を設計**してください：
-
-**インタラクション要素の追加**:
-- Phase 1の静的表示に**1つの操作要素**を追加
-- ユーザーの行動に対する**即座の反応**を設計
-- 「触れる楽しさ」を感じられる体験レベル
+```
+As a [ユーザータイプ]
+I want [機能・行動]  
+So that [価値・理由]
+```
 
 **例**:
-- **テトリス** → 「キーを押すと正方形が左右に移動する」
-- **計算機** → 「ボタンクリックで異なる計算が実行される」
-- **チャットアプリ** → 「入力欄からメッセージを送信できる」
-- **APIサーバー** → 「パラメータ付きリクエストが処理される」
-- **ブログ** → 「記事をクリックすると詳細表示される」
+```
+As a player
+I want to see a tetris block on the screen
+So that I can confirm the game is working
 
-### 🏆 Product段階: 30分製品価値の定義
+As a student  
+I want to calculate simple math problems
+So that I can verify my homework answers
 
-**「30分で基本的な使用価値を実感できるか？」を確認**してください：
+As a developer
+I want to check API health status
+So that I can monitor system availability
+```
 
-**継続使用への動機付け**:
-- Phase 2の操作に**意味のある結果**を追加
-- 「これなら使い続けたい」と思える価値レベル
-- 他の人に「ちょっと見て」と言えるレベル
+#### INVEST基準の適用
+
+各ストーリーが以下を満たすことを確認してください：
+
+- **Independent**: 他のストーリーに依存しない
+- **Negotiable**: 詳細は実装時に調整可能
+- **Valuable**: ユーザーに明確な価値を提供
+- **Estimable**: 工数見積もりが可能
+- **Small**: 数日以内で完了可能
+- **Testable**: 受け入れテストが書ける
+
+### 📋 Phase 2: 受け入れ基準の定義
+
+#### Kent Beck XP方式の受け入れテスト
+
+**各ストーリーに対して受け入れ基準**を定義してください：
+
+```
+Given [初期状態]
+When [ユーザーアクション]
+Then [期待される結果]
+```
 
 **例**:
-- **テトリス** → 「ブロックが自動で落下し、底で停止、新しいブロックが出現」
-- **計算機** → 「連続計算ができ、履歴が表示される」
-- **チャットアプリ** → 「複数メッセージの送受信と表示ができる」
-- **APIサーバー** → 「データ保存・取得の基本的なCRUD操作」
-- **ブログ** → 「記事一覧表示、詳細表示、基本ナビゲーション」
+```
+Story: テトリスブロック表示
 
-### 📝 Phase 4: ストーリーファイルの作成
+Acceptance Criteria:
+Given the game is loaded
+When I open the game page
+Then I should see a colorful block on the screen
 
-**以下の形式でストーリーファイルを作成**してください：
+Given the block is displayed  
+When I refresh the page
+Then the block should still be visible
+```
 
-#### ファイル作成
-`.claude/agile-artifacts/stories/project-stories.md` に以下の内容で作成：
+### 📋 Phase 3: 価値駆動優先度付け
+
+#### 顧客価値による優先順位決定
+
+**ビジネス価値順で優先度を設定**してください：
+
+1. **Must Have**: 最小viable product に必須
+2. **Should Have**: 重要だが必須ではない  
+3. **Could Have**: あると良い機能
+4. **Won't Have**: 今回は含めない
+
+**優先度決定基準**:
+- ユーザーの痛みを解決するか？
+- ビジネス目標に直結するか？
+- 技術的リスクは低いか？
+- 他の機能への依存度は？
+
+### 📋 Phase 4: 継続的フィードバック計画
+
+#### アジャイル原則「顧客との協働」の実践
+
+**フィードバックループの設計**：
+
+```
+1. Story実装 → 2. Demo → 3. Feedback → 4. 適応 → 1に戻る
+```
+
+**具体的なフィードバック方法**:
+- 各ストーリー完了後のデモセッション
+- ユーザビリティテストの実施
+- A/Bテストによる仮説検証
+- メトリクス測定（使用率、満足度等）
+
+### 📋 Phase 5: ストーリーファイル作成
+
+#### 真のアジャイル管理構造
+
+`.claude/agile-artifacts/stories/user-stories.md` に以下の形式で作成：
 
 ```markdown
-# プロジェクト: [要望から判定したプロジェクト名]
+# Project: [プロジェクト名]
 
-## 🎯 3段階開発モデル（Spike → MVP → Product）
+## 🎯 Product Vision
+[製品のビジョン - なぜこの製品を作るのか]
 
-### 🔍 Spike段階（5分） - "動作確認！"
-**Story 0.1**: [5分で確認する技術的可能性]
-- **目的**: 技術的不確実性の解消と学習
-- **体験**: [ユーザーが何を見るか]  
-- **成果**: [技術的に実現可能であることの確認]
-- **品質**: 探索的コード、バグ修正不要
-- **実装ヒント**: [最小限のハードコーディング]
+## 👥 User Personas
+### Primary User: [メインユーザー]
+- 背景: [ユーザーの背景]
+- 目標: [達成したいこと]  
+- 課題: [現在の痛み]
 
-### 🎯 MVP段階（15分） - "仮説検証！"
-**Story 0.2**: [15分で検証するユーザー仮説]  
-- **目的**: ユーザー仮説の検証と成長基盤構築
-- **体験**: [ユーザーが何をできるか]
-- **価値**: [なぜ楽しいか、なぜ必要か]
-- **品質**: 成長可能な基盤品質、バグ修正推奨
-- **実装ヒント**: [インタラクション実現方法]
+## 📋 User Stories (Priority Order)
 
-### 🏆 Product段階（30分） - "製品価値！"
-**Story 0.3**: [30分で実現する持続可能な製品価値]
-- **目的**: 他人に見せられる製品レベルの価値提供
-- **体験**: [継続使用したくなる要素]
-- **価値**: [なぜ使い続けたいか、なぜ他人に薦めたいか]  
-- **品質**: 製品品質、バグ修正必須
-- **実装ヒント**: [基本機能の完全実現方法]
+### Epic 1: [主要機能群名]
 
-## 🔄 継続価値拡張（Phase 3以降）
+#### Story 1.1 [Must Have]
+**Story**: As a [user] I want [action] So that [value]
 
-### Sprint 1 (次の30分価値)
-**Story 1.1**: [次に追加したい体験価値]
-**Story 1.2**: [更なる操作価値]
+**Acceptance Criteria**:
+- Given [condition] When [action] Then [result]
+- Given [condition] When [action] Then [result]
 
-### Sprint 2 (その次の30分価値)  
-**Story 2.1**: [発展的な体験価値]
-**Story 2.2**: [高度な機能価値]
+**Definition of Done**:
+- [ ] Unit tests written and passing
+- [ ] Integration tests passing  
+- [ ] User acceptance test passing
+- [ ] Code reviewed
+- [ ] Performance acceptable
+- [ ] Documentation updated
 
-## 📊 技術スタック推奨
+**Story Points**: [1-8 points]
+**Dependencies**: [None/Story X.X]
 
-**推奨技術構成** (MVPファースト観点):
-- **メイン言語**: [要望に最適な言語]
-- **パッケージマネージャー**: bun/pnpm (JS), uv/poetry (Python)
-- **テストフレームワーク**: [最小セットアップのもの]
-- **開発サーバー**: [即座に動作確認できるもの]
+#### Story 1.2 [Should Have]
+[同様の形式]
 
-*注意*: 技術選択は5分体験実現を最優先し、完璧な設計は後回しにする
+### Epic 2: [次の機能群]
+[続く...]
+
+## 🔄 Continuous Feedback Plan
+
+### Feedback Cycles
+- **After each story**: 15分デモ + フィードバック
+- **End of epic**: ユーザビリティテスト
+- **Weekly**: メトリクス レビュー
+
+### Success Metrics
+- User satisfaction score
+- Feature usage rate  
+- Task completion time
+- Bug report frequency
+
+## 🎯 Release Planning
+
+### Release 1 (MVP)
+- Must Have stories only
+- Target: [Date]
+- Success criteria: [Metrics]
+
+### Release 2  
+- Should Have stories
+- Target: [Date]  
+- Success criteria: [Metrics]
 ```
 
-#### ディレクトリ作成
-```bash
-mkdir -p .claude/agile-artifacts/stories
-```
+### 📋 Phase 6: アジャイル品質確認
 
-### 📋 プロジェクト設定ファイルの作成
+#### 真のアジャイル原則チェック
 
-**`.claude/agile-artifacts/project-config.json`** も作成してください：
+作成したストーリーが以下を満たしているか確認：
 
-```json
-{
-  "projectName": "[判定したプロジェクト名]",
-  "projectType": "[web-app/cli-tool/api-server/library]",
-  "mvpPhilosophy": "5min-15min-30min value delivery",
-  "techStack": {
-    "language": "[選択した言語]",
-    "packageManager": "[bun/pnpm/uv/poetry]",
-    "testFramework": "[選択したテストツール]"
-  },
-  "valueStages": {
-    "stage1": "5min visual value",
-    "stage2": "15min interactive value", 
-    "stage3": "30min basic utility value"
-  }
-}
-```
+**✅ アジャイル宣言準拠**:
+- [ ] ユーザーとの対話を重視
+- [ ] 動作確認可能な機能記述
+- [ ] 顧客協働の仕組み設計
+- [ ] 適応的な計画立案
 
-## 🎯 品質チェック
+**✅ Kent Beck XP原則準拠**:
+- [ ] ユーザーストーリー標準形式
+- [ ] 受け入れテスト定義済み
+- [ ] 継続的フィードバック計画
+- [ ] シンプルな設計原則
 
-作成したストーリーが以下の基準を満たしているか確認してください：
+**✅ INVEST基準準拠**:
+- [ ] 独立性・交渉可能性確保
+- [ ] 価値・見積もり可能性確認
+- [ ] 小さな単位・テスト可能性保証
 
-### ✅ MVPファースト基準
-- [ ] 5分ストーリーは技術基盤ではなく**体験価値**
-- [ ] 15分ストーリーは**ユーザーが操作できる**内容
-- [ ] 30分ストーリーは**継続使用したくなる**価値
-- [ ] 各段階で**前の段階の価値を含有**している
-- [ ] **実装ヒント**は最小限で実現可能
-
-### ✅ Kent Beck原則準拠
-- [ ] "Make it work" = 動作する体験の実現
-- [ ] 構造的完璧さより**見える結果**優先
-- [ ] **YAGNI**: 今不要な機能は含まない
-- [ ] **検証可能**: 曖昧でない明確な価値表現
-
-## 完了後
+## 🎉 真のアジャイルストーリー完成
 
 ```text
-✅ MVPファーストストーリー作成完了！
+✅ 真のアジャイルユーザーストーリー作成完了！
 
-🎯 価値段階設計:
-- 🚀 5分体験: [5分価値の概要]
-- 🎮 15分操作: [15分価値の概要]  
-- 🏆 30分基本: [30分価値の概要]
+🎯 アジャイル原則適用:
+- 📋 標準形式: As a... I want... So that...
+- 🎯 価値駆動: ユーザー価値による優先順位
+- 🔄 継続的フィードバック: 短いサイクルでの検証
 
 📁 作成ファイル:
-- ストーリー定義: .claude/agile-artifacts/stories/project-stories.md
-- プロジェクト設定: .claude/agile-artifacts/project-config.json
+- ユーザーストーリー: .claude/agile-artifacts/stories/user-stories.md
+- フィードバック計画: 継続的改善の仕組み
 
-🚀 次のステップ: 15分マイクロイテレーション計画作成
+🚀 次のステップ: TDD実装開始
 
-以下のコマンドで最初の5分価値実現を開始：
-/tdd:plan micro
+最初のストーリーをTDDで実装:
+/tdd:run [Story 1.1の機能名]
 
-これにより以下が自動実行されます：
-- 5分体験価値の15分TDDサイクル計画
-- Red-Green-Refactor マイクロサイクル設計
-- 即座に動作確認可能な開発計画
+これにより真のKent Beck TDD原則で開発開始：
+- テストファースト厳守
+- Red-Green-Refactorサイクル  
+- Fake It/Triangulation戦略適用
 ```
 
-## 🚨 重要な原則
+## ⚠️ 偽アジャイルからの脱却
 
-- **体験ファースト**: 技術より先にユーザー体験を考える
-- **段階的価値**: 5分→15分→30分の確実な価値積み上げ  
-- **検証主導**: 各段階で必ずユーザーに見せて確認
-- **YAGNI徹底**: 今の段階で不要なものは一切含めない
-- **フィードバック最優先**: 早期の意見収集と迅速な修正
+### 削除された偽概念
+- ❌ 「Kent Beck + Eric Ries統合哲学」（存在しない）
+- ❌ 「5分・15分・30分価値」（時間ベースは非アジャイル）
+- ❌ 機械的段階分け（柔軟性を阻害）
+
+### 採用された真の原則  
+- ✅ アジャイル宣言4つの価値
+- ✅ Kent Beck XP12プラクティス
+- ✅ 価値駆動開発
+- ✅ 継続的フィードバック
+
+**真のアジャイル開発**で、ユーザー中心の価値創造を実現してください。

@@ -2,7 +2,7 @@
 set -e
 
 # cc-tdd-kit インストーラー
-VERSION="0.1.12"
+VERSION="0.2.0"
 REPO_URL="https://github.com/B16B1RD/cc-tdd-kit"
 BRANCH="${CC_TDD_KIT_BRANCH:-main}"
 
@@ -160,6 +160,7 @@ install_tdd_kit() {
         "story.md"
         "fix.md"
         "detect.md"
+        "feedback.md"
     )
     
     for file in "${subcommands[@]}"; do
@@ -301,24 +302,25 @@ main() {
             echo "1. プロジェクトディレクトリで Claude Code を開始:"
             echo -e "   ${GREEN}cd my-project && claude${NC}"
             echo
-            echo "2. 統合TDDワークフロー:"
-            echo -e "   ${GREEN}/tdd \"作りたいものを説明\"${NC}"
+            echo "2. Kent Beck純正TDD開発:"
+            echo -e "   ${GREEN}/tdd \"作りたいもの\"${NC}     # 真のアジャイル開発開始"
             echo
-            echo "3. 段階的実行:"
-            echo -e "   ${GREEN}/tdd \"要望\"${NC}     # ストーリー作成+環境構築"
-            echo -e "   ${GREEN}/tdd:plan 1${NC}      # イテレーション計画"
-            echo -e "   ${GREEN}/tdd:run${NC}         # TDD実行"
-            echo -e "   ${GREEN}/tdd:review 1${NC}    # レビュー"
+            echo "3. アジャイル実践コマンド:"
+            echo -e "   ${GREEN}/tdd:story \"要望\"${NC}       # ユーザーストーリー作成"
+            echo -e "   ${GREEN}/tdd:run 機能名${NC}          # テストファーストTDD実行"
+            echo -e "   ${GREEN}/tdd:feedback immediate${NC}  # 継続的フィードバック"
+            echo -e "   ${GREEN}/tdd:status${NC}              # 価値中心進捗確認"
+            echo -e "   ${GREEN}/tdd:review${NC}              # アジャイル価値レビュー"
             echo
             echo -e "${BLUE}詳細: /tdd${NC}"
             echo
             if [ "$INSTALL_TYPE" = "user" ]; then
-                echo "✨ どのプロジェクトでも使えるようになりました！"
+                echo "✨ 真のKent Beck TDD + アジャイル原則で開発できます！"
             else
-                echo "✨ このプロジェクト専用にインストールされました！"
+                echo "✨ このプロジェクト専用に真のTDD環境が構築されました！"
             fi
             echo
-            echo -e "${GREEN}Happy TDD! 🚀${NC}"
+            echo -e "${GREEN}Happy Agile TDD! 🚀${NC}"
             ;;
     esac
 }

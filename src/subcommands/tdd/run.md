@@ -1,431 +1,497 @@
 ---
-description: "15分マイクロTDDサイクル実行 - MVPファースト価値提供システム"
-argument-hint: "[micro|空欄|他オプション]"
+description: "Kent Beck純正TDDサイクル実行 - テストファースト厳守システム"
+argument-hint: "[機能名] (例: login, calculate, move-block)"
 allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 ---
 
-# 15分マイクロTDD実行
+# Kent Beck純正TDD実行
 
-モード: $ARGUMENTS（micro | 空欄 | 他オプション）
+機能: $ARGUMENTS
 
-## 🚀 推奨: 15分マイクロサイクル
+## 🎯 真のKent Beck TDD原則
 
-### メインモード: `micro` - MVPファースト価値提供 🎯
-**15分で1つの体験価値を実現**し、即座にユーザーが体験可能な状態を作ります。
+### テストファースト厳守
+- **必ずテストから始める** - コードなしでのテスト作成不可能は禁止
+- **一度に1つのテスト** - 複数テスト同時作成禁止
+- **各変更後に全テスト実行** - 品質退行の即座発見
 
-**モード選択**:
-- `micro` または空欄: 15分マイクロサイクル（推奨）
-- `legacy`: 90分イテレーション（非推奨）
-- `--step`: 単一ステップのみ実行
-- `--resume`: 中断箇所から再開
+### Kent Beck世界観
+**「TDDは設計手法である」** - Kent Beck, "Test-Driven Development by Example"
+- テストコードがコードの設計を導く
+- 実装前にAPIを考える
+- シンプルな設計の自然な出現
 
-### 🎯 15分マイクロサイクルの流れ
-```text
-0-2分: 体験デザイン → 2-4分: RED → 4-10分: GREEN → 10-13分: REFACTOR → 13-15分: 体験確認
-```
+## 指示
 
-**目標**: 各サイクル終了時にユーザーが「おお！」と感じる状態
+以下の**厳格なTDDサイクル**を実行してください：
 
-## ⚠️ 非推奨: 従来イテレーションモード
+### 🔴 RED フェーズ: テスト作成
 
-### `legacy` - 90分バッチ処理（Kent Beck原則に反する）
-**非推奨理由**:
-- 価値提供までの時間が長すぎる（90分待機）
-- フィードバックループが遅い
-- 技術基盤優先でユーザー体験後回し
+#### 1. 最小の失敗テスト作成
 
-**使用する場合**: 既存プロジェクトの大規模機能追加時のみ
+**Kent Beck原則**: 「最小の失敗するテストを書く」
 
-## 🎯 指示: 15分マイクロTDDサイクル
+**手順**:
+1. **機能の最小単位を特定**してください：
+   ```
+   例：
+   - login → "正しい認証情報で認証成功"
+   - calculate → "2 + 3 = 5"
+   - move-block → "ブロックがX座標で移動"
+   ```
 
-**microモード**で以下を実行してください：
-
-### 🚀 Phase 0: マイクロサイクル準備（0-2分）
-
-#### 1. 体験価値の明確化
-**今回の15分で実現する体験価値**を確認してください：
-
-- `.claude/agile-artifacts/iterations/micro-iteration-*.md` から最新計画を読み込み
-- **目標体験**: ユーザーが15分後に何を体験できるか
-- **価値確認**: なぜその体験が嬉しいかを明確化
-
-#### 2. 技術環境の簡易確認
-**最小限の環境確認**ですぐに開発開始：
-
-- テストコマンドの特定（`npm test`, `python -m pytest` 等）
-- プロジェクトタイプの再確認（Web/CLI/API）
-- **重要**: 技術セットアップは最小限に留める
-
-#### 3. マイクロサイクル開始宣言
-```text
-🎯 15分マイクロサイクル開始！
-
-🎯 目標体験: [今回実現する体験価値]
-⏱️ 予定時間: 15分以内
-🚀 期待結果: ユーザーが「[体験内容]」可能に
-
-開始時刻: [timestamp]
-```
-
-### 🔄 Phase 1: REDフェーズ（2-4分）
-
-#### 🔴テスト作成（最小限で1つ）
-
-1. **体験ベースのテスト設計**を行ってください：
-   - 技術的実装ではなく**ユーザー体験**をテスト
-   - 「ユーザーがこれをできる」をテストする
-   - 例: `test('ユーザーがボタンをクリックできる')` 
-
-2. **1つのシンプルなテスト**を作成してください：
+2. **1つのテストのみ作成**してください：
    ```javascript
-   // 例: テトリスの場合
-   test('ブロックが表示される', () => {
-     expect(document.querySelector('#game-block')).toBeTruthy();
+   // 例: 計算機能
+   test('should add two numbers', () => {
+     expect(add(2, 3)).toBe(5);
    });
    ```
 
-3. **テスト実行で失敗確認**してください：
+3. **テストが存在しない実装を呼び出す**ことを確認：
+   - 関数が存在しない
+   - クラスが存在しない
+   - メソッドが存在しない
+
+#### 2. テスト実行で失敗確認
+
+**必須**: テストが赤（失敗）であることを確認してください：
+
+```bash
+# プロジェクトタイプに応じて実行
+npm test -- --watchAll=false --forceExit 2>&1
+# または
+python -m pytest -v 2>&1
+# または
+go test ./... 2>&1
+```
+
+**確認項目**:
+- ✅ テストが実行される
+- ✅ テストが失敗する
+- ✅ 失敗理由が期待通り（関数未定義等）
+
+**失敗しない場合**: テストの書き方を修正してください
+
+### 🟢 GREEN フェーズ: 最小実装
+
+#### Kent Beck三大戦略の自動判定適用
+
+**戦略自動選択システム**:
+
+まず**現在の状況を確認**してください：
+
+1. **テストファイルを確認**してください：
    ```bash
-   pnpm test -- --watchAll=false --forceExit 2>&1
-   # または
-   python -m pytest -v 2>&1
+   # テストファイル内のテスト数を確認
+   grep -c "test\|it\|describe" src/**/*.test.* 2>/dev/null || echo "0"
    ```
-   ⚠️ **必須**: テストが赤（失敗）であることを確認
 
-### 🚀 Phase 2: GREENフェーズ（4-10分）
+2. **実装ファイルの存在確認**してください：
+   ```bash
+   # 対象の関数やクラスが既に存在するか確認
+   grep -n "function $ARGUMENTS\|class $ARGUMENTS\|const $ARGUMENTS" src/**/*.* 2>/dev/null || echo "未実装"
+   ```
 
-#### 🟢 Fake It戦略で最小実装
+**自動戦略判定**:
 
-1. **最も恥ずかしいハードコーディング**で実装してください：
+### 📊 状況1: 初回テスト作成（最も一般的）
+**判定条件**: テスト数が0-1個 AND 関数が未実装
+**→ 🎯 Fake It戦略を強制適用**
+
+**理由**: Kent Beck統計「60%以上でFake It使用」
+**行動**: 必ずハードコーディングから開始
+
+### 📊 状況2: 2つ目のテスト追加
+**判定条件**: 同じ関数に対するテストが既に1個存在
+**→ 🎯 Triangulation戦略を自動推奨**
+
+**自動検出方法**:
+```bash
+# 同じ関数名のテスト数を確認
+grep -c "$ARGUMENTS" src/**/*.test.* 2>/dev/null
+```
+
+**行動**: ハードコーディングを破る一般化実装
+
+### 📊 状況3: 明白な実装（稀）
+**判定条件**: 実装が数学的に自明（square, abs等）
+**→ 🎯 Obvious Implementation戦略を許可**
+
+**注意**: Kent Beck「確信がない場合はFake Itを使え」
+
+#### 戦略1: Fake It（最も重要）
+
+**Kent Beck**: 「恥ずかしがらずにハードコーディングから始める」
+
+**🚨 Fake It強制チェック**:
+1. **テストの期待値を確認**してください：
+   ```bash
+   # テストファイルから期待値を抽出
+   grep -A2 -B2 "expect.*toBe\|assert" src/**/*.test.* | head -5
+   ```
+
+2. **期待値をそのままハードコーディング**してください：
    ```javascript
-   // 例: 最初は固定値でOK
-   function createBlock() {
-     return '<div id="game-block" style="width:20px;height:20px;background:red"></div>';
+   // ❌ 間違い: 最初から一般化
+   function add(a, b) {
+     return a + b; // これはFake Itではない！
+   }
+   
+   // ✅ 正解: 完全なハードコーディング
+   function add(a, b) {
+     return 5; // テストが expect(add(2,3)).toBe(5) なら5を返す
    }
    ```
 
-2. **テストを緑にする**ことだけに集中してください：
+3. **Fake It適用確認**:
    ```bash
-   pnpm test -- --watchAll=false --forceExit 2>&1
-   ```
-   ✅ **目標**: テストが緑（成功）になる
-
-3. **即座に動作確認**してください：
-   - **Web**: ブラウザで結果を直接確認
-   - **CLI**: コマンド実行で結果確認
-   - **API**: curlでレスポンス確認
-
-4. **品質チェック**を実行してください：
-   ```bash
-   pnpm lint 2>&1
-   pnpm typecheck 2>&1  # TypeScriptの場合
+   # 実装ファイルにハードコード値があることを確認
+   grep -n "return [0-9]\|return '[^']*'\|return \"[^\"]*\"" src/**/*.* 2>/dev/null
    ```
 
-5. **BEHAVIORコミット**で体験価値を記録してください：
+**Fake It成功基準**:
+- ✅ テストの期待値と完全に一致する固定値を返す
+- ✅ 引数を一切使用しない
+- ✅ 条件分岐やループを含まない
+- ✅ 「これで本当にいいの？」という恥ずかしさを感じる
+
+**なぜFake Itか**:
+- 設計の複雑さを避ける
+- 最小の変更でテスト通過
+- 次のテストで一般化を促進
+- **Kent Beck統計**: 経験豊富な開発者ほどFake Itを多用
+
+#### 戦略2: Triangulation（2つ目のテスト時）
+
+**🔍 Triangulation自動検出システム**:
+
+1. **同じ関数の既存テスト確認**:
    ```bash
-   git add .
-   git commit -m "[BEHAVIOR] [体験価値名]: Fake It implementation"
+   # 現在のテスト数を確認
+   EXISTING_TESTS=$(grep -c "$ARGUMENTS" src/**/*.test.* 2>/dev/null || echo "0")
+   echo "既存テスト数: $EXISTING_TESTS"
    ```
 
-### 🔧 Phase 3: REFACTORフェーズ（10-13分）
-
-#### 🔵 構造改善（必要に応じて）
-
-1. **体験を壊さない範囲で構造改善**してください：
-   - 変数名の改善
-   - コードの整理と可読性向上
-   - **重要**: 振る舞い（体験）は絶対に変更しない
-
-2. **テストで体験保護を確認**してください：
+2. **ハードコーディング検出**:
    ```bash
-   pnpm test -- --watchAll=false --forceExit 2>&1
-   ```
-   ✅ **目標**: テストが全て緑で振る舞い変化なし
-
-3. **STRUCTUREコミット**で構造改善を記録してください：
-   ```bash
-   git add .
-   git commit -m "[STRUCTURE] [体験価値名]: Code structure improvement"
+   # 現在の実装がハードコードかチェック
+   grep -n "return [0-9]\|return '[^']*'" src/**/*.* | grep "$ARGUMENTS"
    ```
 
-### 🎉 Phase 4: 体験確認&完了（13-15分）
+**🎯 Triangulation適用条件**:
+- ✅ 既存テストが1個以上存在
+- ✅ 現在の実装がハードコーディング
+- ✅ 新しいテストが既存テストと異なる入力値
 
-#### ✅ 最終体験確認
+**Triangulation実行手順**:
 
-1. **ユーザー觖点で最終確認**してください：
-   - 当初の目標体験が実現できているか？
-   - ユーザーが「おお！」と感じるレベルか？
-   - 次の15分で追加したい価値は何か？
+1. **2つ目のテストを追加**してください：
+   ```javascript
+   // 既存テスト: expect(add(2, 3)).toBe(5)
+   // 新しいテスト: 異なる入力値で同じ関数をテスト
+   test('should add different numbers', () => {
+     expect(add(1, 4)).toBe(5); // 意図的に同じ期待値にしてハードコードを破る
+   });
+   ```
 
-2. **マイクロサイクル完了宣言**してください：
-   ```text
-   ✅ 15分マイクロサイクル完了！
+2. **テスト実行でハードコードの破綻確認**:
+   ```bash
+   npm test -- --watchAll=false --forceExit 2>&1
+   ```
+
+3. **一般化実装への強制変更**:
+   ```javascript
+   // ハードコードが破綻するため、一般化が必要
+   function add(a, b) {
+     return a + b; // ようやく正しい実装
+   }
+   ```
+
+**Triangulation成功確認**:
+- ✅ 2つ以上のテストが全て通過
+- ✅ ハードコーディングが除去されている  
+- ✅ 実装が一般化されている
+- ✅ 引数を実際に使用している
+
+#### 戦略3: Obvious Implementation（明白な場合のみ）
+
+**⚠️ 危険: 慎重な適用判定が必要**
+
+**🔍 Obvious Implementation適用判定**:
+
+1. **実装の明白さチェック**:
+   ```
+   以下のいずれかに該当する場合のみ使用可能：
    
-   🎯 達成体験: [実現した体験価値]
-   ⏱️ 実際時間: [timestamp - 開始時刻]
-   🎉 ユーザー反応: [予想される反応]
+   ✅ 数学的に自明: square(x) = x * x
+   ✅ 単純な変換: toString() = String(value)  
+   ✅ 1行で完結: isEmpty() = array.length === 0
+   ✅ ライブラリ呼び出し: uuid() = crypto.randomUUID()
+   ```
+
+2. **Kent Beck警告チェック**:
+   ```
+   以下の場合は絶対にFake Itを使用：
    
-   🚀 次の価値: [次に追加したい機能]
+   ❌ ビジネスロジックを含む
+   ❌ 条件分岐が必要
+   ❌ エラーハンドリングが必要
+   ❌ 実装方法に迷いがある
+   ❌ 「これで合ってるかな？」と思う
    ```
 
-## 🚀 マイクロサイクル完了後の選択肢
-
-**15分マイクロサイクル完了後**、以下から選択してください：
-
-### ⚡ MVP品質確保オプション（推奨）
-
-1. **🐛 即座バグ修正** - 動作するが不具合発見時
-   現在の15分体験で発見されたバグを即座に修正
-   例: 境界制限、操作性、表示不具合など
-
-### ✅ 継続開発オプション
-
-2. **🚀 次の15分サイクル** - さらなる価値追加
+3. **自信度チェック**（Kent Beck基準）:
    ```bash
-   /tdd:plan micro
+   echo "実装に100%の確信がありますか？ (y/n)"
+   read -r CONFIDENCE
+   if [ "$CONFIDENCE" != "y" ]; then
+     echo "🚨 Fake It戦略を使用してください"
+   fi
    ```
-   次の体験価値を計画して即座に継続
 
-3. **📝 フィードバック収集** - ユーザーの声を聞く
-   現在の体験についてフィードバックを収集
+**Obvious Implementation実装例**:
+```javascript
+// ✅ 明白な実装例
+function square(x) {
+  return x * x; // 数学的に自明
+}
 
-4. **🔍 体験テスト** - 他の人に見せる
-   実際のユーザーに体験してもらい反応を確認
+function isEmpty(array) {
+  return array.length === 0; // 1行で完結
+}
 
-5. **📋 ストーリー見直し** - 計画を再検討
-   当初のストーリーと実際の体験を比較して調整
+// ❌ 避けるべき例（Fake Itを使う）
+function calculateTax(price, rate) {
+  return price * rate; // ビジネスロジック→不明確
+}
+```
 
-6. **❤️ 休憩** - 満足したら終了
-   現在の価値で十分なら休憩も大切
+**🚨 戦略適用後の検証システム**
 
-**重要**: MVP段階では成長基盤としての品質が重要です。
-バグを発見した場合は、新機能追加前に修正することを強く推奨します。
+各戦略適用後に以下を確認してください：
 
-## ⚠️ Legacyモード: 90分イテレーション（非推奨）
+1. **適用戦略の記録**:
+   ```bash
+   echo "[$(date)] $ARGUMENTS: Applied strategy - [Fake It/Triangulation/Obvious]" >> .claude/agile-artifacts/tdd-logs/strategy-log.md
+   ```
 
-**`legacy`モードの場合のみ**、以下の90分バッチ処理を実行：
+2. **戦略適用の正当性確認**:
+   ```bash
+   # Fake It確認: ハードコードが存在するか
+   if grep -q "return [0-9]\|return '[^']*'" src/**/*.*; then
+     echo "✅ Fake It戦略適用済み"
+   fi
+   
+   # Triangulation確認: 複数テストが存在するか
+   if [ $(grep -c "$ARGUMENTS" src/**/*.test.* 2>/dev/null || echo "0") -ge 2 ]; then
+     echo "✅ Triangulation戦略適用可能"
+   fi
+   ```
 
-### 1. プロジェクト分析と準備
-- プロジェクトコンテキスト分析
-- 最新イテレーションファイル読み込み
-- 実行開始宣言
+3. **Kent Beck原則遵守確認**:
+   ```bash
+   # テストファースト確認
+   if [ ! -f src/**/*.test.* ]; then
+     echo "🚨 エラー: テストファイルが存在しません"
+   fi
+   
+   # 品質確認
+   npm test -- --watchAll=false 2>&1 | grep -q "PASS" && echo "✅ 全テスト通過"
+   ```
 
-### 2. 従来TDDサイクル実行
-- 長時間ステップの連続実行
-- 各ステップでRED-GREEN-REFACTOR
+#### 2. テスト実行で成功確認
 
-### 3. 必須ゲート確認
-- 動作確認（プロジェクトタイプ別）
-- 受け入れ基準チェック
-- 進捗同期
+```bash
+# 同じテストコマンドを再実行
+npm test -- --watchAll=false --forceExit 2>&1
+```
 
-### 4. 従来完了処理
+**確認項目**:
+- ✅ テストが緑（成功）になる
+- ✅ 既存テストが全て通過
+- ✅ コンパイルエラーなし
 
-#### 単一ステップ完了時
-次のステップの実行方法を案内
+#### 3. 動作確認（実際の体験）
 
-#### イテレーション完了時（legacyモードのみ）
+**実装した機能を実際に確認**してください：
 
-### 🎯 成果物確認（legacyモード専用）
+**Web系**:
+```bash
+# 開発サーバー起動
+npm run dev
+# ブラウザで確認: http://localhost:3000
+```
 
-実装完了後、作成した成果物を以下の手順で確認してください：
+**CLI系**:
+```bash
+# 直接実行
+node src/main.js test-input
+# または
+python src/main.py test-input
+```
 
-#### 1. プロジェクトタイプ判定
+**API系**:
+```bash
+# サーバー起動
+npm start
+# APIテスト
+curl http://localhost:3000/api/endpoint
+```
 
-以下を確認してプロジェクトタイプを判定してください：
-- `package.json`の存在とscripts設定
-- `requirements.txt`、`pyproject.toml`の存在
-- `Cargo.toml`、`go.mod`の存在
-- フレームワーク固有ファイル（`next.config.js`、`vite.config.js`等）
+#### 4. 品質チェック
 
-#### 2. タイプ別確認手順
+```bash
+# リンター実行
+npm run lint 2>&1
 
-判定されたプロジェクトタイプに応じて、以下から適切な確認方法を選択・実行してください：
+# タイプチェック（TypeScriptの場合）
+npm run typecheck 2>&1
 
-**🌐 Webアプリ系**
-- **React/Vue/Angular SPA**: 
-  ```bash
-  pnpm dev  # または npm run dev、bun dev
-  ```
-  ブラウザで `http://localhost:3000` を開いて動作確認
+# 全テスト再実行
+npm test 2>&1
+```
 
-- **静的HTML**: 
-  ```bash
-  # 直接開く、または
-  python3 -m http.server 8000
-  ```
-  ブラウザで `http://localhost:8000` または直接HTMLファイルを開く
+#### 5. BEHAVIORコミット
 
-- **Next.js/Nuxt.js**: 
-  ```bash
-  pnpm dev
-  ```
-  フル機能（SSR、API Routes等）の動作確認
+**Tidy First原則**: 振る舞いの変更をコミット
 
-**🖥️ CLI ツール系**
-- **Node.js CLI**: 
-  ```bash
-  node dist/cli.js --help  # または pnpm cli --help
-  ```
-  ヘルプ表示と基本コマンド実行を確認
+```bash
+git add .
+git commit -m "[BEHAVIOR] Add [機能名]: $(echo "$ARGUMENTS") with Fake It implementation"
+```
 
-- **Python CLI**: 
-  ```bash
-  python main.py --help  # または python -m package --help
-  ```
-  コマンドライン引数処理と基本機能を確認
+### 🔵 REFACTOR フェーズ: 構造改善
 
-- **Go CLI**: 
-  ```bash
-  go run . --help  # またはビルドした実行ファイル
-  ```
-  バイナリ動作と基本機能を確認
+**Kent Beck**: 「動作するコードがあってから構造を改善する」
 
-**🔌 API サーバー系**
-- **Express.js/Fastify**: 
-  ```bash
-  pnpm start  # または npm run server
-  curl http://localhost:3000/api/health  # ヘルスチェック
-  ```
+#### 1. 構造改善の実施
 
-- **FastAPI/Django**: 
-  ```bash
-  uvicorn main:app --reload  # または python manage.py runserver
-  ```
-  ブラウザで `http://localhost:8000/docs` （OpenAPI docs）を確認
+**振る舞いを変えずに構造のみ改善**:
 
-- **Spring Boot**: 
-  ```bash
-  ./gradlew bootRun  # または mvn spring-boot:run
-  curl http://localhost:8080/actuator/health
-  ```
+- 変数名の改善
+- 関数の分割
+- 重複コードの除去
+- 可読性の向上
 
-**📦 ライブラリ系**
-- **npm package**: 
-  ```bash
-  pnpm build
-  node -e "const lib = require('./dist'); console.log(lib)"
-  ```
-  ビルド成功とインポート可能性を確認
+**例**:
+```javascript
+// Before
+function calc(x, y) {
+  return x + y;
+}
 
-- **Python package**: 
-  ```bash
-  python -c "import package_name; print('Import successful')"
-  ```
-  インポート可能性と基本API動作を確認
+// After (構造改善)
+function addTwoNumbers(firstNumber, secondNumber) {
+  return firstNumber + secondNumber;
+}
+```
 
-- **Go module**: 
-  ```bash
-  go test ./...
-  go mod tidy
-  ```
-  テスト実行とモジュール整合性を確認
+#### 2. テストで振る舞い保護確認
 
-**🖱️ デスクトップアプリ系**
-- **Electron**: 
-  ```bash
-  pnpm electron  # または npm run electron
-  ```
-  アプリケーション起動と基本UI動作を確認
+**必須**: リファクタリング後にテスト実行
 
-- **Tauri**: 
-  ```bash
-  cargo tauri dev  # または pnpm tauri dev
-  ```
-  ネイティブアプリケーション起動を確認
+```bash
+npm test -- --watchAll=false --forceExit 2>&1
+```
 
-- **Java GUI**: 
-  ```bash
-  java -jar target/app.jar  # またはIDE実行
-  ```
-  GUI表示と基本操作を確認
+**確認項目**:
+- ✅ 全テストが緑のまま
+- ✅ 振る舞いが変化していない
+- ✅ 新しいバグが発生していない
 
-**📊 データ分析系**
-- **Jupyter Notebook**: 
-  ```bash
-  jupyter lab  # または jupyter notebook
-  ```
-  ノートブック実行と結果出力を確認
+#### 3. STRUCTUREコミット
 
-- **R Markdown**: 
-  ```bash
-  Rscript -e "rmarkdown::render('analysis.Rmd')"
-  ```
-  レポート生成と出力ファイルを確認
+**Tidy First原則**: 構造改善をコミット
 
-**📱 モバイル系**
-- **React Native**: 
-  ```bash
-  pnpm start  # Metro bundler起動
-  ```
-  エミュレータまたは実機での動作確認
+```bash
+git add .
+git commit -m "[STRUCTURE] $(echo "$ARGUMENTS"): Improve code structure and readability"
+```
 
-- **Flutter**: 
-  ```bash
-  flutter run
-  ```
-  エミュレータまたは実機での動作確認
+## 🔄 TDDサイクル継続
 
-#### 3. 確認完了チェック
+### 次のテスト追加
 
-以下を確認してください：
-- ✅ 成果物が正常に動作する
-- ✅ 実装した全機能が期待通りに動作する  
-- ✅ ストーリーの受け入れ基準を全て満たしている
-- ✅ エラーや警告が発生していない
+**現在の機能が完了した場合**:
 
-### 📋 次のステップ選択
+1. **同じ機能の追加テストケース**:
+   ```javascript
+   // エッジケース
+   test('should handle zero', () => {
+     expect(add(0, 5)).toBe(5);
+   });
+   ```
 
-**成果物確認が完了した後**、以下から選択してください：
+2. **関連機能の追加**:
+   ```javascript
+   // 減算機能
+   test('should subtract two numbers', () => {
+     expect(subtract(5, 3)).toBe(2);
+   });
+   ```
 
-1. **イテレーション開始** 🚀 - 次のイテレーション自動計画
-2. **フィードバック収集** 💭 - 詳細フィードバック収集
-3. **機能追加** ➕ - 追加機能の分析と計画
-4. **品質向上** 🔧 - コード品質向上
-5. **プロジェクト完了** ✅ - プロジェクト終了
+### サイクル完了
 
-#### フィードバック入力時（選択肢2）
-ユーザーに以下を質問してフィードバックを収集してください：
-「成果物確認を含めた今回のイテレーションについて、ご感想や改善点があれば教えてください。」
+```text
+✅ Kent Beck TDDサイクル完了！
 
-フィードバック収集後、再度選択肢を表示してください。
+🔴 RED: テスト作成 → 失敗確認完了
+🟢 GREEN: 最小実装 → 成功確認完了  
+🔵 REFACTOR: 構造改善 → 品質保持完了
 
-## 🎯 15分マイクロサイクル原則
+🎯 実装機能: [機能名]
+🧪 適用戦略: [Fake It/Triangulation/Obvious Implementation]
+📝 コミット: BEHAVIORコミット + STRUCTUREコミット
 
-### MVPファースト原則
-- **体験優先**: 技術的完璧さよりユーザー体験を最優先
-- **15分ルール**: 15分以内に必ず体験価値を実現
-- **即座フィードバック**: 各サイクル後に必ずユーザー確認
-- **Fake It戦略**: 最初は恥ずかしいハードコーディングから
+🚀 次のアクション選択:
 
-### Kent Beck TDD正式適用
-- **"Make it work"** = 体験価値の実現（技術基盤ではない）
-- **"Make it right"** = 構造改善（体験保護後）
-- **"Make it fast"** = 最適化（最後の優先度）
-- **Tidy First**: [BEHAVIOR]コミット → [STRUCTURE]コミット
+1. **同じ機能の追加テスト** - エッジケースや例外処理
+2. **関連機能のTDD** - 次の機能をTDDで追加
+3. **ユーザーフィードバック** - 実装した機能の使用感確認
+4. **品質向上** - より高度なリファクタリング実施
+5. **機能完了** - 現在の機能で満足
+```
 
-### アジャイル原則
-- **個人と対話**: 15分毎のユーザーフィードバック
-- **動くソフトウェア**: 15分で動作する体験
-- **顧客との協働**: ユーザー体験中心設計
-- **変化への対応**: マイクロサイクルで柔軟性確保
+## 🚨 TDD原則厳守チェック
 
-## エラー対応 & トラブルシューティング
+各段階で以下を確認してください：
 
-### マイクロサイクルでのエラー対応
-1. **テストが緑にならない**:
-   - Fake Itでもっとシンプルに
-   - テスト自体が間違っている可能性を確認
+### ✅ RED段階チェック
+- [ ] テストが実際に失敗する
+- [ ] 失敗理由が期待通り
+- [ ] 1つのテストのみ作成
 
-2. **体験価値が感じられない**:
-   - ユーザー觖点で再確認
-   - 技術的完璧さより「おお！」を優先
+### ✅ GREEN段階チェック  
+- [ ] 最小の変更でテストが通る
+- [ ] Kent Beck戦略を適用
+- [ ] 全テストが通過
 
-3. **15分で終わらない**:
-   - スコープが大きすぎる可能性
-   - もっと小さな体験価値に分割
+### ✅ REFACTOR段階チェック
+- [ ] 振る舞いが変化していない
+- [ ] テストが全て緑のまま
+- [ ] 構造のみ改善
 
-### レガシーモードエラー
-- テスト環境の動作確認
-- 依存関係のインストール状態
-- TDD原則の遵守状態
+### ✅ 品質保証
+- [ ] コンパイルエラーなし
+- [ ] リンターエラーなし
+- [ ] 実際の動作確認完了
+
+## 💡 Kent Beck智慧の実践
+
+### TDDマントラ
+「**Red, Green, Refactor. Red, Green, Refactor.**」
+
+### 設計哲学
+「**テストがコードの設計を駆動する**」
+- テストが先にAPIを定義
+- 使いやすいAPIが自然に出現
+- 複雑性の早期発見
+
+### 品質哲学
+「**動かしてから直す**」
+- Make it work（動作させる）
+- Make it right（正しくする）
+- Make it fast（速くする）
+
+この順序を必ず守り、Kent Beck純正TDDの力を実感してください。
