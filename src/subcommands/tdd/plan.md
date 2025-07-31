@@ -93,5 +93,11 @@ git commit -m "[BEHAVIOR] Create iteration N plan"
 
 🚀 次のステップ: 計画に基づいてKent Beck流TDD実装を開始します
 
+以下のコマンドを実行してください：
 /tdd:run
+
+これにより以下が自動実行されます：
+- RED→GREEN→REFACTORサイクルの実行
+- 必須ゲートによる品質確保
+- 自動的な進捗追跡と同期
 ```
