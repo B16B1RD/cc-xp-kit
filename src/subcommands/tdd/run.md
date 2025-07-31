@@ -116,6 +116,7 @@ Bashツールで以下を実行：
 #### 🔴 RED（テスト作成）
 
 Kent Beck 視点で最小限のテストを作成。**REDフェーズ強制化**: テスト失敗確認まで次に進めません。
+Kent Beck原則の詳細は @~/.claude/commands/shared/kent-beck-principles.md を参照
 
 **REDフェーズ実行手順**：
 
@@ -192,7 +193,7 @@ Bashツールを使用して以下を順次実行：
 コミット:
 
 **GREENフェーズコミット**：
-Bashツールで以下を実行：
+Bashツールで以下を実行（コミット規則は @~/.claude/commands/shared/commit-rules.md を参照）：
 
 ```
 git add .
@@ -202,6 +203,7 @@ git commit -m "[BEHAVIOR] Step X.Y: Fake It implementation"
 #### 🔵 REFACTOR（必要時）
 
 **構造的変更のみ**: 振る舞いは変えない。**REFACTORフェーズ強制化**: リファクタリング実行とテスト確認。
+2つ目のテストでTriangulation戦略を検討（@~/.claude/commands/shared/kent-beck-principles.md 参照）
 
 **REFACTORフェーズ実行手順**：
 
@@ -247,7 +249,7 @@ Bashツールを使用して以下を順次実行：
      - 対処方法を表示（変更を元に戻す等）
      - プロセス終了
 
-7. **リファクタ成功時のコミット**：
+7. **リファクタ成功時のコミット**（コミット規則は @~/.claude/commands/shared/commit-rules.md を参照）：
 
    ```
    git add .
@@ -256,7 +258,7 @@ Bashツールを使用して以下を順次実行：
 
 ### 4. 必須チェック（各ステップ後）
 
-参照: `~/.claude/commands/shared/mandatory-gates.md`
+参照: @~/.claude/commands/shared/mandatory-gates.md
 
 - **動作確認**: プロジェクトタイプに応じて実施
   - Web: サーバーバックグラウンド起動 + Playwright MCP でスクリーンショット
@@ -510,7 +512,7 @@ grep -A 20 "## 必須ゲート" "$iteration_file" | grep -c "- \[ \]"
 `.claude/agile-artifacts/reviews/iteration-N-feedback.md`:
 
 **フィードバック保存コミット**：
-BashツールでフィードバックファイルをGitコミット：
+BashツールでフィードバックファイルをGitコミット（コミット規則は @~/.claude/commands/shared/commit-rules.md を参照）：
 ```
 git commit -m "[BEHAVIOR] Save iteration N feedback"
 ```

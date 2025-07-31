@@ -38,6 +38,7 @@ argument-hint: "[iteration-number]"
 
 #### 必須ゲート達成率
 
+詳細な必須ゲートは @~/.claude/commands/shared/mandatory-gates.md を参照：
 ```text
 動作確認: XX%
 受け入れ基準: XX%
@@ -83,6 +84,7 @@ Tidy First遵守: XX%（目標 > 95%）
 
 ### 6. コミット
 
+コミット規則は @~/.claude/commands/shared/commit-rules.md を参照：
 ```bash
 git commit -m "[BEHAVIOR] Complete iteration N review"
 ```text

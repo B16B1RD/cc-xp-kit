@@ -28,7 +28,7 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 
 5. **`.claude/agile-artifacts/stories/project-stories.md`** にストーリーを保存してください。
 
-6. **Gitコミット**を実行してストーリーファイルをコミットしてください：
+6. **Gitコミット**を実行してストーリーファイルをコミットしてください（コミット規則は @~/.claude/commands/shared/commit-rules.md を参照）：
    ```bash
    git add .claude/agile-artifacts/
    git commit -m "[BEHAVIOR] Create user stories with modern tech stack"
@@ -37,7 +37,7 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash"]
 ## 原則
 
 - **YAGNI**: 今必要ない機能は含めない
-- **検証可能**: 曖昧な基準を避ける
+- **検証可能**: 曖昧な基準を避ける（受け入れ基準は @~/.claude/commands/shared/mandatory-gates.md を参照）
 - **段階的**: 小さく始めて大きく育てる
 - **モダンツール優先**: npm/pipは避け、高速なツールを使用
 

@@ -50,10 +50,10 @@ git init
 既存のCLAUDE.mdがある場合は、TDD関連部分のみ更新してください。
 
 ### 7. 初期コミット
-環境セットアップ完了後にコミットしてください：
+環境セットアップ完了後にコミットしてください（コミット規則は @src/shared/commit-rules.md を参照）：
 ```bash
 git add .
-git commit -m "[BEHAVIOR] Setup modern TDD environment"
+git commit -m "[INIT] TDD environment setup"
 ```
 
 ## 完了後の報告

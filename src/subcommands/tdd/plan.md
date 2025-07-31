@@ -47,7 +47,7 @@ argument-hint: "[iteration-number]"
 Step X.Y: [ステップ名]（20分）
 ├─ Cycle 1: [具体的タスク]（4分）
 │  ├─ RED: テスト作成
-│  ├─ GREEN: Fake It実装
+│  ├─ GREEN: Fake It実装（Kent Beck戦略は @~/.claude/commands/shared/kent-beck-principles.md 参照）
 │  └─ COMMIT: [BEHAVIOR] Message
 ├─ Cycle 2: [次のタスク]（4分）
 └─ ...
@@ -59,11 +59,12 @@ Step X.Y: [ステップ名]（20分）
 
 - 選択ストーリー
 - 実行計画（ステップとサイクル）
-- 必須ゲート（~/.claude/commands/shared/mandatory-gates.md 参照）
+- 必須ゲート（@~/.claude/commands/shared/mandatory-gates.md 参照）
 - 進捗管理情報
 
 ### 6. コミット
 
+コミット規則は @~/.claude/commands/shared/commit-rules.md を参照：
 ```bash
 git add .claude/agile-artifacts/iterations/
 git commit -m "[BEHAVIOR] Create iteration N plan"

@@ -137,7 +137,7 @@ install_tdd_kit() {
         if download_file "$REPO_URL/raw/$BRANCH/src/commands/$file" "$TEMP_DIR/$file"; then
             # インストールタイプに応じてパスを調整
             if [ "$INSTALL_TYPE" = "project" ]; then
-                sed -i.bak 's|~/.claude/commands/shared/|.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
+                sed -i.bak 's|@~/.claude/commands/shared/|@.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
             fi
             cp "$TEMP_DIR/$file" "$INSTALL_DIR/$file"
             echo -e "${GREEN}✓${NC}"
@@ -166,7 +166,7 @@ install_tdd_kit() {
         if download_file "$REPO_URL/raw/$BRANCH/src/subcommands/tdd/$file" "$TEMP_DIR/$file"; then
             # インストールタイプに応じてパスを調整
             if [ "$INSTALL_TYPE" = "project" ]; then
-                sed -i.bak 's|~/.claude/commands/shared/|.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
+                sed -i.bak 's|@~/.claude/commands/shared/|@.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
             fi
             cp "$TEMP_DIR/$file" "$INSTALL_DIR/tdd/$file"
             echo -e "${GREEN}✓${NC}"

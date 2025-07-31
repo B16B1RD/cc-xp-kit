@@ -74,7 +74,7 @@ shellcheck install.sh
 
 ### 設計原則
 
-- **Tidy First原則** - 構造的変更（[STRUCTURE]）と振る舞いの変更（[BEHAVIOR]）を厳格に分離
+- **Tidy First原則** - 構造的変更（[STRUCTURE]）と振る舞いの変更（[BEHAVIOR]）を厳格に分離（詳細は @~/.claude/commands/shared/commit-rules.md を参照）
 - **必須ゲート** - 各ステップで動作確認、受け入れ基準チェック、Git コミットを強制
 - **プログレッシブ表示** - 必要な情報を必要なときに表示（`-v` オプションで詳細表示）
 
@@ -112,6 +112,8 @@ shellcheck install.sh
 - **Fake It 戦略**（60%以上で使用）- 最初はハードコーディングで実装
 - **Triangulation** - 2 つ目のテストで一般化
 - **Obvious Implementation** - 明白な場合のみ最初から正しい実装
+
+詳細な原則と実装例は @~/.claude/commands/shared/kent-beck-principles.md を参照
 
 ## 品質管理
 

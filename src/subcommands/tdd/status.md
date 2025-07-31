@@ -37,7 +37,7 @@ Iteration N: 60% 完了 (36/60 チェック)
 ├─ Phase 2: 🔄 進行中 (Step 2.3)
 └─ Phase 3: ⏳ 未着手
 
-必須ゲート: ⚠️ フィードバック未収集
+必須ゲート（@~/.claude/commands/shared/mandatory-gates.md 詳細）: ⚠️ フィードバック未収集
 
 ### プロジェクトファイル
 
