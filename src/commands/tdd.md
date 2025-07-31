@@ -106,5 +106,6 @@ git commit -m "[INIT] TDD project setup with user stories and environment"
 - Git設定と.gitignoreファイル
 
 🚀 次のステップ: ストーリーと技術スタックに基づいて開発計画を自動作成します
+
 /tdd:plan 1
 ```

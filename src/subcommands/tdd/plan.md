@@ -92,5 +92,6 @@ git commit -m "[BEHAVIOR] Create iteration N plan"
 - [主要機能2]: [概要説明]
 
 🚀 次のステップ: 計画に基づいてKent Beck流TDD実装を開始します
+
 /tdd:run
 ```
