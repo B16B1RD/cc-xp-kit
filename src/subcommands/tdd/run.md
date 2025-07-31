@@ -100,7 +100,159 @@ allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 次のステップの実行方法を案内してください。
 
 #### イテレーション完了時（デフォルト）
-以下の選択肢を提示してください：
+
+### 🎯 成果物確認（必須ステップ）
+
+実装完了後、作成した成果物を以下の手順で確認してください：
+
+#### 1. プロジェクトタイプ判定
+
+以下を確認してプロジェクトタイプを判定してください：
+- `package.json`の存在とscripts設定
+- `requirements.txt`、`pyproject.toml`の存在
+- `Cargo.toml`、`go.mod`の存在
+- フレームワーク固有ファイル（`next.config.js`、`vite.config.js`等）
+
+#### 2. タイプ別確認手順
+
+判定されたプロジェクトタイプに応じて、以下から適切な確認方法を選択・実行してください：
+
+**🌐 Webアプリ系**
+- **React/Vue/Angular SPA**: 
+  ```bash
+  pnpm dev  # または npm run dev、bun dev
+  ```
+  ブラウザで `http://localhost:3000` を開いて動作確認
+
+- **静的HTML**: 
+  ```bash
+  # 直接開く、または
+  python3 -m http.server 8000
+  ```
+  ブラウザで `http://localhost:8000` または直接HTMLファイルを開く
+
+- **Next.js/Nuxt.js**: 
+  ```bash
+  pnpm dev
+  ```
+  フル機能（SSR、API Routes等）の動作確認
+
+**🖥️ CLI ツール系**
+- **Node.js CLI**: 
+  ```bash
+  node dist/cli.js --help  # または pnpm cli --help
+  ```
+  ヘルプ表示と基本コマンド実行を確認
+
+- **Python CLI**: 
+  ```bash
+  python main.py --help  # または python -m package --help
+  ```
+  コマンドライン引数処理と基本機能を確認
+
+- **Go CLI**: 
+  ```bash
+  go run . --help  # またはビルドした実行ファイル
+  ```
+  バイナリ動作と基本機能を確認
+
+**🔌 API サーバー系**
+- **Express.js/Fastify**: 
+  ```bash
+  pnpm start  # または npm run server
+  curl http://localhost:3000/api/health  # ヘルスチェック
+  ```
+
+- **FastAPI/Django**: 
+  ```bash
+  uvicorn main:app --reload  # または python manage.py runserver
+  ```
+  ブラウザで `http://localhost:8000/docs` （OpenAPI docs）を確認
+
+- **Spring Boot**: 
+  ```bash
+  ./gradlew bootRun  # または mvn spring-boot:run
+  curl http://localhost:8080/actuator/health
+  ```
+
+**📦 ライブラリ系**
+- **npm package**: 
+  ```bash
+  pnpm build
+  node -e "const lib = require('./dist'); console.log(lib)"
+  ```
+  ビルド成功とインポート可能性を確認
+
+- **Python package**: 
+  ```bash
+  python -c "import package_name; print('Import successful')"
+  ```
+  インポート可能性と基本API動作を確認
+
+- **Go module**: 
+  ```bash
+  go test ./...
+  go mod tidy
+  ```
+  テスト実行とモジュール整合性を確認
+
+**🖱️ デスクトップアプリ系**
+- **Electron**: 
+  ```bash
+  pnpm electron  # または npm run electron
+  ```
+  アプリケーション起動と基本UI動作を確認
+
+- **Tauri**: 
+  ```bash
+  cargo tauri dev  # または pnpm tauri dev
+  ```
+  ネイティブアプリケーション起動を確認
+
+- **Java GUI**: 
+  ```bash
+  java -jar target/app.jar  # またはIDE実行
+  ```
+  GUI表示と基本操作を確認
+
+**📊 データ分析系**
+- **Jupyter Notebook**: 
+  ```bash
+  jupyter lab  # または jupyter notebook
+  ```
+  ノートブック実行と結果出力を確認
+
+- **R Markdown**: 
+  ```bash
+  Rscript -e "rmarkdown::render('analysis.Rmd')"
+  ```
+  レポート生成と出力ファイルを確認
+
+**📱 モバイル系**
+- **React Native**: 
+  ```bash
+  pnpm start  # Metro bundler起動
+  ```
+  エミュレータまたは実機での動作確認
+
+- **Flutter**: 
+  ```bash
+  flutter run
+  ```
+  エミュレータまたは実機での動作確認
+
+#### 3. 確認完了チェック
+
+以下を確認してください：
+- ✅ 成果物が正常に動作する
+- ✅ 実装した全機能が期待通りに動作する  
+- ✅ ストーリーの受け入れ基準を全て満たしている
+- ✅ エラーや警告が発生していない
+
+### 📋 次のステップ選択
+
+**成果物確認が完了した後**、以下から選択してください：
+
 1. **イテレーション開始** 🚀 - 次のイテレーション自動計画
 2. **フィードバック収集** 💭 - 詳細フィードバック収集
 3. **機能追加** ➕ - 追加機能の分析と計画
@@ -109,7 +261,7 @@ allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 
 #### フィードバック入力時（選択肢2）
 ユーザーに以下を質問してフィードバックを収集してください：
-「今回のイテレーションについて、ご感想や改善点があれば教えてください。」
+「成果物確認を含めた今回のイテレーションについて、ご感想や改善点があれば教えてください。」
 
 フィードバック収集後、再度選択肢を表示してください。
 
