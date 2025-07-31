@@ -150,6 +150,7 @@ Bashツールを使用して以下を順次実行：
    - **終了コード ≠ 0の場合**：
      - 成功メッセージ表示："✅ REDフェーズ成功: テストが期待通り失敗しました"
      - 失敗理由を抽出・表示
+     - **ファイル同期実行**: ストーリーファイルとイテレーションファイルの進捗を更新
      - 次フェーズへの進行メッセージ表示
 
 #### 🟢 GREEN（最小実装）
@@ -184,7 +185,7 @@ Bashツールを使用して以下を順次実行：
        - リント実行：`eval "$LINT_CMD"`
        - リント結果チェック：
          - 失敗時：エラー表示とプロセス終了
-         - 成功時：品質OK表示と次フェーズへ
+         - 成功時：品質OK表示、**ファイル同期実行**、次フェーズへ
    - **終了コード ≠ 0の場合**：
      - エラーメッセージ表示："❌ GREENフェーズ失敗: テストがまだ失敗しています"
      - 失敗理由を抽出・表示
@@ -243,7 +244,7 @@ Bashツールを使用して以下を順次実行：
        - リント実行：`eval "$LINT_CMD"`
        - リント結果チェック：
          - 失敗時：品質悪化エラー表示とプロセス終了
-         - 成功時：品質維持確認とフェーズ完了表示
+         - 成功時：品質維持確認、**ファイル同期実行**、フェーズ完了表示
    - **終了コード ≠ 0の場合**：
      - エラーメッセージ表示："❌ 致命的エラー: リファクタで動作が破壊されました"
      - 対処方法を表示（変更を元に戻す等）
@@ -373,10 +374,39 @@ sed -i "/## 必須ゲート/,/^##\|^$/s/- \[ \] \*\*${gate_type}\*/- \[x\] **${g
 - **進捗更新**: イテレーションファイルの必須ゲート更新
 
 **進捗更新実行方法**：
-- 各フェーズでBashツールから同期関数を呼び出し
-- 例：RED完了時に動作確認ゲートを更新
-- 例：GREEN完了時に受け入れ基準ゲートを更新
-- 例：REFACTOR完了時にGitコミットゲートを更新
+
+各フェーズ完了時にBashツールで以下を実行：
+
+### REDフェーズ完了時
+```bash
+# ストーリーファイル更新
+sed -i "/\*\*Story.*$story_id/,/^\*\*Story\|^$/s/- \[ \] .*テスト失敗確認/- \[x\] テスト失敗確認/" .claude/agile-artifacts/stories/project-stories.md
+
+# イテレーションファイル更新
+sed -i "/Step.*$current_step/,/^###\|^$/s/- \[ \] RED:/- \[x\] RED:/" .claude/agile-artifacts/iterations/iteration-*.md
+echo "📝 REDフェーズ進捗を更新しました"
+```
+
+### GREENフェーズ完了時
+```bash
+# ストーリーファイル更新
+sed -i "/\*\*Story.*$story_id/,/^\*\*Story\|^$/s/- \[ \] .*実装完了/- \[x\] 実装完了/" .claude/agile-artifacts/stories/project-stories.md
+sed -i "/\*\*Story.*$story_id/,/^\*\*Story\|^$/s/- \[ \] .*テスト成功/- \[x\] テスト成功/" .claude/agile-artifacts/stories/project-stories.md
+
+# イテレーションファイル更新
+sed -i "/Step.*$current_step/,/^###\|^$/s/- \[ \] GREEN:/- \[x\] GREEN:/" .claude/agile-artifacts/iterations/iteration-*.md
+echo "📝 GREENフェーズ進捗を更新しました"
+```
+
+### REFACTORフェーズ完了時
+```bash
+# ストーリーファイル更新
+sed -i "/\*\*Story.*$story_id/,/^\*\*Story\|^$/s/- \[ \] .*リファクタリング完了/- \[x\] リファクタリング完了/" .claude/agile-artifacts/stories/project-stories.md
+
+# イテレーションファイル更新
+sed -i "/Step.*$current_step/,/^###\|^$/s/- \[ \] REFACTOR:/- \[x\] REFACTOR:/" .claude/agile-artifacts/iterations/iteration-*.md
+echo "📝 REFACTORフェーズ進捗を更新しました"
+```
 
 ### 5. 完了確認と継続判定
 
