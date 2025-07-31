@@ -11,22 +11,13 @@ argument-hint: "作りたいものを説明してください"
 
 ## 指示
 
-以下を順次実行してください：
+以下のカスタムスラッシュコマンドを順次実行
 
-### 1. ユーザーストーリー作成
-Taskツールで `/tdd:story $ARGUMENTS` を実行してください。
-
-### 2. 開発環境構築  
-Taskツールで `/tdd:init` を実行してください。
-
-### 3. イテレーション計画
-Taskツールで `/tdd:plan 1` を実行してください。
-
-### 4. TDD実行開始
-Taskツールで `/tdd:run` を実行してください。
-
-### 5. レビュー
-Taskツールで `/tdd:review 1` を実行してください。
+1. `/tdd:story $ARGUMENTS`
+2. `/tdd:init`
+3. `/tdd:plan 1`
+4. `/tdd:run`
+5. `/tdd:review 1`
 
 ## 重要な制約
 
