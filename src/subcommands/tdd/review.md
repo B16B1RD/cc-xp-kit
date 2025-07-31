@@ -25,7 +25,7 @@ argument-hint: "[iteration-number]"
 正式には未完了です。
 
 /tdd:run でフィードバック収集を実行してください。
-```text
+```
 
 ### 2. 実行データ収集
 
@@ -44,7 +44,7 @@ argument-hint: "[iteration-number]"
 受け入れ基準: XX%
 フィードバック: ✅/❌
 総合: XX%
-```text
+```
 
 #### TDD品質
 
@@ -52,7 +52,7 @@ argument-hint: "[iteration-number]"
 Fake It使用率: XX%（目標 > 60%）
 平均サイクル: X.X分（目標 < 5分）
 Tidy First遵守: XX%（目標 > 95%）
-```text
+```
 
 #### Git分析
 
@@ -60,7 +60,7 @@ Tidy First遵守: XX%（目標 > 95%）
 [BEHAVIOR]: XX個
 [STRUCTURE]: YY個
 混在: ZZ個（理想は0）
-```text
+```
 
 ### 4. レポート生成
 
@@ -87,7 +87,7 @@ Tidy First遵守: XX%（目標 > 95%）
 コミット規則は @~/.claude/commands/shared/commit-rules.md を参照：
 ```bash
 git commit -m "[BEHAVIOR] Complete iteration N review"
-```text
+```
 
 ## 自動改善提案
 
@@ -100,9 +100,34 @@ git commit -m "[BEHAVIOR] Complete iteration N review"
 ## 完了後
 
 ```text
-📊 レビュー完了！
-品質: [グレード]
-改善点: [要約]
+✅ イテレーション N のレビューが完了しました！
 
-次: /tdd:plan N+1
-```text
+📊 レビュー結果:
+- 品質グレード: [S/A/B/C]
+- 必須ゲート達成率: XX%
+- TDD品質スコア: XX点
+- フィードバック: [収集済み/未収集]
+
+🎯 主要成果:
+- [実装された機能1]
+- [実装された機能2]
+- [品質改善点]
+
+🚀 次のステップを選択してください：
+
+1. **継続開発** 🚀
+   /tdd:plan N+1
+   次のイテレーションを計画
+
+2. **機能追加** ➕
+   /tdd "追加機能要望"
+   新しいストーリーを作成してから計画
+
+3. **品質向上** 🔧
+   改善点に基づくリファクタリング実施
+
+4. **プロジェクト完了** ✅
+   開発終了・成果物確定
+
+数字でお答えください: [1-4]
+```
