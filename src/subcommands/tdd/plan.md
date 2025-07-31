@@ -91,6 +91,6 @@ git commit -m "[BEHAVIOR] Create iteration N plan"
 - [主要機能1]: [概要説明]
 - [主要機能2]: [概要説明]
 
-🚀 TDD実行を開始してください: Kent Beck流のRed→Green→Refactorサイクルで実装します
+🚀 次のステップ: 計画に基づいてKent Beck流TDD実装を開始します
 /tdd:run
 ```
