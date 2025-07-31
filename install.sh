@@ -129,7 +129,6 @@ install_tdd_kit() {
     # メインコマンドのダウンロード
     local main_files=(
         "tdd.md"
-        "tdd-quick.md"
     )
     
     for file in "${main_files[@]}"; do
@@ -152,8 +151,6 @@ install_tdd_kit() {
     
     # サブコマンドのダウンロード
     local subcommands=(
-        "init.md"
-        "story.md"
         "plan.md"
         "run.md"
         "status.md"
@@ -213,7 +210,6 @@ uninstall_tdd_kit() {
                 rm -rf "$dir/shared"
                 rm -rf "$dir/tdd"
                 rm -f "$dir/tdd.md"
-                rm -f "$dir/tdd-quick.md"
                 rm -f "$dir/.cc-tdd-kit.json"
                 
                 # ディレクトリが空なら削除
@@ -300,14 +296,14 @@ main() {
             echo "1. プロジェクトディレクトリで Claude Code を開始:"
             echo -e "   ${GREEN}cd my-project && claude${NC}"
             echo
-            echo "2. クイックスタート:"
-            echo -e "   ${GREEN}/tdd-quick \"作りたいものを説明\"${NC}"
+            echo "2. 統合TDDワークフロー:"
+            echo -e "   ${GREEN}/tdd \"作りたいものを説明\"${NC}"
             echo
-            echo "3. 通常の使い方:"
-            echo -e "   ${GREEN}/tdd:init${NC}"
-            echo -e "   ${GREEN}/tdd:story \"要望\"${NC}"
-            echo -e "   ${GREEN}/tdd:plan 1${NC}"
-            echo -e "   ${GREEN}/tdd:run${NC}"
+            echo "3. 段階的実行:"
+            echo -e "   ${GREEN}/tdd \"要望\"${NC}     # ストーリー作成+環境構築"
+            echo -e "   ${GREEN}/tdd:plan 1${NC}      # イテレーション計画"
+            echo -e "   ${GREEN}/tdd:run${NC}         # TDD実行"
+            echo -e "   ${GREEN}/tdd:review 1${NC}    # レビュー"
             echo
             echo -e "${BLUE}詳細: /tdd${NC}"
             echo
