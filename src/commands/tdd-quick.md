@@ -7,11 +7,9 @@ argument-hint: "作りたいものを説明してください"
 
 # TDD クイックスタート
 
-要望: $ARGUMENTS
-
 ## 指示
 
-以下のカスタムスラッシュコマンドを順次実行
+以下のカスタムスラッシュコマンドを Task Tool で順次実行
 
 1. `/tdd:story $ARGUMENTS`
 2. `/tdd:init`
