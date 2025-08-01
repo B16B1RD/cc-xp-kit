@@ -1,12 +1,14 @@
 ---
-description: "Kent Beck純正TDDサイクル実行 - テストファースト厳守システム"
-argument-hint: "[機能名] (例: login, calculate, move-block)"
+description: "Kent Beck純正TDD - 自動判定・数値指定対応"
+argument-hint: "[空白=自動|数値=順位|x.y=Story|文字列=機能名]"
 allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 ---
 
 # Kent Beck純正TDD実行
 
-機能: $ARGUMENTS
+**選択されたタスク**: !bash ~/.claude/commands/shared/task-selector.sh "$ARGUMENTS"
+
+この出力から機能名部分（カッコ内の説明を除いた部分）を抽出し、以下のすべての処理で使用してください。
 
 ## 🎯 真のKent Beck TDD原則
 
@@ -95,12 +97,12 @@ go test ./... 2>&1
 
 **受け入れ条件チェック**:
 ```bash
-bash ~/.claude/commands/shared/acceptance-criteria.sh check red "$(echo "$ARGUMENTS")" "テスト作成完了"
+bash ~/.claude/commands/shared/acceptance-criteria.sh check red "[抽出した機能名]" "テスト作成完了"
 ```
 
 **30秒フィードバック**:
 ```bash
-bash ~/.claude/commands/shared/micro-feedback.sh step "1.1" "$(echo "$ARGUMENTS")"
+bash ~/.claude/commands/shared/micro-feedback.sh step "1.1" "[抽出した機能名]"
 ```
 
 ### 🟢 GREEN フェーズ: 最小実装
@@ -120,7 +122,7 @@ bash ~/.claude/commands/shared/micro-feedback.sh step "1.1" "$(echo "$ARGUMENTS"
 2. **実装ファイルの存在確認**してください：
    ```bash
    # 対象の関数やクラスが既に存在するか確認
-   grep -n "function $ARGUMENTS\|class $ARGUMENTS\|const $ARGUMENTS" src/**/*.* 2>/dev/null || echo "未実装"
+   grep -n "function [抽出した機能名]\|class [抽出した機能名]\|const [抽出した機能名]" src/**/*.* 2>/dev/null || echo "未実装"
    ```
 
 **自動戦略判定**:
@@ -141,7 +143,7 @@ bash ~/.claude/commands/shared/micro-feedback.sh step "1.1" "$(echo "$ARGUMENTS"
 **自動検出方法**:
 ```bash
 # 同じ関数名のテスト数を確認
-grep -c "$ARGUMENTS" src/**/*.test.* 2>/dev/null
+grep -c "[抽出した機能名]" src/**/*.test.* 2>/dev/null
 ```
 
 **行動**: ハードコーディングを破る一般化実装
@@ -424,12 +426,12 @@ npm test 2>&1
 
 **受け入れ条件チェック**:
 ```bash
-bash ~/.claude/commands/shared/acceptance-criteria.sh check green "$(echo "$ARGUMENTS")" "最小実装完了"
+bash ~/.claude/commands/shared/acceptance-criteria.sh check green "[抽出した機能名]" "最小実装完了"
 ```
 
 **30秒フィードバック**:
 ```bash
-bash ~/.claude/commands/shared/micro-feedback.sh step "1.2" "$(echo "$ARGUMENTS")"
+bash ~/.claude/commands/shared/micro-feedback.sh step "1.2" "[抽出した機能名]"
 ```
 
 #### 5. BEHAVIORコミット
@@ -438,7 +440,7 @@ bash ~/.claude/commands/shared/micro-feedback.sh step "1.2" "$(echo "$ARGUMENTS"
 
 ```bash
 git add .
-git commit -m "[BEHAVIOR] Add [機能名]: $(echo "$ARGUMENTS") with Fake It implementation"
+git commit -m "[BEHAVIOR] Add [機能名]: [抽出した機能名] with Fake It implementation"
 ```
 
 ### 🔵 REFACTOR フェーズ: 構造改善
