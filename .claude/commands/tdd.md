@@ -1,5 +1,5 @@
 ---
-description: "統合TDD開発 - init, story, planを1コマンドで完全実行"
+description: "TDD開発環境の完全構築と実装開始"
 argument-hint: "作りたいものを説明してください（例: テトリスゲーム、REST APIサーバー）"
 allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash", "TodoWrite"]
 ---
@@ -10,11 +10,11 @@ allowed-tools: ["Write", "Read", "LS", "WebSearch", "Bash", "TodoWrite"]
 
 ## 🎯 統合開発フロー
 
-この統合コマンドは以下の機能を順次実行します：
-1. **要望分析・技術選択** 
-2. **環境初期化** (従来の`/tdd:init`機能)
-3. **ユーザーストーリー作成** (従来の`/tdd:story`機能)  
-4. **イテレーション計画** (従来の`/tdd:plan`機能)
+このコマンドは以下を順次実行し、TDD開発を即座に開始できる状態にします：
+1. **要望分析・技術選択**
+2. **環境初期化**  
+3. **ユーザーストーリー作成**
+4. **イテレーション計画**
 5. **実装開始案内**
 
 ## 指示
@@ -362,7 +362,7 @@ So that [価値]
 
 ---
 
-## 📅 Phase 4: イテレーション計画 (plan統合)
+## 📅 Phase 4: イテレーション計画
 
 ### 4.1 Kent Beck "90分ルール" の適用
 

@@ -66,8 +66,8 @@ shellcheck install.sh
 
 ### 主要ディレクトリ構造
 
-- `src/commands/` - メインコマンド（`/tdd`, `/tdd-quick`）
-- `src/subcommands/tdd/` - TDD サブコマンド（`init`、`story`、`plan`、`run`、`status`、`review`）
+- `src/commands/` - メインコマンド（`/tdd`）
+- `src/subcommands/tdd/` - TDD サブコマンド（`run`、`status`、`review`、`feedback`、`fix`、`detect`）
 - `src/shared/` - 共通リソース（Kent Beck 原則、必須ゲート、プロジェクト検証など）
 - `tests/` - 自動テストスイート
 - `examples/` - 使用例（api-server, cli-tool, web-app）

@@ -431,7 +431,7 @@ if [ $TESTS_PASSED -gt 0 ]; then
     echo -e "    • YAML形式イテレーション追跡 (iteration-tracker.sh)"
     echo -e "  - TDD体験革新: \"Most Anxious Thing First\"原則の自動適用"
     echo -e "  - フィードバックループ: 30秒ステップ + 2分イテレーション"
-    echo -e "  - /tdd:init, /tdd:story, /tdd:plan → /tdd に統合"
+    echo -e "  - 統合ワークフロー: 環境構築からTDD実装まで完全自動化"
 fi
 
 if [ $TESTS_FAILED -eq 0 ]; then
