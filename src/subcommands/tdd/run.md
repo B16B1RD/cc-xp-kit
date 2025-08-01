@@ -124,6 +124,31 @@ bash ~/.claude/commands/shared/todo-manager.sh anxiety
 3. **期待内容**: 表示されるべき具体的な文字列、図形、色、数値
 4. **確認不能時**: ログ出力、エラーメッセージでの代替確認方法
 
+## 作業開始前の必須確認
+
+TDD作業開始前に**必ず以下を実行**してください：
+
+### 1. ユーザーストーリーの確認
+`.claude/agile-artifacts/stories/user-stories-v1.0.md` を読み込み、以下を確認：
+- 現在の作業がどのストーリーに該当するか
+- 該当ストーリーの受け入れ基準
+- 優先度と工数見積もり
+
+### 2. イテレーション計画の確認  
+`.claude/agile-artifacts/iterations/iteration-plan-v1.0.md` を読み込み、以下を確認：
+- 現在のPhaseと次のタスク
+- 完了すべきチェック項目
+- 予定時間と進捗状況
+
+### 3. チェック項目の段階的制御
+- **前のチェック項目が☐（未完了）の場合は作業を停止**
+- 現在のタスクのチェック項目を確認
+- 作業完了後は該当チェック項目を☑️に更新
+- **ファイルを必ず保存して進捗を記録**
+
+### 4. 作業対象の明確化
+上記確認により、実装する具体的な機能・タスクを明確にしてから開始
+
 ## 指示
 
 以下の**厳格なTDDサイクル**を実行してください：
@@ -177,6 +202,12 @@ go test ./... 2>&1
 **失敗しない場合**: テストの書き方を修正してください
 
 #### 🔍 REDフェーズ完了確認
+
+**チェック項目の更新（必須）**:
+1. `.claude/agile-artifacts/iterations/iteration-plan-v1.0.md` を読み込み
+2. 現在のタスクのREDフェーズ項目を☐から☑️に更新
+3. ファイルを保存して進捗を記録
+4. **次のGREENフェーズに進む前に更新完了を確認**
 
 **受け入れ条件チェック**:
 ```bash
@@ -521,6 +552,12 @@ npm test 2>&1
 
 #### 🔍 GREENフェーズ完了確認
 
+**チェック項目の更新（必須）**:
+1. `.claude/agile-artifacts/iterations/iteration-plan-v1.0.md` を読み込み
+2. 現在のタスクのGREENフェーズ項目を☐から☑️に更新
+3. ファイルを保存して進捗を記録
+4. **次のREFACTORフェーズに進む前に更新完了を確認**
+
 **受け入れ条件チェック**:
 ```bash
 bash ~/.claude/commands/shared/acceptance-criteria.sh check green "[抽出した機能名]" "最小実装完了"
@@ -581,6 +618,12 @@ npm test -- --watchAll=false --forceExit 2>&1
 
 #### 🔍 REFACTORフェーズ完了確認
 
+**チェック項目の更新（必須）**:
+1. `.claude/agile-artifacts/iterations/iteration-plan-v1.0.md` を読み込み
+2. 現在のタスクのREFACTORフェーズ項目を☐から☑️に更新
+3. ファイルを保存して進捗を記録
+4. **TDDサイクル完了として記録**
+
 **受け入れ条件チェック**:
 ```bash
 bash ~/.claude/commands/shared/acceptance-criteria.sh check refactor "$(echo "$ARGUMENTS")" "構造改善完了"
@@ -624,6 +667,11 @@ git commit -m "[STRUCTURE] $(echo "$ARGUMENTS"): Improve code structure and read
 
 ### 🎉 TDDサイクル完了
 
+**プロジェクト管理ファイルの最終更新（必須）**:
+1. `.claude/agile-artifacts/stories/user-stories-v1.0.md` で該当ストーリーの進捗を更新
+2. `.claude/agile-artifacts/iterations/iteration-plan-v1.0.md` でタスク完了をマーク
+3. 両ファイルを保存して確実に記録
+
 ```text
 ✅ Kent Beck TDDサイクル完了！
 
@@ -634,6 +682,10 @@ git commit -m "[STRUCTURE] $(echo "$ARGUMENTS"): Improve code structure and read
 🎯 実装機能: [機能名]
 🧪 適用戦略: [Fake It/Triangulation/Obvious Implementation]
 📝 コミット: BEHAVIORコミット + STRUCTUREコミット
+📊 プロジェクト進捗: ストーリー・イテレーション計画更新完了
+
+🔄 次のTDDサイクル:
+/tdd:run  # 自動判定で次の機能を開始
 ```
 
 #### 🔄 2分イテレーションフィードバック
@@ -686,6 +738,11 @@ bash ~/.claude/commands/shared/progress-dashboard.sh detailed
 6. **機能完了** - 現在の機能で満足
 
 **重要**: 高不安度項目（5/7以上）がある場合は、Kent Beck原則により必ずそれから着手してください。
+
+**次のTDDサイクル開始**:
+```
+/tdd:run  # 自動判定で最適な次の機能を開始
+```
 
 ## 🚨 TDD原則厳守チェック
 
