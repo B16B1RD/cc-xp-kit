@@ -847,7 +847,7 @@ bash ~/.claude/commands/shared/quick-feedback.sh "テトリミノ操作"
 - **価値検証**: 実際にユーザーとして5分間使用
 - **Phase 3.5再実行**: MVP検証ゲートによる最終確認
 - **最終更新**: user-storiesに完了状況と学習を記録
-- **継続実装準備**: 次の機能は `/tdd:run [機能名]` で続行
+- **継続実装準備**: 次の機能は `/tdd:run` で自動続行
 
 ### 4.3 Kent Beck三大戦略の適用計画
 
@@ -1119,10 +1119,10 @@ bash ~/.claude/commands/shared/quick-feedback.sh "テトリミノ操作"
 /tdd [次のStoryまたは機能要望]
 ```
 
-**継続実装（推奨）**:
+**継続実装（自動判別）**:
 
 ```bash
-/tdd:run [次の優先機能]
+/tdd:run
 ```
 
 ### コマンド使い分けガイド
@@ -1137,14 +1137,14 @@ bash ~/.claude/commands/shared/quick-feedback.sh "テトリミノ操作"
 - ✅ 既存のuser-storiesがある
 - ✅ 環境が構築済み
 - ✅ Storyの継続実装
-- ✅ 次の機能の実装
+- ✅ **引数なしで自動判別**
 
 **一般的なフロー**:
 ```
-1. /tdd [要望]           # 初回のみ
-2. /tdd:run [機能1]      # Story 1実装
-3. /tdd:run [機能2]      # Story 2実装
-4. /tdd:run [機能3]      # Story 3実装
+1. /tdd [要望]           # 初回のみ（統合開発）
+2. /tdd:run                # 継続実装（次の機能を自動判別）
+3. /tdd:run                # さらに継続（全て自動）
+4. /tdd:run                # 最後まで簡単
 ```
 
 **Kent Beck**: "Software development is a learning game"
