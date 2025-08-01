@@ -683,7 +683,22 @@ git commit -m "[STRUCTURE] $(echo "$ARGUMENTS"): Improve code structure and read
 🧪 適用戦略: [Fake It/Triangulation/Obvious Implementation]
 📝 コミット: BEHAVIORコミット + STRUCTUREコミット
 📊 プロジェクト進捗: ストーリー・イテレーション計画更新完了
+```
 
+**機能完了時の具体的なテスト案内**:
+
+以下を実行して、プロジェクトタイプに応じた**具体的なテスト手順**を確認してください：
+
+```bash
+bash ~/.claude/commands/shared/completion-message-generator.sh
+```
+
+**このコマンドにより**：
+- ✅ 実装した機能の**具体的なテスト方法**が表示される
+- ✅ プロジェクトタイプに応じた**期待される動作**を確認できる  
+- ✅ **簡単なフィードバック**で機能の品質を評価できる
+
+```text
 🔄 次のTDDサイクル:
 /tdd:run  # 自動判定で次の機能を開始
 ```
