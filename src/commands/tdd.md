@@ -410,7 +410,7 @@ fi
 
 **新規ディレクトリ作成**:
 ```bash
-mkdir -p docs/agile-artifacts/{stories,reviews,tdd-logs}
+mkdir -p docs/agile-artifacts/{stories,planning,reviews,tdd-logs}
 ```
 
 ### 2.4 .gitignore の設定
@@ -674,11 +674,11 @@ So that [価値ある体験]
 **生成プロセス**:
 ```bash
 # 軽量イテレーション計画の生成
-cp ~/.claude/commands/shared/iteration-plan-medium.md docs/agile-artifacts/stories/iteration-plan-v1.0.md
+cp ~/.claude/commands/shared/iteration-plan-medium.md docs/agile-artifacts/planning/iteration-plan-v1.0.md
 
 # プロジェクト固有情報の置換
-sed -i 's/\[プロジェクト名\]/'$PROJECT_NAME'/g' docs/agile-artifacts/stories/iteration-plan-v1.0.md
-sed -i 's/\[作成日\]/'$(date +%Y-%m-%d)'/g' docs/agile-artifacts/stories/iteration-plan-v1.0.md
+sed -i 's/\[プロジェクト名\]/'$PROJECT_NAME'/g' docs/agile-artifacts/planning/iteration-plan-v1.0.md
+sed -i 's/\[作成日\]/'$(date +%Y-%m-%d)'/g' docs/agile-artifacts/planning/iteration-plan-v1.0.md
 ```
 
 **実行指示**:
@@ -689,7 +689,7 @@ sed -i 's/\[作成日\]/'$(date +%Y-%m-%d)'/g' docs/agile-artifacts/stories/iter
 
 1. **軽量イテレーション計画の生成**:
    ```bash
-   cp ~/.claude/commands/shared/iteration-plan-medium.md docs/agile-artifacts/stories/iteration-plan-v1.0.md
+   cp ~/.claude/commands/shared/iteration-plan-medium.md docs/agile-artifacts/planning/iteration-plan-v1.0.md
    ```
 
 2. **プロジェクト情報の設定**:
@@ -704,8 +704,8 @@ sed -i 's/\[作成日\]/'$(date +%Y-%m-%d)'/g' docs/agile-artifacts/stories/iter
    - 重複情報は参照関係で管理
 
 **生成ファイル**:
-- user-stories-v1.0.md（メイン管理）
-- iteration-plan-v1.0.md（マイルストーン・リスク管理）
+- stories/user-stories-v1.0.md（メイン管理）
+- planning/iteration-plan-v1.0.md（マイルストーン・リスク管理）
 
 **次のPhaseへ**: Phase 3.6（MVP検証ゲート）に進んでください。
 ```
@@ -722,10 +722,10 @@ sed -i 's/\[作成日\]/'$(date +%Y-%m-%d)'/g' docs/agile-artifacts/stories/iter
 **生成プロセス**:
 ```bash
 # 詳細イテレーション計画の生成
-cp ~/.claude/commands/shared/iteration-plan-large.md docs/agile-artifacts/stories/iteration-plan-v1.0.md
+cp ~/.claude/commands/shared/iteration-plan-large.md docs/agile-artifacts/planning/iteration-plan-v1.0.md
 
 # チーム管理ディレクトリの作成
-mkdir -p docs/agile-artifacts/{team-coordination,risk-management,communication}
+mkdir -p docs/agile-artifacts/planning/{team-coordination,risk-management,communication}
 ```
 
 **実行指示**:
@@ -736,12 +736,12 @@ mkdir -p docs/agile-artifacts/{team-coordination,risk-management,communication}
 
 1. **詳細イテレーション計画の生成**:
    ```bash
-   cp ~/.claude/commands/shared/iteration-plan-large.md docs/agile-artifacts/stories/iteration-plan-v1.0.md
+   cp ~/.claude/commands/shared/iteration-plan-large.md docs/agile-artifacts/planning/iteration-plan-v1.0.md
    ```
 
 2. **追加管理ディレクトリの作成**:
    ```bash
-   mkdir -p docs/agile-artifacts/{team-coordination,risk-management,communication}
+   mkdir -p docs/agile-artifacts/planning/{team-coordination,risk-management,communication}
    ```
 
 3. **プロジェクト情報の詳細設定**:
@@ -756,11 +756,11 @@ mkdir -p docs/agile-artifacts/{team-coordination,risk-management,communication}
    - プロジェクトマネージャーとの調整
 
 **生成ファイル**:
-- user-stories-v1.0.md（詳細進捗管理）
-- iteration-plan-v1.0.md（包括的プロジェクト管理）
-- team-coordination/（チーム管理）
-- risk-management/（リスク管理）
-- communication/（コミュニケーション管理）
+- stories/user-stories-v1.0.md（詳細進捗管理）
+- planning/iteration-plan-v1.0.md（包括的プロジェクト管理）
+- planning/team-coordination/（チーム管理）
+- planning/risk-management/（リスク管理）
+- planning/communication/（コミュニケーション管理）
 
 **次のPhaseへ**: Phase 3.6（MVP検証ゲート）に進んでください。
 ```
