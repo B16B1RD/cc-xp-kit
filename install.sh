@@ -140,7 +140,6 @@ install_tdd_kit() {
     # メインコマンドのダウンロード
     local main_files=(
         "tdd.md"
-        "tdd-quick.md"
     )
     
     for file in "${main_files[@]}"; do
@@ -223,7 +222,6 @@ uninstall_tdd_kit() {
                 rm -rf "$dir/shared"
                 rm -rf "$dir/tdd"
                 rm -f "$dir/tdd.md"
-                rm -f "$dir/tdd-quick.md"
                 rm -f "$dir/.cc-tdd-kit.json"
                 
                 # ディレクトリが空なら削除

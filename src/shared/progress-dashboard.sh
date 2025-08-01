@@ -122,11 +122,11 @@ generate_recommendations() {
     
     case "$phase" in
         "setup")
-            echo -e "   ${RED}1. ストーリーファイル作成${NC} - /tdd:story で要望を整理"
+            echo -e "   ${RED}1. ストーリーファイル作成${NC} - /tdd で統合開発開始"
             echo -e "   ${BLUE}2. プロジェクト構造確認${NC} - 基本ディレクトリの準備"
             ;;
         "planning")
-            echo -e "   ${RED}1. イテレーション計画作成${NC} - /tdd:plan で90分計画"
+            echo -e "   ${RED}1. イテレーション計画作成${NC} - /tdd で統合開発開始"
             echo -e "   ${BLUE}2. 技術スタック確認${NC} - テスト環境の準備"
             ;;
         "initial")
@@ -237,8 +237,8 @@ show_compact_dashboard() {
     # 最重要アクション1つ
     echo -ne "次: "
     case "$phase" in
-        "setup") echo -e "${RED}/tdd:story${NC} でストーリー作成" ;;
-        "planning") echo -e "${RED}/tdd:plan${NC} で90分計画" ;;
+        "setup") echo -e "${RED}/tdd${NC} で統合開発開始" ;;
+        "planning") echo -e "${RED}/tdd${NC} で統合開発開始" ;;
         "initial"|"development") 
             if [[ "$high_anxiety_todos" -gt 0 ]]; then
                 echo -e "${RED}高不安度ToDo対処${NC}"
@@ -290,7 +290,7 @@ show_detailed_dashboard() {
         
     else
         echo -e "   ${RED}ストーリーファイル未作成${NC}"
-        echo -e "   推奨: /tdd:story でストーリー作成"
+        echo -e "   推奨: /tdd で統合開発開始"
     fi
     
     # イテレーション情報
@@ -306,7 +306,7 @@ show_detailed_dashboard() {
         fi
     else
         echo -e "   ${RED}イテレーション計画未作成${NC}"
-        echo -e "   推奨: /tdd:plan でイテレーション計画"
+        echo -e "   推奨: /tdd で統合開発開始"
     fi
     
     # ToDo分析詳細

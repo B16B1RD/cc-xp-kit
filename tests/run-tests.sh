@@ -116,7 +116,6 @@ required_files=(
     "../install.sh"
     "../.gitignore"
     "../src/commands/tdd.md"
-    "../src/commands/tdd-quick.md"
     "../src/subcommands/tdd/run.md"
     "../src/subcommands/tdd/status.md"
     "../src/subcommands/tdd/review.md"
@@ -204,15 +203,6 @@ else
     ((TESTS_FAILED++))
 fi
 
-# tdd-quick コマンド構文チェック
-echo -n "  tdd-quick コマンド構文チェック ... "
-if [ -f "$SCRIPT_DIR/../src/commands/tdd-quick.md" ]; then
-    echo -e "${GREEN}✓${NC}"
-    ((TESTS_PASSED++))
-else
-    echo -e "${RED}✗${NC}"
-    ((TESTS_FAILED++))
-fi
 
 # 削除対象ファイルの不存在確認
 echo -n "  削除対象ファイル除去確認 ... "

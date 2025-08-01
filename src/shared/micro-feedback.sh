@@ -388,7 +388,7 @@ EOF
         echo -e "   ${YELLOW}1. XP価値の向上${NC}: 最も低いスコアの改善"
         echo -e "   ${BLUE}2. リファクタリング${NC}: シンプルさ・コミュニケーション向上"
     else
-        echo -e "   ${GREEN}1. 次のイテレーション計画${NC}: /tdd:plan で次の90分計画"
+        echo -e "   ${GREEN}1. 次のイテレーション計画${NC}: /tdd で次の統合開発"
         echo -e "   ${BLUE}2. 学習の活用${NC}: $key_learning を次の実装に適用"
     fi
 }
