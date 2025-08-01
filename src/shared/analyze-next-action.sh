@@ -79,6 +79,38 @@ determine_implementation_stage() {
     fi
 }
 
+# フィーチャーレベルの推奨アクション
+recommend_feature_level_actions() {
+    local stage="$1"
+    local anxiety_level="$2"
+    local story_progress="$3"
+    
+    if [[ "$story_progress" -lt 30 ]]; then
+        echo -e "${YELLOW}フィーチャー初期段階:${NC}"
+        echo -e "- コア機能の基本実装に集中"
+        echo -e "- 統合ポイントの早期確認"
+        echo -e "- 2-4時間での最小動作版完成を目指す"
+    elif [[ "$story_progress" -lt 70 ]]; then
+        echo -e "${BLUE}フィーチャー中期段階:${NC}"
+        echo -e "- 関連機能の統合実装"
+        echo -e "- ユーザーフローの実現"
+        echo -e "- エラーケースの考慮開始"
+    else
+        echo -e "${GREEN}フィーチャー後期段階:${NC}"
+        echo -e "- ポリッシュと品質向上"
+        echo -e "- 実使用シナリオでの検証"
+        echo -e "- 次フィーチャーとの接続準備"
+    fi
+    
+    # 不安度に基づく追加推奨
+    if [[ "$anxiety_level" -ge 4 ]]; then
+        echo -e "\n${RED}⚠️ 高不安度フィーチャー検出:${NC}"
+        echo -e "- todo-manager.sh feature-anxiety で関連タスク確認"
+        echo -e "- 最も不安な機能から着手（Kent Beck原則）"
+        echo -e "- フィーチャー全体の設計見直しを検討"
+    fi
+}
+
 # 不安度の分析（Kent Beck "Most Anxious Thing First"原則）
 analyze_anxiety_level() {
     local impl_type="$1"
@@ -223,14 +255,20 @@ suggest_concrete_actions() {
     
     # ストーリー進捗に基づく追加提案
     if [[ "$story_progress" -lt 50 ]]; then
-        echo -e "\n${CYAN}📋 ストーリー進捗 ${story_progress}% - 継続フォーカス推奨${NC}"
-        echo -e "   - 現在のストーリーの受け入れ基準を優先"
-        echo -e "   - 新機能よりも既存機能の完成度向上"
+        echo -e "\n${CYAN}📋 フィーチャー進捗 ${story_progress}% - 継続フォーカス推奨${NC}"
+        echo -e "   - 現在のフィーチャーの統合完成を優先"
+        echo -e "   - 関連機能をまとめて実装（2-4時間単位）"
+        echo -e "   - 新フィーチャーよりも既存フィーチャーの完成度向上"
     elif [[ "$story_progress" -ge 80 ]]; then
-        echo -e "\n${CYAN}🎉 ストーリー進捗 ${story_progress}% - 完成間近！${NC}"
-        echo -e "   - 最終的な品質チェック実施"
-        echo -e "   - 次のストーリー準備を検討"
+        echo -e "\n${CYAN}🎉 フィーチャー進捗 ${story_progress}% - 完成間近！${NC}"
+        echo -e "   - End-to-End統合テスト実施"
+        echo -e "   - 実使用シナリオでの動作確認"
+        echo -e "   - 次のフィーチャー準備を検討"
     fi
+    
+    # フィーチャーレベルの推奨
+    echo -e "\n${PURPLE}🎯 フィーチャー単位の推奨事項:${NC}"
+    recommend_feature_level_actions "$stage" "$anxiety_level" "$story_progress"
 }
 
 # メイン分析関数

@@ -34,6 +34,7 @@ show_usage() {
     echo "  complete <id>                       - ToDo完了"
     echo "  remove <id>                         - ToDo削除"
     echo "  anxiety                             - 不安度分析表示"
+    echo "  feature-anxiety                     - フィーチャーレベル不安度分析"
     echo ""
     echo "優先度:"
     echo "  high    - システム安定性（エラー、クラッシュ、セキュリティ）"
@@ -69,10 +70,34 @@ auto_detect_priority() {
     echo "$priority"
 }
 
-# 不安度スコア計算
+# フィーチャー検出（同じ機能群のタスクを識別）
+detect_feature_group() {
+    local content="$1"
+    local feature=""
+    
+    # フィーチャーキーワードによるグループ化
+    if echo "$content" | grep -iE "(認証|auth|ログイン|login|ユーザー|user|セッション|session)" > /dev/null; then
+        feature="authentication-system"
+    elif echo "$content" | grep -iE "(データ|data|保存|save|storage|取得|retrieve|永続|persist)" > /dev/null; then
+        feature="data-management"
+    elif echo "$content" | grep -iE "(UI|画面|view|表示|display|コンポーネント|component)" > /dev/null; then
+        feature="user-interface"
+    elif echo "$content" | grep -iE "(API|通信|request|response|エンドポイント|endpoint)" > /dev/null; then
+        feature="api-integration"
+    elif echo "$content" | grep -iE "(テスト|test|検証|validation|品質|quality)" > /dev/null; then
+        feature="quality-assurance"
+    else
+        feature="general-feature"
+    fi
+    
+    echo "$feature"
+}
+
+# 不安度スコア計算（フィーチャーレベル考慮）
 calculate_anxiety_score() {
     local priority="$1"
     local content="$2"
+    local feature="${3:-}"
     
     local score=0
     
@@ -91,6 +116,14 @@ calculate_anxiety_score() {
     # 不確実性キーワードによる加算
     if echo "$content" | grep -iE "(不明|unknown|調査|investigate|確認|check|検討|consider)" > /dev/null; then
         score=$((score + 1))
+    fi
+    
+    # フィーチャーレベルの影響度加算
+    if [[ -n "$feature" ]] && [[ "$feature" != "general-feature" ]]; then
+        # 認証やデータ管理など重要フィーチャーは+1
+        if [[ "$feature" == "authentication-system" ]] || [[ "$feature" == "data-management" ]]; then
+            score=$((score + 1))
+        fi
     fi
     
     # 最大7に制限
@@ -114,8 +147,11 @@ add_todo() {
         priority=$(auto_detect_priority "$content")
     fi
     
-    # 不安度スコア計算
-    local anxiety_score=$(calculate_anxiety_score "$priority" "$content")
+    # フィーチャーグループ検出
+    local feature_group=$(detect_feature_group "$content")
+    
+    # 不安度スコア計算（フィーチャーレベル考慮）
+    local anxiety_score=$(calculate_anxiety_score "$priority" "$content" "$feature_group")
     
     # ID生成（タイムスタンプベース）
     local todo_id=$(date +%s)
@@ -168,6 +204,7 @@ EOF
             echo "" >> "$temp_file"
             echo "- [ ] **[ID:$todo_id]** $content" >> "$temp_file"
             echo "  - 不安度: $anxiety_score/7" >> "$temp_file"
+            echo "  - フィーチャー: $feature_group" >> "$temp_file"
             echo "  - 作成: $timestamp" >> "$temp_file"
             if [[ -n "$context" ]]; then
                 echo "  - コンテキスト: $context" >> "$temp_file"
@@ -182,6 +219,7 @@ EOF
         echo "" >> "$temp_file"
         echo "- [ ] **[ID:$todo_id]** $content" >> "$temp_file"
         echo "  - 不安度: $anxiety_score/7" >> "$temp_file"
+        echo "  - フィーチャー: $feature_group" >> "$temp_file"
         echo "  - 作成: $timestamp" >> "$temp_file"
         if [[ -n "$context" ]]; then
             echo "  - コンテキスト: $context" >> "$temp_file"
@@ -196,6 +234,7 @@ EOF
     echo -e "   内容: $content"
     echo -e "   優先度: $priority_icon $priority"
     echo -e "   不安度: ${RED}$anxiety_score/7${NC}"
+    echo -e "   フィーチャー: ${CYAN}$feature_group${NC}"
     
     if [[ "$anxiety_score" -ge 5 ]]; then
         echo -e "\n${RED}⚠️  高不安度項目です！Kent Beck原則により最優先で取り組むことを推奨${NC}"
@@ -382,6 +421,104 @@ analyze_anxiety() {
     fi
 }
 
+# フィーチャーレベル不安度分析
+analyze_feature_anxiety() {
+    ensure_todo_dir
+    
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo -e "${YELLOW}📝 ToDoリストが空です${NC}"
+        return
+    fi
+    
+    echo -e "${BOLD}${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BOLD}🎯 フィーチャーレベル不安度分析${NC}"
+    echo -e "${BOLD}${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    
+    # フィーチャーごとの不安度集計
+    declare -A feature_scores
+    declare -A feature_counts
+    declare -A feature_high_items
+    
+    # ToDoファイルからフィーチャー情報を抽出
+    local current_id=""
+    local current_score=""
+    local current_feature=""
+    local in_todo_item=false
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^-\ \[\ \]\ \*\*\[ID:[0-9]+\]\*\*.*$ ]]; then
+            # 新しいToDoアイテムの開始
+            in_todo_item=true
+            current_id=$(echo "$line" | sed -n 's/.*\[ID:\([0-9]*\)\].*/\1/p')
+            current_score=""
+            current_feature=""
+        elif [[ "$in_todo_item" == true ]]; then
+            if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*不安度:[[:space:]]*([0-9])/7$ ]]; then
+                current_score="${BASH_REMATCH[1]}"
+            elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]*フィーチャー:[[:space:]]*(.+)$ ]]; then
+                current_feature="${BASH_REMATCH[1]}"
+            elif [[ -z "$line" ]] || [[ "$line" =~ ^## ]]; then
+                # ToDoアイテムの終了
+                if [[ -n "$current_feature" ]] && [[ -n "$current_score" ]]; then
+                    feature_counts["$current_feature"]=$((${feature_counts["$current_feature"]:-0} + 1))
+                    feature_scores["$current_feature"]=$((${feature_scores["$current_feature"]:-0} + current_score))
+                    if [[ "$current_score" -ge 5 ]]; then
+                        feature_high_items["$current_feature"]=$((${feature_high_items["$current_feature"]:-0} + 1))
+                    fi
+                fi
+                in_todo_item=false
+                current_feature=""
+                current_score=""
+            fi
+        fi
+    done < "$TODO_FILE"
+    
+    # 最後のアイテムの処理
+    if [[ "$in_todo_item" == true ]] && [[ -n "$current_feature" ]] && [[ -n "$current_score" ]]; then
+        feature_counts["$current_feature"]=$((${feature_counts["$current_feature"]:-0} + 1))
+        feature_scores["$current_feature"]=$((${feature_scores["$current_feature"]:-0} + current_score))
+        if [[ "$current_score" -ge 5 ]]; then
+            feature_high_items["$current_feature"]=$((${feature_high_items["$current_feature"]:-0} + 1))
+        fi
+    fi
+    
+    # フィーチャーごとの平均不安度でソート
+    echo -e "\n${BOLD}📊 フィーチャー別不安度ランキング:${NC}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    
+    # ソートして表示
+    for feature in "${!feature_scores[@]}"; do
+        count="${feature_counts[$feature]}"
+        total_score="${feature_scores[$feature]}"
+        high_items="${feature_high_items[$feature]:-0}"
+        avg_score=$(awk "BEGIN {printf \"%.1f\", $total_score / $count}")
+        
+        echo "$avg_score|$feature|$count|$total_score|$high_items"
+    done | sort -nr | while IFS='|' read -r avg feature count total high; do
+        # 色分け（小数点を整数に変換して比較）
+        avg_int=$(echo "$avg" | awk '{print int($1 + 0.5)}')  # 四捨五入
+        if [[ "$avg_int" -ge 5 ]]; then
+            color="$RED"
+        elif [[ "$avg_int" -ge 3 ]]; then
+            color="$YELLOW"
+        else
+            color="$GREEN"
+        fi
+        
+        echo -e "${color}${feature}${NC}"
+        echo -e "  平均不安度: ${color}${avg}/7${NC} (タスク数: ${count})"
+        if [[ "$high" -gt 0 ]]; then
+            echo -e "  ${RED}⚠️  高不安度タスク: ${high}個${NC}"
+        fi
+        echo ""
+    done
+    
+    echo -e "${BOLD}💡 推奨事項:${NC}"
+    echo -e "- 平均不安度5以上のフィーチャーから着手"
+    echo -e "- 同一フィーチャー内のタスクはまとめて実装（2-4時間）"
+    echo -e "- 高不安度タスクが多いフィーチャーを優先"
+}
+
 # メイン関数
 main() {
     local command="${1:-}"
@@ -408,6 +545,9 @@ main() {
             ;;
         "anxiety")
             analyze_anxiety
+            ;;
+        "feature-anxiety")
+            analyze_feature_anxiety
             ;;
         *)
             show_usage

@@ -41,34 +41,45 @@ show_usage() {
 # 🎯 メイン自動判定関数 - 選択理由含む出力
 # Kent Beck "Most Anxious Thing First" 原則に基づく優先度判定
 auto_determine_next_task() {
+    local all_args="$*"
+    local granularity="feature"  # デフォルト
+    
+    # 粒度判定
+    if echo "$all_args" | grep -q "\--micro"; then
+        granularity="micro"
+    elif echo "$all_args" | grep -q "\--epic"; then
+        granularity="epic"
+    fi
+    
     # 1. 最優先: 不安度5/7以上の項目 (Most Anxious Thing First)
-    local high_anxiety_task=$(get_most_anxious_task)
+    local high_anxiety_task=$(get_most_anxious_task "$granularity")
     if [ -n "$high_anxiety_task" ]; then
         echo "$high_anxiety_task (Kent Beck \"Most Anxious Thing First\" 原則適用)"
         return 0
     fi
     
     # 2. 継続中タスク検出 (フロー維持)
-    local continuing_task=$(detect_continuing_task)
+    local continuing_task=$(detect_continuing_task "$granularity")
     if [ -n "$continuing_task" ]; then
         echo "$continuing_task (前回コミットからの継続)"
         return 0
     fi
     
     # 3. Must Have ストーリーの次項目 (価値優先)
-    local next_story=$(get_next_must_have_story)
+    local next_story=$(get_next_must_have_story "$granularity")
     if [ -n "$next_story" ]; then
         echo "$next_story (Must Have ストーリー優先)"
         return 0
     fi
     
-    # 4. デフォルト新機能
-    local default_task="new-feature-$(date +%H%M%S)"
-    echo "$default_task (新機能開始)"
+    # 4. デフォルトタスク（粒度に応じた単位）
+    local default_task=$(generate_default_task "$granularity")
+    echo "$default_task (新タスク開始)"
 }
 
-# 🚨 最も不安度の高いタスクを取得
+# 🚨 最も不安度の高いタスクを取得（粒度対応版）
 get_most_anxious_task() {
+    local granularity="${1:-feature}"
     local todo_manager_path=""
     
     # todo-manager.sh のパスを検索
@@ -78,17 +89,105 @@ get_most_anxious_task() {
         return 1
     fi
     
-    # 高不安度項目（5/7以上）を取得
-    # todo-manager.sh list high の出力から実際のタスク名を抽出
-    bash "$todo_manager_path" list high 2>/dev/null | \
+    # 高不安度項目（5/7以上）を取得（完了済みを除外）
+    local raw_task=$(bash "$todo_manager_path" list high 2>/dev/null | \
     grep "^- \[ \]" | head -1 | \
     sed 's/^- \[ \] \*\*\[ID:[^]]*\]\*\* *//' | \
-    head -c 50 || echo ""
+    head -c 50)
+    
+    # 完了済み項目が混入していないかチェック
+    if [[ "$raw_task" == *"[DONE]"* ]]; then
+        raw_task=""
+    fi
+    
+    if [ -n "$raw_task" ]; then
+        # 粒度に応じてタスクを拡張
+        expand_to_granularity "$raw_task" "$granularity"
+    else
+        echo ""
+    fi
 }
 
-# 🔄 継続中タスクの検出
-# 最新のBEHAVIORコミットから機能名を抽出
+# 🎛️ 粒度に応じたタスク拡張
+expand_to_granularity() {
+    local task="$1"
+    local granularity="$2"
+    
+    case "$granularity" in
+        "micro")
+            # マイクロレベル: タスクをそのまま返す（単一関数レベル）
+            echo "$task"
+            ;;
+        "epic")
+            # エピックレベル: プロダクト全体に拡張
+            expand_to_epic "$task"
+            ;;
+        *)
+            # フィーチャーレベル（デフォルト）: 統合機能群に拡張
+            expand_to_feature "$task"
+            ;;
+    esac
+}
+
+# 🏗️ 単一タスクをフィーチャー単位に拡張
+expand_to_feature() {
+    local task="$1"
+    
+    # タスクの性質に応じてフィーチャー単位に拡張
+    case "$task" in
+        *"エラー"*|*"バグ"*|*"修正"*)
+            echo "${task}を含む品質保証システム (error-handling, logging, testing)"
+            ;;
+        *"認証"*|*"ログイン"*|*"ユーザー"*)
+            echo "${task}を含むユーザー管理システム (authentication, authorization, profile)"
+            ;;
+        *"データ"*|*"保存"*|*"取得"*)
+            echo "${task}を含むデータ基盤システム (storage, retrieval, validation)"
+            ;;
+        *"UI"*|*"画面"*|*"表示"*)
+            echo "${task}を含むユーザーインターフェース群 (components, layout, interaction)"
+            ;;
+        *"API"*|*"通信"*|*"リクエスト"*)
+            echo "${task}を含む通信システム (api-integration, data-sync, error-recovery)"
+            ;;
+        *)
+            # デフォルト: タスク名 + 関連機能群
+            echo "${task}を含む機能群 (core-implementation, integration, testing)"
+            ;;
+    esac
+}
+
+# 🏛️ 単一タスクをエピック単位に拡張
+expand_to_epic() {
+    local task="$1"
+    
+    # タスクの性質に応じてエピック単位（プロダクト全体）に拡張
+    case "$task" in
+        *"エラー"*|*"バグ"*|*"修正"*)
+            echo "${task}を含むプロダクト品質向上プロジェクト (monitoring, testing, reliability, performance)"
+            ;;
+        *"認証"*|*"ログイン"*|*"ユーザー"*)
+            echo "${task}を含むユーザー体験プラットフォーム (auth, profile, social, personalization)"
+            ;;
+        *"データ"*|*"保存"*|*"取得"*)
+            echo "${task}を含むデータドリブンプラットフォーム (storage, analytics, insights, automation)"
+            ;;
+        *"UI"*|*"画面"*|*"表示"*)
+            echo "${task}を含むユーザーエクスペリエンス革新 (interface, interaction, accessibility, mobile)"
+            ;;
+        *"API"*|*"通信"*|*"リクエスト"*)
+            echo "${task}を含む接続プラットフォーム (integration, sync, real-time, scalability)"
+            ;;
+        *)
+            # デフォルト: プロダクト全体
+            echo "${task}を含むプロダクト全体構築 (core-platform, integrations, user-experience, operations)"
+            ;;
+    esac
+}
+
+# 🔄 継続中タスクの検出（粒度対応版）
 detect_continuing_task() {
+    local granularity="${1:-feature}"
     if ! git rev-parse --git-dir >/dev/null 2>&1; then
         return 1
     fi
@@ -98,15 +197,31 @@ detect_continuing_task() {
     
     if [ -n "$behavior_commit" ]; then
         # パターン: [BEHAVIOR] Add feature-name: description
-        echo "$behavior_commit" | \
+        local raw_task=$(echo "$behavior_commit" | \
         sed -n 's/.*\[BEHAVIOR\][^:]*Add \([^:]*\):.*/\1/p' | \
         sed 's/^ *//;s/ *$//' | \
-        head -c 50 || echo ""
+        head -c 50)
+        
+        if [ -n "$raw_task" ]; then
+            # 粒度に応じて拡張（継続の場合は軽量化）
+            case "$granularity" in
+                "micro")
+                    echo "${raw_task}継続 (refinement, edge-cases)"
+                    ;;
+                "epic")
+                    echo "${raw_task}関連プロダクト継続 (platform-extension, integration, scaling)"
+                    ;;
+                *)
+                    echo "${raw_task}関連フィーチャー継続 (extension, refinement, integration)"
+                    ;;
+            esac
+        fi
     fi
 }
 
 # 📋 Must Have ストーリーの次項目を取得
 get_next_must_have_story() {
+    local granularity="${1:-feature}"
     local story_file=".claude/agile-artifacts/stories/user-stories.md"
     
     if [ ! -f "$story_file" ]; then
@@ -121,6 +236,129 @@ get_next_must_have_story() {
              print; 
              exit 
          }' "$story_file" | head -1 | head -c 50 || echo ""
+}
+
+# 🏗️ デフォルトタスク生成（粒度対応）
+generate_default_task() {
+    local granularity="${1:-feature}"
+    local project_type=$(detect_project_type)
+    local time_suffix=$(date +%H%M)
+    
+    case "$granularity" in
+        "micro")
+            generate_default_micro "$project_type" "$time_suffix"
+            ;;
+        "epic")
+            generate_default_epic "$project_type" "$time_suffix"
+            ;;
+        *)
+            generate_default_feature "$project_type" "$time_suffix"
+            ;;
+    esac
+}
+
+# 🔬 マイクロレベルデフォルト生成
+generate_default_micro() {
+    local project_type="$1"
+    local time_suffix="$2"
+    
+    case "$project_type" in
+        "web"|"game"|"api"|"cli"|"mobile")
+            echo "基本関数実装 (single-function) [$time_suffix]"
+            ;;
+        *)
+            echo "単一機能実装 (core-function) [$time_suffix]"
+            ;;
+    esac
+}
+
+# 🏛️ エピックレベルデフォルト生成
+generate_default_epic() {
+    local project_type="$1"
+    local time_suffix="$2"
+    
+    case "$project_type" in
+        "web")
+            echo "Webプラットフォーム全体構築 (frontend, backend, deployment, monitoring) [$time_suffix]"
+            ;;
+        "game")
+            echo "ゲームプロダクト全体開発 (game-engine, content, monetization, community) [$time_suffix]"
+            ;;
+        "api")
+            echo "APIプラットフォーム全体構築 (services, gateway, auth, analytics) [$time_suffix]"
+            ;;
+        "cli")
+            echo "CLI製品全体開発 (core-tools, ecosystem, documentation, distribution) [$time_suffix]"
+            ;;
+        "mobile")
+            echo "モバイルアプリ全体開発 (app, backend, store-release, analytics) [$time_suffix]"
+            ;;
+        *)
+            echo "プロダクト全体構築 (platform, integrations, operations, growth) [$time_suffix]"
+            ;;
+    esac
+}
+
+# 🏗️ デフォルトフィーチャー生成（実用的な単位）
+generate_default_feature() {
+    local project_type="${1:-$(detect_project_type)}"
+    local time_suffix="${2:-$(date +%H%M)}"
+    # プロジェクトの性質を推測してフィーチャー単位を提案
+    
+    case "$project_type" in
+        "web")
+            echo "ユーザー認証システム (login, signup, session-management) [$time_suffix]"
+            ;;
+        "game")
+            echo "ゲーム基盤システム (game-board, piece-movement, scoring) [$time_suffix]"
+            ;;
+        "api")
+            echo "RESTful API基盤 (routing, validation, error-handling) [$time_suffix]"
+            ;;
+        "cli")
+            echo "CLI基本機能 (argument-parsing, help-system, output-formatting) [$time_suffix]"
+            ;;
+        "mobile")
+            echo "画面遷移システム (navigation, state-management, ui-components) [$time_suffix]"
+            ;;
+        *)
+            echo "コア機能群 (core-logic, data-handling, user-interface) [$time_suffix]"
+            ;;
+    esac
+}
+
+# プロジェクトタイプ推測
+detect_project_type() {
+    # package.json や設定ファイルからプロジェクトタイプを推測
+    if [ -f "package.json" ]; then
+        if grep -q "react\|vue\|angular" package.json 2>/dev/null; then
+            echo "web"
+        elif grep -q "express\|koa\|fastify" package.json 2>/dev/null; then
+            echo "api"
+        elif grep -q "react-native\|expo" package.json 2>/dev/null; then
+            echo "mobile" 
+        elif grep -q "phaser\|three.js\|pixi" package.json 2>/dev/null; then
+            echo "game"
+        else
+            echo "web"
+        fi
+    elif [ -f "Cargo.toml" ]; then
+        if grep -q "clap\|structopt" Cargo.toml 2>/dev/null; then
+            echo "cli"
+        else
+            echo "api"
+        fi
+    elif [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+        if grep -q "django\|flask\|fastapi" requirements.txt pyproject.toml 2>/dev/null; then
+            echo "api"
+        elif grep -q "pygame\|arcade" requirements.txt pyproject.toml 2>/dev/null; then
+            echo "game"
+        else
+            echo "api"
+        fi
+    else
+        echo "generic"
+    fi
 }
 
 # 🔢 不安度ランキング指定によるタスク取得
@@ -180,6 +418,7 @@ get_task_by_story_number() {
 main() {
     local name_only=false
     local input=""
+    local all_args="$*"
     
     # --name-only オプションの処理
     if [ "${1:-}" = "--name-only" ]; then
@@ -199,9 +438,9 @@ main() {
     
     # タスク選択の実行
     local result=""
-    if [ -z "$input" ]; then
-        # 引数が空の場合は自動判定
-        result=$(auto_determine_next_task)
+    if [ -z "$input" ] || [[ "$input" =~ ^--.*$ ]]; then
+        # 引数が空またはオプションのみの場合は自動判定
+        result=$(auto_determine_next_task "$all_args")
     elif [[ "$input" =~ ^[0-9]+$ ]]; then
         # 純粋な数値 → 不安度ランキング指定
         result=$(get_task_by_ranking "$input")

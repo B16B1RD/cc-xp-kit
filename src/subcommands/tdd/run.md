@@ -1,14 +1,56 @@
 ---
-description: "Kent Beck純正TDD - 自動判定・数値指定対応"
-argument-hint: "[空白=自動|数値=順位|x.y=Story|文字列=機能名]"
+description: "Kent Beck純正TDD - 自動判定・数値指定・粒度選択対応"
+argument-hint: "[空白=自動|数値=順位|x.y=Story|文字列=機能名] [--micro|--feature|--epic]"
 allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 ---
 
 # Kent Beck純正TDD実行
 
+## 🎛️ 粒度選択機能（v0.2.1新機能）
+
 **選択されたタスク**: !bash ~/.claude/commands/shared/task-selector.sh "$ARGUMENTS"
 
+**自動粒度判定**:
+
+- **引数に`--micro`が含まれる場合**: 従来の細かい粒度（単一関数レベル・10-30分）で実行
+- **引数に`--epic`が含まれる場合**: プロダクト全体レベル（8-16時間）で実行  
+- **デフォルト**: フィーチャー単位（2-4時間）で実行
+
+**粒度別の実装アプローチ**:
+
+### 🔬 Microレベル (--micro)
+
+- **対象**: 単一関数・メソッド
+- **時間**: 10-30分
+- **TDDサイクル**: 標準的なRed-Green-Refactor
+- **適用場面**: 上級者、複雑なアルゴリズム、学習目的
+
+### 🎯 Featureレベル (デフォルト)  
+
+- **対象**: 統合機能群（認証システム、データ管理など）
+- **時間**: 2-4時間
+- **TDDサイクル**: Phase単位のRed-Green-Refactor
+- **適用場面**: 一般的な開発、実用的な価値提供
+
+### 🏛️ Epicレベル (--epic)
+
+- **対象**: プロダクト全体・主要フィーチャー群
+- **時間**: 8-16時間（1-2日）
+- **TDDサイクル**: Feature群の統合・アーキテクチャレベル
+- **適用場面**: MVP開発、大規模リファクタリング
+
 この出力から機能名部分（カッコ内の説明を除いた部分）を抽出し、以下のすべての処理で使用してください。
+
+**粒度判定結果**:
+
+!bash -c '
+if echo "$ARGUMENTS" | grep -q "\-\-micro"; then
+  echo "🔬 Microレベル実行"
+elif echo "$ARGUMENTS" | grep -q "\-\-epic"; then
+  echo "🏛️ Epicレベル実行"
+else
+  echo "🎯 Featureレベル実行"
+fi'
 
 ## 🎯 真のKent Beck TDD原則
 

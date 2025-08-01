@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Kent Beck流マイクロフィードバックループ
-# 30秒ステップフィードバック + 2分イテレーションフィードバック
+# Kent Beck流フィードバックループ
+# 15分Phaseフィードバック + 2時間フィーチャーフィードバック
 
 set -euo pipefail
 
@@ -28,13 +28,13 @@ show_usage() {
     echo "使用方法: $0 <type> [parameters]"
     echo ""
     echo "フィードバックタイプ:"
-    echo "  step <step_id> <feature>     - 30秒ステップフィードバック"
-    echo "  iteration <iteration_id>     - 2分イテレーションフィードバック"
+    echo "  phase <phase_id> <feature>   - 15分Phaseフィードバック"
+    echo "  feature <feature_id>         - 2時間フィーチャーフィードバック"
     echo "  anxiety                      - 不安度分析のみ"
     echo ""
     echo "例:"
-    echo "  $0 step \"1.1\" \"ゲームボード表示\""
-    echo "  $0 iteration \"1\""
+    echo "  $0 phase \"1\" \"ユーザー認証機能\""
+    echo "  $0 feature \"authentication-system\""
 }
 
 # 不安度測定（Kent Beck "anxiety" concept）
@@ -111,15 +111,15 @@ measure_anxiety() {
     echo "$anxiety_level|$anxiety_details"
 }
 
-# 30秒ステップフィードバック
-step_feedback() {
-    local step_id="$1"
+# 15分Phaseフィードバック
+phase_feedback() {
+    local phase_id="$1"
     local feature="$2"
     
     ensure_feedback_dir
     
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BOLD}⚡ 30秒ステップフィードバック - Step $step_id${NC}"
+    echo -e "${BOLD}⚡ 15分Phaseフィードバック - Phase $phase_id${NC}"
     echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     
     local start_time=$(date +%s)
@@ -222,9 +222,9 @@ EOF
     fi
 }
 
-# 2分イテレーションフィードバック
-iteration_feedback() {
-    local iteration_id="$1"
+# 2時間フィーチャーフィードバック
+feature_feedback() {
+    local feature_id="$1"
     
     ensure_feedback_dir
     
@@ -421,21 +421,21 @@ main() {
     local feedback_type="${1:-}"
     
     case "$feedback_type" in
-        "step")
+        "phase")
             if [[ $# -lt 3 ]]; then
-                echo -e "${RED}❌ エラー: ステップIDと機能名を指定してください${NC}"
+                echo -e "${RED}❌ エラー: PhaseIDと機能名を指定してください${NC}"
                 show_usage
                 exit 1
             fi
-            step_feedback "$2" "$3"
+            phase_feedback "$2" "$3"
             ;;
-        "iteration")
+        "feature")
             if [[ $# -lt 2 ]]; then
-                echo -e "${RED}❌ エラー: イテレーションIDを指定してください${NC}"
+                echo -e "${RED}❌ エラー: フィーチャーIDを指定してください${NC}"
                 show_usage
                 exit 1
             fi
-            iteration_feedback "$2"
+            feature_feedback "$2"
             ;;
         "anxiety")
             anxiety_analysis
