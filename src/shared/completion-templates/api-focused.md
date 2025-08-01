@@ -23,6 +23,11 @@
 #{API_TEST_COMMANDS}
 ```
 
+**サーバー停止：**
+```bash
+#{STOP_COMMAND}
+```
+
 **ブラウザでも確認可能：**
 #{TEST_URLS}
 

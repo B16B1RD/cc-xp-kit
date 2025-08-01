@@ -20,6 +20,11 @@
 **ブラウザで確認：**
 #{TEST_URL}
 
+**開発サーバー停止：**
+```bash
+#{STOP_COMMAND}
+```
+
 **期待される動作：**
 #{EXPECTED_BEHAVIORS}
 
