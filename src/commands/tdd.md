@@ -1104,138 +1104,330 @@ bash ~/.claude/commands/shared/quick-feedback.sh "テトリミノ操作"
 
 ---
 
-## 🛠️ Phase 4: 実装開始 - PDCA「Do」
+## 🛠️ Phase 4: TDD統合実装 - PDCA「Do」
 
-### 4.1 user-storiesベース実装（Single Source of Truth）
+### **⚠️ 重要警告**: このPhaseでは**一括実装は絶対禁止**です
 
-**user-storiesファイルのみを使用**した統合実装管理：
+Kent Beck TDD原則を厳格に適用します：
+1. **失敗するテストなしにプロダクションコードを書いてはならない**
+2. **小さなステップで確実に進む**  
+3. **Fake It戦略を60%以上で使用**
 
-1. **Phase完了時にuser-storiesを即座更新**（進捗とフィードバックを一体管理）
-2. **複数のRed-Green-Refactorサイクル**で段階的に構築
-3. **各Phase完了時の必須フィードバック収集**（Phase 3.7実行）
-4. **統合テストと実使用確認**まで含めて完了
-5. **計画修正をuser-storiesに直接反映**して現実に追従
+### 4.1 受け入れ基準のテスト化（強制実行）
 
-### 学習ループ統合の実装プロセス
+**user-storiesの受け入れ基準を実行可能テストに変換**してください：
 
-**各Phase完了時の必須作業**:
+#### Step 1: 最初の受け入れ基準を特定
 
-```markdown
-## Phase完了チェックリスト（必須）
+user-storiesファイルから**最初の受け入れ基準**を取り出し、テストケースに変換：
 
-### 技術実装の完了
-- [ ] 該当機能が動作する
-- [ ] テストが通る
-- [ ] コードレビューが完了
-
-### フィードバック収集の完了（Phase 3.7）
-- [ ] 実装フィードバックを記録
-- [ ] ユーザビリティフィードバックを記録
-- [ ] 価値フィードバックを記録
-- [ ] 工数フィードバックを記録
-
-### ストーリー更新の完了
-- [ ] user-storiesの進捗を現実的に更新
-- [ ] 発見した課題を追記
-- [ ] 受け入れ基準を実態に合わせて調整
-- [ ] 次の優先度を見直し
-
-### 計画修正の勇気
-- [ ] 当初計画の問題点を正直に評価
-- [ ] 必要に応じて残りの実装計画を修正
-- [ ] 工数見積もりを現実的に再調整
+```javascript
+// 例: GIVEN ゲーム開始 WHEN 5分間プレイ THEN 上級者・初心者ともに満足する体験が得られる
+// ↓ テスト化
+describe('Game Basic Experience', () => {
+  it('should display game board when game starts', () => {
+    // 最初のテスト: ゲームボードが表示される
+    const game = new TetrisGame(canvas);
+    expect(game.board).toBeDefined();
+    expect(game.board.width).toBe(10);
+    expect(game.board.height).toBe(20);
+  });
+});
 ```
 
-### 4.2 TDD実装フロー（user-stories統合管理）
+#### Step 2: テスト実行（Red）
 
-**MVPフィーチャーファースト原則**でStory 1を実装：
-
-**実装フロー (2-3時間)**: Story 1のMVPフィーチャー実装
-
-**各機能実装時の統合作業**:
-```markdown
-## 実装完了チェックリスト（各機能ごと）
-
-### TDD実装の完了
-- [ ] Red: 失敗するテスト作成
-- [ ] Green: 最小実装（Fake It/Triangulation/Obvious）
-- [ ] Refactor: コード改善
-- [ ] Commit: [BEHAVIOR] 機能名
-
-### 即座統合作業（5分以内）
-- [ ] user-storiesのチェックボックスを✅に更新
-- [ ] **自動化スクリプト実行**: `bash ~/.claude/commands/shared/quick-feedback.sh "機能名"`
-- [ ] 発見事項をuser-storiesの該当箇所に※追記
-- [ ] 次の優先度確認・調整
+```bash
+# テストを実行して失敗することを確認
+bun test
+# -> FAIL: TetrisGame is not defined
 ```
 
-**統合テスト完了時**:
-- **価値検証**: 実際にユーザーとして5分間使用
-- **Phase 3.6再実行**: MVP検証ゲートによる最終確認
-- **最終更新**: user-storiesに完了状況と学習を記録
-- **継続実装準備**: 次の機能は `/tdd:run` で自動続行
+#### Step 3: Fake It実装（Green）
 
-### 4.3 Kent Beck三大戦略の適用計画
+**Kent Beck Fake It戦略**：最小限のハードコーディング実装
 
-各Task実装時の戦略を事前に計画：
+```javascript
+// 最小限のハードコード実装
+class TetrisGame {
+  constructor(canvas) {
+    this.board = {
+      width: 10,
+      height: 20
+    };
+  }
+}
+```
 
-**Fake It戦略** (60%以上で使用):
-- 実装方法が不明確
-- 複雑なビジネスロジック
-- まずはハードコーディングで動かす
+#### Step 4: テスト通過確認（Green）
 
-**Triangulation戦略**:
-- 2つ目のテストで一般化
-- パターンが見えてきた時
+```bash
+bun test
+# -> PASS: 1 test passed
+```
 
-**Obvious Implementation戦略**:
-- 数学的に自明な処理のみ
-- 1行で完結する簡単な処理
+#### Step 5: 次のテスト追加（Red）
 
-### 4.4 技術的制約・リスクの洗い出し
+```javascript
+it('should draw game board on canvas', () => {
+  const canvas = document.createElement('canvas');
+  const game = new TetrisGame(canvas);
+  game.draw();
+  
+  // Canvas contextが使用されたかチェック
+  expect(canvas.getContext('2d')).toBeDefined();
+});
+```
 
-**技術リスク**:
-- 未経験の技術スタック
-- パフォーマンス要件
-- 外部API依存
+### 4.2 Kent Beck三大戦略の強制適用
 
-**対応策**:
-- スパイクソリューション（調査用実装）
-- 代替手段の準備
-- 段階的複雑化
+#### Fake It戦略（60%以上で使用・強制）
 
-### 4.5 user-storiesでの進捗管理統合
+**実装方法が不明確な場合**：
 
-**Single Source of Truth**: user-storiesファイルのみで全て管理
+```javascript
+// ❌ 間違い: いきなり正しい実装
+function calculateScore(lines) {
+  return lines * 100 * level; // 複雑すぎる
+}
 
-**進捗追跡方法**:
+// ✅ 正しい: Fake It戦略
+function calculateScore(lines) {
+  return 100; // 完全にハードコード
+}
+```
+
+#### Triangulation戦略（2つ目のテストで一般化）
+
+```javascript
+// 1つ目のテスト
+it('should return 100 for single line clear', () => {
+  expect(calculateScore(1)).toBe(100);
+});
+
+// 2つ目のテスト追加でハードコードを破る
+it('should return 200 for double line clear', () => {
+  expect(calculateScore(2)).toBe(200);
+});
+
+// Triangulationで一般化
+function calculateScore(lines) {
+  return lines * 100; // ようやく正しい実装
+}
+```
+
+#### Obvious Implementation戦略（自明な場合のみ）
+
+```javascript
+// 数学的に自明な場合のみ
+function square(x) {
+  return x * x; // 1行で完結、自明
+}
+```
+
+### 4.3 Red-Green-Refactorサイクルの段階的実行
+
+#### 各受け入れ基準に対して以下を**必ず実行**：
+
+**Cycle 1: ゲームボード描画**
+```
+Red   → テスト作成: ゲームボードが表示される
+Green → Fake It: 固定サイズのボード表示のみ
+Refactor → 変数名の改善、コメント追加
+Commit → [BEHAVIOR] Add basic game board display
+```
+
+**Cycle 2: テトリミノ生成**
+```
+Red   → テスト作成: テトリミノが1個生成される
+Green → Fake It: Iピース固定で生成
+Refactor → 定数の抽出、メソッド分離
+Commit → [BEHAVIOR] Add I-piece generation
+```
+
+**Cycle 3: テトリミノ操作**
+```
+Red   → テスト作成: テトリミノが左に移動する
+Green → Fake It: position -= 1 のみ
+Refactor → 境界チェック追加
+Commit → [BEHAVIOR] Add left movement
+```
+
+### 4.4 小さなステップの強制実行
+
+#### ❌ 禁止される大きなステップ：
+
+```javascript
+// 一度に全機能を実装（禁止）
+class TetrisGame {
+  constructor() {
+    this.initBoard();
+    this.initPieces();
+    this.initControls();
+    this.initScoring();
+    this.initRenderer();
+    // ... 100行以上の実装
+  }
+}
+```
+
+#### ✅ 正しい小さなステップ：
+
+```javascript
+// Step 1: ボードのみ
+class TetrisGame {
+  constructor() {
+    this.board = Array(20).fill(null).map(() => Array(10).fill(0));
+  }
+}
+
+// Step 2: 1個のピース追加
+class TetrisGame {
+  constructor() {
+    this.board = Array(20).fill(null).map(() => Array(10).fill(0));
+    this.currentPiece = [[1,1,1,1]]; // Iピース固定
+  }
+}
+
+// Step 3: 移動機能追加
+class TetrisGame {
+  // ... 前のコード
+  moveLeft() {
+    this.pieceX -= 1; // 最小限の実装
+  }
+}
+```
+
+### 4.5 実装順序の具体的指定
+
+**Story 1の受け入れ基準を以下の順序で実装**：
+
+#### Phase 4.1: 基本表示（30分目標）
+1. **Red**: ゲームボード表示テスト
+2. **Green**: Canvas要素 + 固定グリッド描画
+3. **Refactor**: 描画コードの整理
+4. **Commit**: `[BEHAVIOR] Add game board display`
+
+#### Phase 4.2: ピース生成（45分目標）
+1. **Red**: テトリミノ1個生成テスト
+2. **Green**: Iピース固定生成
+3. **Red**: テトリミノ表示テスト  
+4. **Green**: 固定位置に描画
+5. **Refactor**: ピース定数の抽出
+6. **Commit**: `[BEHAVIOR] Add tetrimino generation and display`
+
+#### Phase 4.3: 基本操作（60分目標）
+1. **Red**: 左移動テスト
+2. **Green**: position.x -= 1（境界チェックなし）
+3. **Red**: 境界チェックテスト
+4. **Green**: 境界条件の追加
+5. **Refactor**: 操作メソッドの整理
+6. **Commit**: `[BEHAVIOR] Add basic movement with boundary check`
+
+#### Phase 4.4: 落下システム（45分目標）
+1. **Red**: 自動落下テスト
+2. **Green**: setInterval固定速度
+3. **Red**: 底面衝突テスト
+4. **Green**: 単純な衝突判定
+5. **Refactor**: タイマー管理の改善
+6. **Commit**: `[BEHAVIOR] Add automatic falling system`
+
+### 4.6 user-storiesリアルタイム更新
+
+**各Phase完了と同時に**user-storiesを更新：
+
 ```markdown
-## Story 1実装時の更新例
-
-**フィーチャー内容** (2-3時間で完成): 🔄 **実装中**
+**フィーチャー内容** (4-5時間で完成): 🔄 **実装中**
 - [x] **ゲームボード描画** ✅ 完了 - 25分 - ※Canvas習得が予想より簡単
-- [x] **テトリミノ操作** ✅ 完了 - 40分 - ※衝突判定複雑、次回事前調査必要
-- [ ] **ライン消去システム** 🔄 実装中 - 予想30分
-- [ ] **基本得点計算** - 予想20分
-- [ ] **統合テスト** - 予想15分
-
-**学習記録**:
-## 学習記録 - Phase 1 - 2025-08-01 14:30
-1. 予想との違い: Canvas APIが予想より簡単だった - チュートリアル充実
-2. 重要な発見: requestAnimationFrameの重要性 - 滑らかな描画に必須
-3. 次の優先度: 変わらない - 衝突判定の調査時間を+10分追加
-
-## 学習記録 - Phase 2 - 2025-08-01 15:10
-1. 予想との違い: 衝突判定が予想より複雑 - 境界値チェックが多数
-2. 重要な発見: テスト駆動で境界値バグを早期発見 - TDDの威力実感
-3. 次の優先度: ライン消去を先に実装 - アニメーション後回し
+- [x] **テトリミノ生成システム** ✅ 完了 - 40分 - ※固定ピースから開始で効率的
+- [ ] **ゴーストピース表示** 🔄 実装中 - 予想30分
+- [ ] **テトリミノ操作** - 予想45分
 ```
 
-**メリット**:
-- ✅ **一元管理**: 進捗・学習・計画変更が一箇所に集約
-- ✅ **リアルタイム更新**: 実装と同時に記録更新
-- ✅ **学習蓄積**: フィードバックが進捗と一体化
-- ✅ **シンプル**: 複雑なファイル管理が不要
+### 4.7 学習記録の継続実行
+
+**各Phase完了時に自動化スクリプト実行**：
+
+```bash
+# Phase 4.1完了後
+bash ~/.claude/commands/shared/quick-feedback.sh "ゲームボード描画"
+
+# Phase 4.2完了後  
+bash ~/.claude/commands/shared/quick-feedback.sh "テトリミノ生成"
+```
+
+### 4.8 実装完了の厳格な定義
+
+#### ✅ 実装完了の条件（全て必須）
+
+1. **全テストが通る**
+2. **受け入れ基準が実際に動作する**
+3. **5分間のユーザー体験テスト通過**
+4. **Phase 3.6 MVP検証ゲート再実行でPASS**
+5. **user-stories完全更新**
+6. **学習記録完了**
+
+#### ❌ 完了とみなされない状態
+
+- テストは通るが実際に使えない
+- 基本機能は動くが品質が低い
+- 実装は終わったが学習記録なし
+- 一部の機能のみで受け入れ基準未達成
+
+### 4.9 継続実装案内の自動化
+
+**Story 1完了時の案内**：
+
+```markdown
+🎉 Story 1 (MVP Feature) 実装完了！
+
+📊 実装結果:
+- 実装時間: [実績]時間（見積: 4-5時間）
+- TDDサイクル数: [X]回
+- 主要な学習: [発見事項]
+
+🚀 次のアクション:
+
+**引数なしで簡単継続**（推奨）:
+```
+/tdd:run
+```
+
+**手動で次の機能指定**:
+```
+/tdd:run Story2のデータ永続化システム
+```
+
+**新しいプロジェクト開始**:
+```
+/tdd [新しい要望]
+```
+```
+
+### 4.10 TDD原則違反の防止システム
+
+#### 自動チェックリスト（各実装前に確認）
+
+```markdown
+## TDD原則チェック（必須確認）
+
+### Kent Beck 3つのルール
+- [ ] 失敗するテストを書いたか？
+- [ ] そのテストが正確に失敗することを確認したか？
+- [ ] テストを通す最小限の実装のみ書いたか？
+
+### 実装サイズチェック  
+- [ ] 1度の実装が10行以下か？
+- [ ] 1つの機能のみに集中しているか？
+- [ ] 「動く」と「完璧」を混同していないか？
+
+### Fake It戦略チェック
+- [ ] 実装方法が不明確な場合、ハードコードから始めたか？
+- [ ] 複雑なロジックを一度に書こうとしていないか？
+- [ ] 2つ目のテストでハードコードを破る準備はできているか？
+```
+
+**このチェックリストを通らない限り、実装を開始してはいけません。**
 
 ---
 

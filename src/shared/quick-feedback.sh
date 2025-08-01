@@ -65,9 +65,56 @@ echo ""
 echo "✅ フィードバック記録完了！"
 echo "📍 記録場所: $STORIES_FILE"
 echo ""
-echo "🎯 次の作業:"
-echo "  1. user-storiesのチェックボックスを✅に更新"
-echo "  2. 発見事項を該当箇所に※追記"
-echo "  3. 必要に応じて優先度調整"
+
+# 自動化オプションの提供
+echo "🤖 自動化オプション:"
+echo "====================="
+read -p "user-storiesのチェックボックスを自動更新しますか？ (y/n): " auto_update
+
+if [[ "$auto_update" == "y" ]]; then
+    echo "ステータス選択:"
+    echo "1) completed (完了)"
+    echo "2) in_progress (実装中)"
+    read -p "選択 (1-2): " status_choice
+    
+    case $status_choice in
+        1) 
+            status="completed"
+            notes="※${discovery}"
+            ;;
+        2) 
+            status="in_progress"
+            notes="進行中 - ※${discovery}"
+            ;;
+        *)
+            status="in_progress"
+            notes="※${discovery}"
+            ;;
+    esac
+    
+    # user-stories更新スクリプトを実行
+    if [[ -f ~/.claude/commands/shared/update-user-stories.sh ]]; then
+        bash ~/.claude/commands/shared/update-user-stories.sh "$PHASE_NAME" "$status" "$notes"
+        echo "✅ チェックボックス自動更新完了！"
+    else
+        echo "⚠️ 自動更新スクリプトが見つかりません"
+    fi
+fi
+
 echo ""
-echo "⏭️  次のPhaseに進んでください"
+echo "🎯 次の作業選択肢:"
+echo "=================="
+echo "1. 🔄 次のTDDサイクル開始:"
+echo "   bash ~/.claude/commands/shared/tdd-cycle.sh red \"次の機能名\""
+echo ""
+echo "2. 📝 手動でuser-stories更新:"
+echo "   bash ~/.claude/commands/shared/update-user-stories.sh"
+echo ""
+echo "3. 🧠 Kent Beck戦略判定:"
+echo "   node ~/.claude/commands/shared/kent-beck-strategy.js \"機能説明\""
+echo ""
+echo "4. 🧪 受け入れ基準をテストに変換:"
+echo "   node ~/.claude/commands/shared/acceptance-to-test.js"
+echo ""
+echo "⏭️  統合TDD開発の継続:"
+echo "   /tdd:run   # 引数なしで自動判別"
