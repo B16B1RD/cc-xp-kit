@@ -11,6 +11,7 @@ allowed-tools: ["Write", "Read", "Bash", "TodoWrite"]
 ## 🎯 アジャイル原則「個人と対話 > プロセスとツール」
 
 ### フィードバック哲学
+
 **Kent Beck XP**: "顧客との協働によって価値を最大化する"
 
 **短いフィードバックループの重要性**:
@@ -53,7 +54,7 @@ allowed-tools: ["Write", "Read", "Bash", "TodoWrite"]
 
 3. **フィードバック記録**:
    `.claude/agile-artifacts/feedback/immediate-feedback-$(date +%Y%m%d-%H%M).md` に記録：
-   
+
    ```markdown
    # 即座フィードバック - $(date '+%Y-%m-%d %H:%M')
    
@@ -216,16 +217,19 @@ allowed-tools: ["Write", "Read", "Bash", "TodoWrite"]
 ## 🎯 フィードバックループ成功指標
 
 ### ✅ 短期指標（日次）
+
 - [ ] 実装した機能のデモを毎回実施
 - [ ] ユーザー価値の確認を怠らない
 - [ ] 改善点の即座特定と対応
 
 ### ✅ 中期指標（週次）
+
 - [ ] 週1回以上の包括的価値評価
 - [ ] メトリクスによる定量的分析
 - [ ] 来週の改善計画策定
 
 ### ✅ 長期指標（月次）
+
 - [ ] プロジェクト全体のふりかえり実施
 - [ ] TDD実践度の向上確認
 - [ ] 継続的改善の文化定着

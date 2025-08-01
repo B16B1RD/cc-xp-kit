@@ -110,11 +110,22 @@ install_tdd_kit() {
         "kent-beck-principles.md"
         "mandatory-gates.md"
         "commit-rules.md"
+        "analyze-next-action.sh"
+        "todo-manager.sh"
+        "story-tracker.sh"
+        "progress-dashboard.sh"
+        "micro-feedback.sh"
+        "acceptance-criteria.sh"
+        "iteration-tracker.sh"
     )
     
     for file in "${shared_files[@]}"; do
         echo -n "  - shared/$file ... "
         if download_file "$REPO_URL/raw/$BRANCH/src/shared/$file" "$INSTALL_DIR/shared/$file"; then
+            # shellスクリプトに実行権限を付与
+            if [[ "$file" == *.sh ]]; then
+                chmod +x "$INSTALL_DIR/shared/$file"
+            fi
             echo -e "${GREEN}✓${NC}"
         else
             echo -e "${RED}✗${NC}"
@@ -303,17 +314,23 @@ main() {
             echo -e "   ${GREEN}/tdd \"作りたいもの\"${NC}     # 統合開発（環境構築→ストーリー→計画→実装案内を一括実行）"
             echo
             echo "3. TDD実践コマンド:"
-            echo -e "   ${GREEN}/tdd:run 機能名${NC}          # Kent Beck純正TDD実装"
+            echo -e "   ${GREEN}/tdd:run 機能名${NC}          # Kent Beck純正TDD実装（7つの改善システム統合済み）"
             echo -e "   ${GREEN}/tdd:feedback immediate${NC}  # 継続的フィードバック"
             echo -e "   ${GREEN}/tdd:status${NC}              # 価値中心進捗確認"
             echo -e "   ${GREEN}/tdd:review${NC}              # アジャイル価値レビュー"
             echo
+            echo "4. Kent Beck改善システム（v0.2.0 新機能）:"
+            echo -e "   ${GREEN}bash ~/.claude/commands/shared/progress-dashboard.sh${NC}     # 進捗ダッシュボード"
+            echo -e "   ${GREEN}bash ~/.claude/commands/shared/todo-manager.sh anxiety${NC}   # 不安優先ToDo管理"
+            echo -e "   ${GREEN}bash ~/.claude/commands/shared/micro-feedback.sh step${NC}    # マイクロフィードバック"
+            echo -e "   ${GREEN}bash ~/.claude/commands/shared/acceptance-criteria.sh${NC}    # 受け入れ条件チェック"
+            echo
             echo -e "${BLUE}詳細: /tdd${NC}"
             echo
             if [ "$INSTALL_TYPE" = "user" ]; then
-                echo "✨ v0.2.0統合コマンドで開発効率が大幅向上！ /tdd一発で開発準備完了！"
+                echo "✨ v0.2.0 Kent Beck改善システムで開発体験が革新！科学的TDD実践が可能に！"
             else
-                echo "✨ このプロジェクト専用にv0.2.0統合TDD環境が構築されました！"
+                echo "✨ このプロジェクト専用にv0.2.0 Kent Beck改善TDD環境が構築されました！"
             fi
             echo
             echo -e "${GREEN}Happy Agile TDD! 🚀${NC}"

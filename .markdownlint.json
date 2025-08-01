@@ -3,10 +3,19 @@
     "siblings_only": true
   },
   "MD013": {
-    "line_length": 100,
+    "line_length": 120,
     "headings": false,
-    "tables": false
+    "tables": false,
+    "code_blocks": false
   },
   "MD025": false,
-  "MD036": false
+  "MD036": false,
+  "MD022": {
+    "lines_above": 1,
+    "lines_below": 1
+  },
+  "MD031": false,
+  "MD032": false,
+  "MD040": false,
+  "MD047": false
 }

@@ -11,15 +11,33 @@ allowed-tools: ["Bash", "Read", "Write", "TodoWrite"]
 ## 🎯 真のKent Beck TDD原則
 
 ### テストファースト厳守
+
 - **必ずテストから始める** - コードなしでのテスト作成不可能は禁止
 - **一度に1つのテスト** - 複数テスト同時作成禁止
 - **各変更後に全テスト実行** - 品質退行の即座発見
 
 ### Kent Beck世界観
+
 **「TDDは設計手法である」** - Kent Beck, "Test-Driven Development by Example"
 - テストコードがコードの設計を導く
 - 実装前にAPIを考える
 - シンプルな設計の自然な出現
+
+## 🚀 Kent Beck改善機能統合
+
+### ワークフロー開始時の推奨アクション
+
+**進捗ダッシュボード確認**:
+```bash
+# 現在のプロジェクト状況を確認
+bash ~/.claude/commands/shared/progress-dashboard.sh compact
+```
+
+**高不安度項目の確認**:
+```bash
+# 最も不安な項目から着手（Kent Beck原則）
+bash ~/.claude/commands/shared/todo-manager.sh anxiety
+```
 
 ## 指示
 
@@ -73,6 +91,18 @@ go test ./... 2>&1
 
 **失敗しない場合**: テストの書き方を修正してください
 
+#### 🔍 REDフェーズ完了確認
+
+**受け入れ条件チェック**:
+```bash
+bash ~/.claude/commands/shared/acceptance-criteria.sh check red "$(echo "$ARGUMENTS")" "テスト作成完了"
+```
+
+**30秒フィードバック**:
+```bash
+bash ~/.claude/commands/shared/micro-feedback.sh step "1.1" "$(echo "$ARGUMENTS")"
+```
+
 ### 🟢 GREEN フェーズ: 最小実装
 
 #### Kent Beck三大戦略の自動判定適用
@@ -96,6 +126,7 @@ go test ./... 2>&1
 **自動戦略判定**:
 
 ### 📊 状況1: 初回テスト作成（最も一般的）
+
 **判定条件**: テスト数が0-1個 AND 関数が未実装
 **→ 🎯 Fake It戦略を強制適用**
 
@@ -103,6 +134,7 @@ go test ./... 2>&1
 **行動**: 必ずハードコーディングから開始
 
 ### 📊 状況2: 2つ目のテスト追加
+
 **判定条件**: 同じ関数に対するテストが既に1個存在
 **→ 🎯 Triangulation戦略を自動推奨**
 
@@ -115,6 +147,7 @@ grep -c "$ARGUMENTS" src/**/*.test.* 2>/dev/null
 **行動**: ハードコーディングを破る一般化実装
 
 ### 📊 状況3: 明白な実装（稀）
+
 **判定条件**: 実装が数学的に自明（square, abs等）
 **→ 🎯 Obvious Implementation戦略を許可**
 
@@ -387,6 +420,18 @@ npm run typecheck 2>&1
 npm test 2>&1
 ```
 
+#### 🔍 GREENフェーズ完了確認
+
+**受け入れ条件チェック**:
+```bash
+bash ~/.claude/commands/shared/acceptance-criteria.sh check green "$(echo "$ARGUMENTS")" "最小実装完了"
+```
+
+**30秒フィードバック**:
+```bash
+bash ~/.claude/commands/shared/micro-feedback.sh step "1.2" "$(echo "$ARGUMENTS")"
+```
+
 #### 5. BEHAVIORコミット
 
 **Tidy First原則**: 振る舞いの変更をコミット
@@ -435,6 +480,18 @@ npm test -- --watchAll=false --forceExit 2>&1
 - ✅ 振る舞いが変化していない
 - ✅ 新しいバグが発生していない
 
+#### 🔍 REFACTORフェーズ完了確認
+
+**受け入れ条件チェック**:
+```bash
+bash ~/.claude/commands/shared/acceptance-criteria.sh check refactor "$(echo "$ARGUMENTS")" "構造改善完了"
+```
+
+**30秒フィードバック**:
+```bash
+bash ~/.claude/commands/shared/micro-feedback.sh step "1.3" "$(echo "$ARGUMENTS")"
+```
+
 #### 3. STRUCTUREコミット
 
 **Tidy First原則**: 構造改善をコミット
@@ -466,7 +523,7 @@ git commit -m "[STRUCTURE] $(echo "$ARGUMENTS"): Improve code structure and read
    });
    ```
 
-### サイクル完了
+### 🎉 TDDサイクル完了
 
 ```text
 ✅ Kent Beck TDDサイクル完了！
@@ -478,36 +535,83 @@ git commit -m "[STRUCTURE] $(echo "$ARGUMENTS"): Improve code structure and read
 🎯 実装機能: [機能名]
 🧪 適用戦略: [Fake It/Triangulation/Obvious Implementation]
 📝 コミット: BEHAVIORコミット + STRUCTUREコミット
-
-🚀 次のアクション選択:
-
-1. **同じ機能の追加テスト** - エッジケースや例外処理
-2. **関連機能のTDD** - 次の機能をTDDで追加
-3. **ユーザーフィードバック** - 実装した機能の使用感確認
-4. **品質向上** - より高度なリファクタリング実施
-5. **機能完了** - 現在の機能で満足
 ```
+
+#### 🔄 2分イテレーションフィードバック
+
+**Kent Beck XP価値評価**:
+```bash
+bash ~/.claude/commands/shared/micro-feedback.sh iteration "1"
+```
+
+#### 📊 進捗状況更新
+
+**ストーリー進捗チェック**:
+```bash
+bash ~/.claude/commands/shared/story-tracker.sh check "$(echo "$ARGUMENTS")" "TDDサイクル完了"
+```
+
+**イテレーション追跡更新**:
+```bash
+bash ~/.claude/commands/shared/iteration-tracker.sh complete-task "1" "1.1"
+```
+
+#### 🧠 Kent Beck流次アクション分析
+
+**科学的な次アクション決定**:
+```bash
+bash ~/.claude/commands/shared/analyze-next-action.sh "1.1" "fake_it" 1 30
+```
+
+**高不安度項目チェック**:
+```bash
+bash ~/.claude/commands/shared/todo-manager.sh list high
+```
+
+#### 📈 全体状況ダッシュボード
+
+**詳細進捗確認**:
+```bash
+bash ~/.claude/commands/shared/progress-dashboard.sh detailed
+```
+
+#### 🎯 Kent Beck原則に基づく次アクション選択
+
+**システム推奨アクション**（analyze-next-action.shの結果に基づく）:
+
+1. **同じ機能のTriangulation** - 2つ目のテストで一般化
+2. **高不安度項目への着手** - "Most Anxious Thing First"原則
+3. **関連機能のTDD** - 次の機能をTDDで追加
+4. **ユーザーフィードバック** - 実装した機能の使用感確認
+5. **品質向上** - より高度なリファクタリング実施
+6. **機能完了** - 現在の機能で満足
+
+**重要**: 高不安度項目（5/7以上）がある場合は、Kent Beck原則により必ずそれから着手してください。
 
 ## 🚨 TDD原則厳守チェック
 
 各段階で以下を確認してください：
 
 ### ✅ RED段階チェック
+
 - [ ] テストが実際に失敗する
 - [ ] 失敗理由が期待通り
 - [ ] 1つのテストのみ作成
 
 ### ✅ GREEN段階チェック  
+
 - [ ] 最小の変更でテストが通る
 - [ ] Kent Beck戦略を適用
 - [ ] 全テストが通過
 
 ### ✅ REFACTOR段階チェック
+
 - [ ] 振る舞いが変化していない
 - [ ] テストが全て緑のまま
 - [ ] 構造のみ改善
 
 ### ✅ 品質保証
+
 - [ ] コンパイルエラーなし
 - [ ] リンターエラーなし
 - [ ] 実際の動作確認完了
@@ -515,18 +619,123 @@ git commit -m "[STRUCTURE] $(echo "$ARGUMENTS"): Improve code structure and read
 ## 💡 Kent Beck智慧の実践
 
 ### TDDマントラ
+
 「**Red, Green, Refactor. Red, Green, Refactor.**」
 
 ### 設計哲学
+
 「**テストがコードの設計を駆動する**」
 - テストが先にAPIを定義
 - 使いやすいAPIが自然に出現
 - 複雑性の早期発見
 
 ### 品質哲学
+
 「**動かしてから直す**」
 - Make it work（動作させる）
 - Make it right（正しくする）
 - Make it fast（速くする）
 
-この順序を必ず守り、Kent Beck純正TDDの力を実感してください。
+## 🛠️ 統合Kent Beck改善ツール
+
+### 7つの智慧ツール
+
+#### 1. 🧠 次アクション分析システム
+
+```bash
+bash ~/.claude/commands/shared/analyze-next-action.sh <step_id> <strategy> <anxiety> <elapsed_time>
+```
+- Kent Beck戦略自動判定
+- 実装ステージ分析
+- 科学的次アクション推奨
+
+#### 2. 📝 不安優先ToDo管理
+
+```bash
+bash ~/.claude/commands/shared/todo-manager.sh add "エラーハンドリング"
+bash ~/.claude/commands/shared/todo-manager.sh anxiety
+```
+- "Most Anxious Thing First"原則実装
+- 自動優先度判定
+- 1-7不安度スコア
+
+#### 3. 📖 ストーリー進捗追跡
+
+```bash
+bash ~/.claude/commands/shared/story-tracker.sh check "機能名" "結果"
+bash ~/.claude/commands/shared/story-tracker.sh progress
+```
+- 受け入れ基準自動検出
+- インタラクティブ進捗更新
+- 開発フェーズ判定
+
+#### 4. 📊 リアルタイム進捗ダッシュボード
+
+```bash
+bash ~/.claude/commands/shared/progress-dashboard.sh compact
+bash ~/.claude/commands/shared/progress-dashboard.sh detailed
+```
+- プロジェクト全体状況
+- 品質指標算出
+- 推奨アクション生成
+
+#### 5. ⚡ マイクロフィードバックループ
+
+```bash
+bash ~/.claude/commands/shared/micro-feedback.sh step "1.1" "機能名"
+bash ~/.claude/commands/shared/micro-feedback.sh iteration "1"
+```
+- 30秒ステップフィードバック
+- 2分イテレーションフィードバック
+- XP価値評価（Communication, Simplicity, Feedback, Courage）
+
+#### 6. ✅ 受け入れ条件明示システム
+
+```bash
+bash ~/.claude/commands/shared/acceptance-criteria.sh check red "1.1" "機能名"
+bash ~/.claude/commands/shared/acceptance-criteria.sh list
+```
+- RED/GREEN/REFACTORフェーズ別基準
+- インタラクティブチェック
+- Kent Beck戦略詳細説明
+
+#### 7. 📋 YAML形式イテレーション追跡
+
+```bash
+bash ~/.claude/commands/shared/iteration-tracker.sh start "1"
+bash ~/.claude/commands/shared/iteration-tracker.sh add-task "1" "機能名"
+bash ~/.claude/commands/shared/iteration-tracker.sh status "1"
+```
+- 90分イテレーション管理
+- TDDサイクル統合
+- メトリクス自動計算
+
+### 統合ワークフロー
+
+**1. セッション開始**:
+```bash
+bash ~/.claude/commands/shared/progress-dashboard.sh compact
+bash ~/.claude/commands/shared/todo-manager.sh anxiety
+```
+
+**2. 各TDDフェーズ完了後**:
+```bash
+bash ~/.claude/commands/shared/acceptance-criteria.sh check [red|green|refactor] "機能名" "結果"
+bash ~/.claude/commands/shared/micro-feedback.sh step "ステップID" "機能名"
+```
+
+**3. TDDサイクル完了後**:
+```bash
+bash ~/.claude/commands/shared/micro-feedback.sh iteration "イテレーションID"
+bash ~/.claude/commands/shared/story-tracker.sh check "機能名" "結果"
+bash ~/.claude/commands/shared/analyze-next-action.sh "ステップID" "戦略" "不安度" "時間"
+bash ~/.claude/commands/shared/progress-dashboard.sh detailed
+```
+
+**4. セッション終了時**:
+```bash
+bash ~/.claude/commands/shared/iteration-tracker.sh status "イテレーションID"
+bash ~/.claude/commands/shared/story-tracker.sh progress
+```
+
+この統合システムにより、Kent Beck純正TDDの真の力を最大限活用できます。

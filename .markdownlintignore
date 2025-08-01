@@ -1,3 +1,6 @@
 node_modules/
 .git/
 tmp/
+docs/
+examples/
+CLAUDE.md

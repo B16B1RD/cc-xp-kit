@@ -10,12 +10,14 @@ allowed-tools: ["Bash", "Read", "LS", "Grep"]
 現在のプロジェクトを詳細に分析してください：
 
 ### 1. 基本情報の収集
+
 以下の情報を確認してください：
 - プロジェクトルートの構造（主要なファイルとディレクトリ）
 - 言語の判定（package.json, pyproject.toml, Cargo.toml, go.mod等）
 - 既存の設定ファイル（.gitignore, README等）
 
 ### 2. 言語とプロジェクトタイプの判定
+
 ファイルの存在に基づいて判定してください：
 
 **JavaScript/TypeScript**:
@@ -35,6 +37,7 @@ allowed-tools: ["Bash", "Read", "LS", "Grep"]
 - など
 
 ### 3. プロジェクトタイプの推定
+
 ファイル構造から判定してください：
 - **Web アプリケーション**: index.html, src/components/, public/等
 - **API サーバー**: src/routes/, src/controllers/, server.js等
@@ -42,6 +45,7 @@ allowed-tools: ["Bash", "Read", "LS", "Grep"]
 - **ライブラリ**: lib/, index.js, 複数のエクスポート
 
 ### 4. 推奨事項の提示
+
 分析結果に基づいて以下を提示してください：
 
 **モダンツールへの移行提案**:
@@ -55,6 +59,7 @@ allowed-tools: ["Bash", "Read", "LS", "Grep"]
 - 推奨プロジェクト構造
 
 ### 5. 結果の表示
+
 以下の形式で結果を表示してください：
 
 ```text

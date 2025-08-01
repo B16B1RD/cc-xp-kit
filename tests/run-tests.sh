@@ -108,7 +108,7 @@ fi
 # 2. ファイル整合性テスト
 echo -e "\n${YELLOW}2. ファイル整合性テスト${NC}"
 
-# 必須ファイルの存在確認（v0.2.0統合版）
+# 必須ファイルの存在確認（v0.2.0統合版 + Kent Beck改善機能）
 required_files=(
     "../README.md"
     "../LICENSE"
@@ -126,6 +126,13 @@ required_files=(
     "../src/shared/kent-beck-principles.md"
     "../src/shared/mandatory-gates.md"
     "../src/shared/commit-rules.md"
+    "../src/shared/analyze-next-action.sh"
+    "../src/shared/todo-manager.sh"
+    "../src/shared/story-tracker.sh"
+    "../src/shared/progress-dashboard.sh"
+    "../src/shared/micro-feedback.sh"
+    "../src/shared/acceptance-criteria.sh"
+    "../src/shared/iteration-tracker.sh"
 )
 
 all_files_exist=true
@@ -148,6 +155,7 @@ fi
 echo -e "\n${YELLOW}3. コード品質テスト${NC}"
 
 if command -v shellcheck > /dev/null 2>&1; then
+    # install.sh のチェック
     if shellcheck "$SCRIPT_DIR/../install.sh" > /dev/null 2>&1; then
         echo -e "  ShellCheck (install.sh) ... ${GREEN}✓${NC}"
         ((TESTS_PASSED++))
@@ -155,6 +163,30 @@ if command -v shellcheck > /dev/null 2>&1; then
         echo -e "  ShellCheck (install.sh) ... ${RED}✗${NC}"
         ((TESTS_FAILED++))
     fi
+    
+    # Kent Beck改善スクリプトのチェック
+    kent_beck_scripts=(
+        "../src/shared/analyze-next-action.sh"
+        "../src/shared/todo-manager.sh"
+        "../src/shared/story-tracker.sh"
+        "../src/shared/progress-dashboard.sh"
+        "../src/shared/micro-feedback.sh"
+        "../src/shared/acceptance-criteria.sh"
+        "../src/shared/iteration-tracker.sh"
+    )
+    
+    for script in "${kent_beck_scripts[@]}"; do
+        if [ -f "$script" ]; then
+            script_name=$(basename "$script")
+            if shellcheck "$script" > /dev/null 2>&1; then
+                echo -e "  ShellCheck ($script_name) ... ${GREEN}✓${NC}"
+                ((TESTS_PASSED++))
+            else
+                echo -e "  ShellCheck ($script_name) ... ${RED}✗${NC}"
+                ((TESTS_FAILED++))
+            fi
+        fi
+    done
 else
     echo -e "  ShellCheck ... ${YELLOW}スキップ (未インストール)${NC}"
 fi
@@ -191,6 +223,71 @@ if [ ! -f "$SCRIPT_DIR/../src/subcommands/tdd/init.md" ] && \
     ((TESTS_PASSED++))
 else
     echo -e "${RED}✗${NC}"
+    ((TESTS_FAILED++))
+fi
+
+# Kent Beck改善機能テスト
+echo -e "\n${YELLOW}4.5. Kent Beck改善機能テスト${NC}"
+
+# 実行権限テスト
+kent_beck_scripts=(
+    "../src/shared/analyze-next-action.sh"
+    "../src/shared/todo-manager.sh"
+    "../src/shared/story-tracker.sh"
+    "../src/shared/progress-dashboard.sh"
+    "../src/shared/micro-feedback.sh"
+    "../src/shared/acceptance-criteria.sh"
+    "../src/shared/iteration-tracker.sh"
+)
+
+echo -n "  実行権限確認 ... "
+all_executable=true
+for script in "${kent_beck_scripts[@]}"; do
+    if [ -f "$script" ] && [ ! -x "$script" ]; then
+        all_executable=false
+        break
+    fi
+done
+
+if [ "$all_executable" = true ]; then
+    echo -e "${GREEN}✓${NC}"
+    ((TESTS_PASSED++))
+else
+    echo -e "${RED}✗${NC}"
+    ((TESTS_FAILED++))
+fi
+
+# 基本機能テスト（安全な方法で）
+echo -n "  基本機能テスト ... "
+kent_beck_functional_test_passed=0
+kent_beck_functional_test_total=0
+
+for script in "${kent_beck_scripts[@]}"; do
+    if [ -f "$script" ] && [ -x "$script" ]; then
+        script_name=$(basename "$script")
+        ((kent_beck_functional_test_total++))
+        
+        # 各スクリプトのヘルプ機能をテスト（安全）
+        case "$script_name" in
+            "analyze-next-action.sh")
+                if bash "$script" 2>&1 | grep -q "使用方法\|Usage"; then
+                    ((kent_beck_functional_test_passed++))
+                fi
+                ;;
+            "todo-manager.sh"|"story-tracker.sh"|"progress-dashboard.sh"|"micro-feedback.sh"|"acceptance-criteria.sh"|"iteration-tracker.sh")
+                if bash "$script" 2>&1 | grep -q "使用方法\|Usage"; then
+                    ((kent_beck_functional_test_passed++))
+                fi
+                ;;
+        esac
+    fi
+done
+
+if [ "$kent_beck_functional_test_passed" -eq "$kent_beck_functional_test_total" ] && [ "$kent_beck_functional_test_total" -gt 0 ]; then
+    echo -e "${GREEN}✓${NC} ($kent_beck_functional_test_passed/$kent_beck_functional_test_total)"
+    ((TESTS_PASSED++))
+else
+    echo -e "${RED}✗${NC} ($kent_beck_functional_test_passed/$kent_beck_functional_test_total)"
     ((TESTS_FAILED++))
 fi
 
@@ -297,14 +394,15 @@ PERF_TEST_DIR="$TEMP_DIR/perf_test"
 mkdir -p "$PERF_TEST_DIR"
 cd "$PERF_TEST_DIR" || exit
 
-# 言語検出のパフォーマンス
+# 基本パフォーマンステスト
 for i in {1..10}; do
     echo '{"name": "test-'$i'", "version": "1.0.0"}' > "package-$i.json"
 done
 
-if source "$SCRIPT_DIR/../src/shared/language-detector.md" 2>/dev/null; then
-    for i in {1..10}; do
-        PROJECT_TYPE=$(detect_project_type 2>/dev/null || echo "default") > /dev/null
+# Kent Beck改善スクリプトの基本パフォーマンス
+if [ -f "$SCRIPT_DIR/../src/shared/progress-dashboard.sh" ]; then
+    for i in {1..5}; do
+        timeout 1 bash "$SCRIPT_DIR/../src/shared/progress-dashboard.sh" compact >/dev/null 2>&1 || true
     done
 fi
 
@@ -329,14 +427,21 @@ echo -e "${BLUE}================================${NC}"
 echo -e "合格: ${GREEN}${TESTS_PASSED}${NC}"
 echo -e "失敗: ${RED}${TESTS_FAILED}${NC}"
 
-# v0.2.0統合改善報告
+# v0.2.0 Kent Beck改善報告
 if [ $TESTS_PASSED -gt 0 ]; then
-    echo -e "\n${BLUE}✨ v0.2.0統合改善内容${NC}"
+    echo -e "\n${BLUE}✨ v0.2.0 Kent Beck改善内容${NC}"
     echo -e "  - 統合ワークフロー: /tdd ワンコマンドで開発準備完了"
-    echo -e "  - 技術制約100%解決: コマンド間参照問題完全排除"
-    echo -e "  - 学習コスト27%削減: 11個→8個コマンド"
+    echo -e "  - Kent Beck改善システム: 7つの新機能でTDD実践を科学的に支援"
+    echo -e "    • 次アクション分析システム (analyze-next-action.sh)"
+    echo -e "    • 不安優先ToDo管理 (todo-manager.sh)"
+    echo -e "    • ストーリー進捗追跡 (story-tracker.sh)"
+    echo -e "    • リアルタイム進捗ダッシュボード (progress-dashboard.sh)"
+    echo -e "    • マイクロフィードバックループ (micro-feedback.sh)"
+    echo -e "    • 受け入れ条件明示システム (acceptance-criteria.sh)"
+    echo -e "    • YAML形式イテレーション追跡 (iteration-tracker.sh)"
+    echo -e "  - TDD体験革新: \"Most Anxious Thing First\"原則の自動適用"
+    echo -e "  - フィードバックループ: 30秒ステップ + 2分イテレーション"
     echo -e "  - /tdd:init, /tdd:story, /tdd:plan → /tdd に統合"
-    echo -e "  - 5Phase統合フロー: 要望→環境→ストーリー→計画→実装案内"
 fi
 
 if [ $TESTS_FAILED -eq 0 ]; then
