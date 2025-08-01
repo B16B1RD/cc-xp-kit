@@ -117,6 +117,9 @@ install_tdd_kit() {
         "micro-feedback.sh"
         "acceptance-criteria.sh"
         "iteration-tracker.sh"
+        "completion-message-generator.sh"
+        "project-type-detector.sh"
+        "story-progress-analyzer.sh"
     )
     
     for file in "${shared_files[@]}"; do
@@ -136,6 +139,29 @@ install_tdd_kit() {
         [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
     done
     
+    # completion-templatesディレクトリの作成とファイルダウンロード
+    echo -e "${BLUE}📥 completion-templatesをダウンロード中...${NC}"
+    mkdir -p "$INSTALL_DIR/shared/completion-templates"
+    
+    local template_files=(
+        "api-focused.md"
+        "cli-focused.md"
+        "development-focused.md"
+        "experience-focused.md"
+    )
+    
+    for file in "${template_files[@]}"; do
+        echo -n "  - shared/completion-templates/$file ... "
+        if download_file "$REPO_URL/raw/$BRANCH/src/shared/completion-templates/$file" "$INSTALL_DIR/shared/completion-templates/$file"; then
+            echo -e "${GREEN}✓${NC}"
+        else
+            echo -e "${RED}✗${NC}"
+            echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
+            exit 1
+        fi
+        # GitHub Actions でのレート制限対策
+        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
+    done
     
     # メインコマンドのダウンロード
     local main_files=(
