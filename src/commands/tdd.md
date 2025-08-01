@@ -216,17 +216,29 @@ mkdir -p step{1..3}-{basic,enhanced,advanced} tests docs
 
 ### 2.3 アジャイル管理ディレクトリの作成
 
+**既存ユーザーのマイグレーション対応**:
 ```bash
-mkdir -p .claude/agile-artifacts/{stories,iterations,reviews,tdd-logs}
+# 既存の .claude/agile-artifacts/ がある場合は自動移行
+if [ -d ".claude/agile-artifacts" ]; then
+  echo "🔄 Migrating .claude/agile-artifacts → docs/agile-artifacts"
+  mkdir -p docs/
+  mv .claude/agile-artifacts docs/
+  echo "✅ Migration completed"
+fi
 ```
 
-### 2.3 .gitignore の設定
+**新規ディレクトリ作成**:
+```bash
+mkdir -p docs/agile-artifacts/{stories,iterations,reviews,tdd-logs}
+```
+
+### 2.4 .gitignore の設定
 
 個人用ログを除外し、チーム共有価値は含める：
 
 ```text
 # TDD個人ログ（Git管理対象外）
-.claude/agile-artifacts/tdd-logs/
+docs/agile-artifacts/tdd-logs/
 
 # 一般的な除外項目
 node_modules/
@@ -235,7 +247,7 @@ __pycache__/
 .DS_Store
 ```
 
-### 2.4 Git リポジトリの初期化（必要な場合）
+### 2.5 Git リポジトリの初期化（必要な場合）
 
 ```bash
 git init
@@ -243,7 +255,7 @@ git add .gitignore
 git commit -m "[INIT] TDD environment setup with agile structure"
 ```
 
-### 2.5 基本テスト環境の確認
+### 2.6 基本テスト環境の確認
 
 プロジェクトタイプに応じてテストコマンドを確認：
 
@@ -338,7 +350,7 @@ THEN [期待結果]
 
 ### 3.4 ストーリーファイルの作成
 
-`.claude/agile-artifacts/stories/` ディレクトリに以下の形式でファイルを作成：
+`docs/agile-artifacts/stories/` ディレクトリに以下の形式でファイルを作成：
 
 **ファイル名**: `user-stories-v1.0.md`
 
@@ -577,7 +589,7 @@ Story 1作成完了後、必ず以下を自問してください：
 
 ### 4.5 イテレーション計画ファイルの作成
 
-`.claude/agile-artifacts/iterations/` ディレクトリに以下を作成：
+`docs/agile-artifacts/iterations/` ディレクトリに以下を作成：
 
 **ファイル名**: `iteration-plan-v1.0.md`
 
@@ -703,7 +715,7 @@ Story 1作成完了後、必ず以下を自問してください：
 🎉 統合TDD開発環境の構築完了！
 
 📋 作成された成果物:
-├── .claude/agile-artifacts/
+├── docs/agile-artifacts/
 │   ├── stories/user-stories-v1.0.md     # ユーザーストーリー
 │   ├── iterations/iteration-plan-v1.0.md # イテレーション計画
 │   └── [その他のディレクトリ]
