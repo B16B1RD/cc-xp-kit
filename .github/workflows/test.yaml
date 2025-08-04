@@ -44,13 +44,13 @@ jobs:
         
         if [ "${{ matrix.install-type }}" = "user" ]; then
           for file in "${CC_XP_FILES[@]}"; do
-            test -f "$HOME/.claude/commands/$file"
+            test -f "$HOME/.claude/commands/cc-xp/$file"
             echo "✅ $file installed"
           done
         else
           cd test-project
           for file in "${CC_XP_FILES[@]}"; do
-            test -f ".claude/commands/$file"
+            test -f ".claude/commands/cc-xp/$file"
             echo "✅ $file installed"
           done
         fi
@@ -61,10 +61,10 @@ jobs:
         CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
         
         if [ "${{ matrix.install-type }}" = "user" ]; then
-          commands_dir="$HOME/.claude/commands"
+          commands_dir="$HOME/.claude/commands/cc-xp"
         else
           cd test-project
-          commands_dir=".claude/commands"
+          commands_dir=".claude/commands/cc-xp"
         fi
         
         # 各ファイルにXPキーワードが含まれているか確認

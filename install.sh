@@ -120,7 +120,7 @@ fi
 
 # ディレクトリ作成
 echo -e "${BLUE}ディレクトリを作成中...${NC}"
-mkdir -p "$INSTALL_DIR"
+mkdir -p "$INSTALL_DIR/cc-xp"
 
 # cc-xp コマンドをインストール
 echo -e "${BLUE}5つのXPコマンドをインストール中...${NC}"
@@ -135,7 +135,7 @@ if [ -d "$SCRIPT_DIR/src/cc-xp" ]; then
     # ローカルファイルからコピー
     for file in "${CC_XP_FILES[@]}"; do
         if [ -f "$SCRIPT_DIR/src/cc-xp/$file" ]; then
-            cp "$SCRIPT_DIR/src/cc-xp/$file" "$INSTALL_DIR/"
+            cp "$SCRIPT_DIR/src/cc-xp/$file" "$INSTALL_DIR/cc-xp/"
             echo -e "${BLUE}  ✓ cc-xp:${file%.md} をコピーしました${NC}"
         else
             echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
@@ -146,7 +146,7 @@ elif [ -d "$(pwd)/src/cc-xp" ]; then
     # カレントディレクトリからコピー
     for file in "${CC_XP_FILES[@]}"; do
         if [ -f "$(pwd)/src/cc-xp/$file" ]; then
-            cp "$(pwd)/src/cc-xp/$file" "$INSTALL_DIR/"
+            cp "$(pwd)/src/cc-xp/$file" "$INSTALL_DIR/cc-xp/"
             echo -e "${BLUE}  ✓ cc-xp:${file%.md} をコピーしました${NC}"
         else
             echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
@@ -166,9 +166,9 @@ else
     
     for file in "${CC_XP_FILES[@]}"; do
         if curl -fsSL --head "$BASE_URL/$file" >/dev/null 2>&1; then
-            curl -fsSL "$BASE_URL/$file" -o "$INSTALL_DIR/$file"
+            curl -fsSL "$BASE_URL/$file" -o "$INSTALL_DIR/cc-xp/$file"
             
-            if [ ! -f "$INSTALL_DIR/$file" ] || [ ! -s "$INSTALL_DIR/$file" ]; then
+            if [ ! -f "$INSTALL_DIR/cc-xp/$file" ] || [ ! -s "$INSTALL_DIR/cc-xp/$file" ]; then
                 echo -e "${RED}❌ $file のダウンロードに失敗しました${NC}"
                 download_success=false
             else
@@ -193,7 +193,7 @@ echo -e "${GREEN}✅ cc-xp-kit インストール完了！${NC}"
 echo ""
 echo "📋 インストールされた5つのXPコマンド："
 for file in "${CC_XP_FILES[@]}"; do
-    if [ -f "$INSTALL_DIR/$file" ]; then
+    if [ -f "$INSTALL_DIR/cc-xp/$file" ]; then
         command_name="${file%.md}"
         echo -e "${BLUE}  ✓ /cc-xp:${command_name}${NC}"
     fi

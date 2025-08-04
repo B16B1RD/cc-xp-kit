@@ -42,7 +42,7 @@ bash "$SCRIPT_HOME/install.sh" --project >/dev/null 2>&1
 # 各cc-xpファイルの存在チェック
 all_files_installed=true
 for file in "${CC_XP_FILES[@]}"; do
-    if [ -f ".claude/commands/$file" ]; then
+    if [ -f ".claude/commands/cc-xp/$file" ]; then
         command_name="${file%.md}"
         echo -e "${GREEN}✅ cc-xp:${command_name} が正常にインストールされました${NC}"
     else
@@ -60,7 +60,7 @@ echo ""
 echo -e "${BLUE}📋 ファイル内容チェック...${NC}"
 
 # plan.md の内容確認
-if grep -q "XP plan" ".claude/commands/plan.md" && grep -q "YAGNI原則" ".claude/commands/plan.md"; then
+if grep -q "XP plan" ".claude/commands/cc-xp/plan.md" && grep -q "YAGNI原則" ".claude/commands/cc-xp/plan.md"; then
     echo -e "${GREEN}✅ plan.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ plan.md の内容が不正です${NC}"
@@ -68,7 +68,7 @@ else
 fi
 
 # story.md の内容確認
-if grep -q "XP story" ".claude/commands/story.md" && grep -q "対話重視" ".claude/commands/story.md"; then
+if grep -q "XP story" ".claude/commands/cc-xp/story.md" && grep -q "対話重視" ".claude/commands/cc-xp/story.md"; then
     echo -e "${GREEN}✅ story.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ story.md の内容が不正です${NC}"
@@ -76,7 +76,7 @@ else
 fi
 
 # develop.md の内容確認
-if grep -q "XP develop" ".claude/commands/develop.md" && grep -q "Red→Green→Refactor" ".claude/commands/develop.md"; then
+if grep -q "XP develop" ".claude/commands/cc-xp/develop.md" && grep -q "Red→Green→Refactor" ".claude/commands/cc-xp/develop.md"; then
     echo -e "${GREEN}✅ develop.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ develop.md の内容が不正です${NC}"
@@ -84,7 +84,7 @@ else
 fi
 
 # review.md の内容確認
-if grep -q "XP review" ".claude/commands/review.md" && grep -q "動作確認" ".claude/commands/review.md"; then
+if grep -q "XP review" ".claude/commands/cc-xp/review.md" && grep -q "動作確認" ".claude/commands/cc-xp/review.md"; then
     echo -e "${GREEN}✅ review.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ review.md の内容が不正です${NC}"
@@ -92,7 +92,7 @@ else
 fi
 
 # retro.md の内容確認
-if grep -q "XP retro" ".claude/commands/retro.md" && grep -q "継続的改善" ".claude/commands/retro.md"; then
+if grep -q "XP retro" ".claude/commands/cc-xp/retro.md" && grep -q "継続的改善" ".claude/commands/cc-xp/retro.md"; then
     echo -e "${GREEN}✅ retro.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ retro.md の内容が不正です${NC}"
@@ -104,23 +104,23 @@ echo ""
 echo -e "${BLUE}🔄 XPワークフロー整合性テスト...${NC}"
 
 # 各ファイルに期待される次コマンドが記載されているかチェック
-if grep -q "/cc-xp:story" ".claude/commands/plan.md"; then
+if grep -q "/cc-xp:story" ".claude/commands/cc-xp/plan.md"; then
     echo -e "${GREEN}✅ plan.md → story ワークフローが正しく記載されています${NC}"
 fi
 
-if grep -q "/cc-xp:develop" ".claude/commands/story.md"; then
+if grep -q "/cc-xp:develop" ".claude/commands/cc-xp/story.md"; then
     echo -e "${GREEN}✅ story → develop ワークフローが正しく記載されています${NC}"
 fi
 
-if grep -q "/cc-xp:review" ".claude/commands/develop.md"; then
+if grep -q "/cc-xp:review" ".claude/commands/cc-xp/develop.md"; then
     echo -e "${GREEN}✅ develop → review ワークフローが正しく記載されています${NC}"
 fi
 
-if grep -q "/cc-xp:retro" ".claude/commands/review.md"; then
+if grep -q "/cc-xp:retro" ".claude/commands/cc-xp/review.md"; then
     echo -e "${GREEN}✅ review → retro ワークフローが正しく記載されています${NC}"
 fi
 
-if grep -q "/cc-xp:plan" ".claude/commands/retro.md"; then
+if grep -q "/cc-xp:plan" ".claude/commands/cc-xp/retro.md"; then
     echo -e "${GREEN}✅ retro → plan サイクルが正しく記載されています${NC}"
 fi
 
@@ -158,7 +158,7 @@ if bash "$SCRIPT_HOME/install.sh" --local >/dev/null 2>&1; then
     # 5つのファイルすべてがインストールされているかチェック
     local_test_success=true
     for file in "${CC_XP_FILES[@]}"; do
-        if [ ! -f ".claude/commands/$file" ]; then
+        if [ ! -f ".claude/commands/cc-xp/$file" ]; then
             echo -e "${RED}❌ --local インストールで $file が見つかりません${NC}"
             local_test_success=false
         fi
