@@ -1,155 +1,161 @@
-# cc-tdd-kit
+# cc-xp-kit
 
-Claude Code 用の TDD 開発キット - Kent Beck 流で小さく始めて大きく育てる。
+Kent Beck XP + TDD統合開発を、5つのスラッシュコマンドで。
 
-> [!NOTE]
-> **このプロジェクトは Claude Code との Vibe Coding で作成された実験的プロジェクトです**  
->
-> もともと個人的な開発効率化のために作ったツールですが、以下の理由で公開しています。
->
-> - **Vibe Coding の実践例**として、新しい開発手法の可能性を示す
-> - **TDD + AI ペアプロ**の具体的な成果物として参考になる
-> - 「**こんなやり方もあるよ**」という情報共有
->
-> ただし、AI との協調開発で作成されたツールの安定性や保守性はまだ検証段階です。  
-> 便利そうだと思われた方は、その点をご理解の上でお試しください。
+## 🎯 哲学
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blue)](https://www.anthropic.com/)
+> "シンプルさこそが究極の洗練である" - レオナルド・ダ・ヴィンチ
 
-## このキットに含まれるもの
+Kent BeckのXP原則とTDDサイクルを完全統合し、フィーチャーレベルでの実用的開発を実現します：
 
-### オールインワンパッケージ
+- **コミュニケーション** - ユーザーストーリー中心の対話型開発
+- **シンプルさ** - 5つのコマンドによる明確なワークフロー
+- **フィードバック** - Red→Green→Refactorによる継続的改善
+- **勇気** - フィーチャーブランチでの安心実験
+- **尊重** - モダンツールチェーンと開発者体験の最適化
 
-- **Claude Code カスタムスラッシュコマンド**の自動インストール
-  - インストール先選択可能（ユーザー用 or プロジェクト用）
-- **TDD専用コマンド**（`/tdd`）の追加
-- Kent Beck 哲学に基づいたワークフロー  
-- 必須ゲートによる品質保証
-- フィードバック駆動の継続的改善
-
-## クイックスタート（30秒）
+## 🚀 クイックスタート
 
 ```bash
-# インストール
-curl -fsSL \
-  https://raw.githubusercontent.com/B16B1RD/cc-tdd-kit/main/install.sh \
-  | bash
+# インストール（10秒）
+curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-tdd-kit/main/install.sh | bash
 
-# プロジェクトで Claude Code を開始
-cd my-project
-claude
+# 開発用ブランチからインストール
+curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-tdd-kit/main/install.sh | bash -s -- --branch develop
 
-# TDD開発を即座に開始
-/tdd "Webで動くテトリスゲームを作りたい"
-```text
-
-これだけで環境構築から TDD 実行まですべて自動で行われます。
-
-## v0.2.0 新機能
-
-### 🚀 1コマンドで開発開始
-
-```bash
-# 作りたいものを伝えるだけ！
-/tdd "TODOアプリを作りたい"
-
-# これだけで自動的に：
-# ✅ 環境構築
-# ✅ ユーザーストーリー作成
-# ✅ 開発計画の策定
-# ✅ TDD実装の準備完了
+# XPワークフロー開始
+/cc-xp:plan "ウェブブラウザで遊べるテトリスが欲しい"
 ```
 
-従来の4コマンド手動実行が、**たった1コマンド**に。
+## 🔄 5つのXPワークフロー
 
-### 実際の開発フロー
+### 完全統合された開発サイクル
 
 ```bash
-# 1. 要望を伝える
-/tdd "Webで動くテトリスゲームを作りたい"
+# 1. 計画立案（YAGNI原則）
+/cc-xp:plan "作りたいもの"
 
-# 2. TDDで実装（機能ごとに小さく開発）
-/tdd:run ブロック落下機能
+# 2. ユーザーストーリー詳細化
+/cc-xp:story
 
-# 3. 進捗確認
-/tdd:status
+# 3. TDD実装（Red→Green→Refactor）
+/cc-xp:develop
 
-# 4. 品質チェック
-/tdd:review
-```text
+# 4. 動作確認とフィードバック
+/cc-xp:review [accept/reject]
 
-## 特徴
+# 5. 振り返りと継続的改善
+/cc-xp:retro
+```
 
-### Kent Beck TDD原則
+### 実際の使用例
 
-- **Red → Green → Refactor** の厳格な実施
-- **Fake It戦略**（60%以上で使用）による素早い実装
-- **Tidy First原則** - 構造的変更と振る舞いの変更を分離
+```bash
+# 新機能の計画
+/cc-xp:plan "ユーザー登録機能を追加したい"
 
-### 必須ゲート
+# ストーリー詳細化
+/cc-xp:story
 
-すべてのステップで以下を自動チェック。
+# TDD実装
+/cc-xp:develop
 
-- 動作確認（プロジェクトタイプに応じた自動実行）
-- 受け入れ基準チェック
-- フィードバック収集（イテレーション完了時）
-- Git コミット（TDD/STRUCT/FEAT などのタグ付き）
+# 動作確認
+/cc-xp:review
 
-### プロジェクトタイプの自動判定
+# 受け入れまたは修正
+/cc-xp:review accept    # または reject "理由"
 
-- **Webアプリ** → HTML/JS/Canvas + Vitest
-- **CLIツール** → Node.js/Python + Jest/pytest 等
-- **API** → Express/FastAPI + テストフレームワーク
+# 振り返り
+/cc-xp:retro
+```
 
-## インストール詳細
+## 🛠️ モダンツールチェーン対応
 
-### インストールタイプ
+プロジェクトの言語を自動検出し、最適なツールを使用：
 
-インストール時に選択できます。
+- **JavaScript/TypeScript**: Bun または pnpm + Vite
+- **Python**: uv + Ruff + pytest  
+- **Rust**: Cargo（標準）
+- **Go**: Go modules（標準）
+- **Ruby**: mise + Bundler
+- **Java**: SDKMAN + Gradle/Maven
+- **C#**: .NET CLI（標準）
 
-1. **ユーザー用**（推奨）
-   - パス: `~/.claude/commands/`
-   - 利点: 一度のインストールで全プロジェクトに使用可能
+## 💡 なぜcc-xp-kit？
 
-2. **プロジェクト用**
-   - パス: `.claude/commands/`
-   - 利点: プロジェクト固有のカスタマイズが可能
+### 従来のXP/TDDツールの問題
 
-### システム要件
+- 概念的すぎて実装が曖昧
+- ツールチェーン統合の複雑さ
+- フィーチャーレベルでの実用性不足
 
-- Claude Code（最新版推奨）
-- Git
-- Node.js または Python（プロジェクトタイプによる）
+### cc-xp-kitの解決策
 
-## 基本コマンド
+- **明確な5ステップ** - 迷わない開発フロー
+- **フィーチャーブランチ統合** - Gitワークフローと完全連携
+- **実用的TDD** - Red→Green→Refactorの厳密実行
+- **バックログ管理** - YAML形式でのストーリー追跡
 
-- `/tdd "作りたいもの"` - 開発開始（環境構築〜計画まで自動）
-- `/tdd:run 機能名` - TDD実装
-- `/tdd:status` - 進捗確認
-- `/tdd:review` - 品質チェック
+## 🏗️ プロジェクト構造
 
-## インストール後
+### cc-xp-kit構造
+```
+cc-xp-kit/
+├── src/cc-xp/                # 📦 5つのXPコマンド
+│   ├── plan.md              # 計画立案
+│   ├── story.md             # ストーリー詳細化
+│   ├── develop.md           # TDD実装
+│   ├── review.md            # 動作確認
+│   └── retro.md             # 振り返り
+├── install.sh                # モダンインストーラー
+├── tests/                    # テストスイート
+└── docs/                     # ドキュメント
+```
 
-プロジェクトに`.claude/`フォルダが作成され、開発の記録が自動保存されます。
+### ユーザープロジェクト構造
+```
+your-project/
+├── ~/.claude/commands/       # インストールされたコマンド
+│   ├── plan.md              # /cc-xp:plan
+│   ├── story.md             # /cc-xp:story
+│   ├── develop.md           # /cc-xp:develop
+│   ├── review.md            # /cc-xp:review
+│   └── retro.md             # /cc-xp:retro
+├── docs/cc-xp/              # プロジェクトデータ（自動生成）
+│   ├── backlog.yaml         # ストーリーバックログ
+│   ├── metrics.json         # ベロシティ・メトリクス
+│   └── stories/             # 詳細化されたストーリー
+└── .git/                    # フィーチャーブランチ管理
+```
 
-## ライセンス
+## 🎯 実用的な機能
 
-このプロジェクトは MIT ライセンスの下で公開されています。詳細は [LICENSE](LICENSE) ファイルを参照してください。
+### バックログ管理
+- **YAML形式** - 人間が読みやすく、Gitで追跡可能
+- **ストーリーポイント** - Size(1,2,3,5,8) + Value(High/Medium/Low)
+- **状態管理** - todo → selected → in-progress → testing → done
 
-## 謝辞
+### メトリクス追跡
+- **ベロシティ** - 完了ストーリーポイント/時間
+- **サイクルタイム** - Red→Green→Refactorの所要時間  
+- **Git統計** - コミット数、変更行数による客観的分析
 
-- Kent Beck - TDD 哲学の創始者
-- 深津（@fladdict）さん - Claude to Kiro kit に触発されて開発
-- Anthropic - Claude Code の開発
+### フィーチャーブランチ戦略
+- **ストーリー単位ブランチ** - `story-{id}` での作業分離
+- **TDDフェーズコミット** - Red🔴 → Green✅ → Refactor♻️
+- **自動マージ・タグ** - 受け入れ時の自動処理
 
-## サポート
+## 🤝 貢献
 
-- バグ報告や機能要望  
-  [GitHub Issues](https://github.com/B16B1RD/cc-tdd-kit/issues) へ
-- 使い方の共有や質問  
-  [GitHub Discussions](https://github.com/B16B1RD/cc-tdd-kit/discussions) へ
+XPの実用性を高める改善提案を歓迎します。Kent Beck原則を維持しながらの機能拡張をお願いします。
+
+## 📜 ライセンス
+
+MIT License - 自由に使ってください。
 
 ---
 
-*シンプルに、小さく始めて、大きく育てる。それが Kent Beck 流 TDD の本質です。*
+*"勇気とは、恐怖に直面した効果的な行動である" - Kent Beck*
+
+*小さく始めて、継続的にフィードバックを得る。それがXPの本質です。*

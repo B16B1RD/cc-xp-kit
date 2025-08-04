@@ -1,366 +1,226 @@
 #!/bin/bash
+# cc-xp-kit installer - Kent Beck哲学 + XPワークフローのインストーラー
+
 set -e
 
-# cc-tdd-kit インストーラー
-VERSION="0.2.0"
-REPO_URL="https://github.com/B16B1RD/cc-tdd-kit"
-BRANCH="${CC_TDD_KIT_BRANCH:-main}"
-
 # カラー定義
-RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-echo -e "${BLUE}🎯 cc-tdd-kit インストーラー v${VERSION}${NC}"
-echo "========================================"
+# デフォルト設定
+DEFAULT_BRANCH="main"
+BRANCH=${CC_TDD_BRANCH:-$DEFAULT_BRANCH}
+NON_INTERACTIVE=false
+INSTALL_DIR=""
+INSTALL_TYPE=""
 
-# 依存関係チェック
-check_dependencies() {
-    local missing_deps=()
-    
-    if ! command -v git &> /dev/null; then
-        missing_deps+=("git")
-    fi
-    
-    if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
-        missing_deps+=("curl または wget")
-    fi
-    
-    if [ ${#missing_deps[@]} -ne 0 ]; then
-        echo -e "${RED}❌ エラー: 以下のツールが必要です:${NC}"
-        printf '%s\n' "${missing_deps[@]}"
-        exit 1
-    fi
+# ヘルプ表示
+show_help() {
+    echo -e "${BLUE}🚀 cc-xp-kit インストーラー${NC}"
+    echo ""
+    echo "5つのXPスラッシュコマンドによる統合開発ワークフロー"
+    echo ""
+    echo "使用方法："
+    echo "  bash install.sh [オプション]"
+    echo ""
+    echo "インストール先オプション："
+    echo "  --user             ユーザー用インストール (~/.claude/commands/)"
+    echo "  --project          プロジェクト用インストール (.claude/commands/)"
+    echo "  --local, --dev     ローカル開発用 (.claude/commands/ のエイリアス)"
+    echo ""
+    echo "その他のオプション："
+    echo "  -b, --branch BRANCH    インストール元のブランチを指定 (デフォルト: main)"
+    echo "  -h, --help            このヘルプを表示"
+    echo ""
+    echo "環境変数："
+    echo "  CC_TDD_BRANCH         インストール元のブランチ"
+    echo ""
+    echo "例："
+    echo "  bash install.sh                          # インタラクティブ選択"
+    echo "  bash install.sh --local                  # ローカル開発用（非対話）"
+    echo "  bash install.sh --user                   # ユーザー用（非対話）"
+    echo "  bash install.sh --local --branch develop # ブランチ指定と組み合わせ"
+    echo "  CC_TDD_BRANCH=feature bash install.sh    # 環境変数でブランチ指定"
+    echo ""
 }
 
-# インストール先の選択
-select_install_location() {
-    echo -e "\n${YELLOW}インストール先を選択してください:${NC}"
-    echo "1) ユーザー用 (~/.claude/commands/) - すべてのプロジェクトで使える"
-    echo "2) プロジェクト用 (.claude/commands/) - このプロジェクトのみ"
-    echo
-    read -p "選択 [1/2] (デフォルト: 1): " INSTALL_CHOICE
-    
-    if [ "${INSTALL_CHOICE}" = "2" ]; then
-        INSTALL_DIR=".claude/commands"
-        INSTALL_TYPE="project"
-        
-        # ホームディレクトリチェック
-        if [ "$PWD" = "$HOME" ]; then
-            echo -e "${RED}❌ エラー: ホームディレクトリではプロジェクト用インストールできません${NC}"
-            echo "プロジェクトディレクトリに移動してから再実行してください"
-            exit 1
-        fi
-        
-        echo -e "${GREEN}📁 プロジェクト用としてインストールします: $PWD/$INSTALL_DIR${NC}"
-    else
-        INSTALL_DIR="$HOME/.claude/commands"
-        INSTALL_TYPE="user"
-        echo -e "${GREEN}📁 ユーザー用としてインストールします: $INSTALL_DIR${NC}"
-    fi
-}
-
-# ファイルのダウンロード（リトライロジック付き）
-download_file() {
-    local url=$1
-    local output=$2
-    local max_retries=3
-    local retry_delay=1
-    
-    for i in $(seq 1 $max_retries); do
-        if command -v curl &> /dev/null; then
-            if curl -fsSL "$url" -o "$output" 2>/dev/null; then
-                return 0
-            fi
-        elif command -v wget &> /dev/null; then
-            if wget -q "$url" -O "$output" 2>/dev/null; then
-                return 0
-            fi
-        else
-            echo -e "${RED}❌ ダウンロードツールが見つかりません${NC}"
-            return 1
-        fi
-        
-        # 最後の試行でない場合は遅延を入れてリトライ
-        if [ $i -lt $max_retries ]; then
-            sleep $retry_delay
-            retry_delay=$((retry_delay * 2))  # 指数バックオフ
-        fi
-    done
-    
-    return 1
-}
-
-# インストール実行
-install_tdd_kit() {
-    echo -e "\n${BLUE}📦 ディレクトリを作成中...${NC}"
-    mkdir -p "$INSTALL_DIR/shared"
-    mkdir -p "$INSTALL_DIR/tdd"
-    
-    # 一時ディレクトリの作成
-    TEMP_DIR=$(mktemp -d)
-    trap 'rm -rf "$TEMP_DIR"' EXIT
-    
-    echo -e "${BLUE}📥 ファイルをダウンロード中...${NC}"
-    
-    # 共通リソースのダウンロード
-    local shared_files=(
-        "kent-beck-principles.md"
-        "mandatory-gates.md"
-        "commit-rules.md"
-        "analyze-next-action.sh"
-        "todo-manager.sh"
-        "story-tracker.sh"
-        "progress-dashboard.sh"
-        "micro-feedback.sh"
-        "acceptance-criteria.sh"
-        "iteration-tracker.sh"
-        "completion-message-generator.sh"
-        "project-type-detector.sh"
-        "story-progress-analyzer.sh"
-    )
-    
-    for file in "${shared_files[@]}"; do
-        echo -n "  - shared/$file ... "
-        if download_file "$REPO_URL/raw/$BRANCH/src/shared/$file" "$INSTALL_DIR/shared/$file"; then
-            # shellスクリプトに実行権限を付与
-            if [[ "$file" == *.sh ]]; then
-                chmod +x "$INSTALL_DIR/shared/$file"
-            fi
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC}"
-            echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
-            exit 1
-        fi
-        # GitHub Actions でのレート制限対策
-        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
-    done
-    
-    # completion-templatesディレクトリの作成とファイルダウンロード
-    echo -e "${BLUE}📥 completion-templatesをダウンロード中...${NC}"
-    mkdir -p "$INSTALL_DIR/shared/completion-templates"
-    
-    local template_files=(
-        "api-focused.md"
-        "cli-focused.md"
-        "development-focused.md"
-        "experience-focused.md"
-    )
-    
-    for file in "${template_files[@]}"; do
-        echo -n "  - shared/completion-templates/$file ... "
-        if download_file "$REPO_URL/raw/$BRANCH/src/shared/completion-templates/$file" "$INSTALL_DIR/shared/completion-templates/$file"; then
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC}"
-            echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
-            exit 1
-        fi
-        # GitHub Actions でのレート制限対策
-        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
-    done
-    
-    # メインコマンドのダウンロード
-    local main_files=(
-        "tdd.md"
-    )
-    
-    for file in "${main_files[@]}"; do
-        echo -n "  - $file ... "
-        if download_file "$REPO_URL/raw/$BRANCH/src/commands/$file" "$TEMP_DIR/$file"; then
-            # インストールタイプに応じてパスを調整
-            if [ "$INSTALL_TYPE" = "project" ]; then
-                sed -i.bak 's|@~/.claude/commands/shared/|@.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
-            fi
-            cp "$TEMP_DIR/$file" "$INSTALL_DIR/$file"
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC}"
-            echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
-            exit 1
-        fi
-        # GitHub Actions でのレート制限対策
-        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
-    done
-    
-    # サブコマンドのダウンロード
-    local subcommands=(
-        "run.md"
-        "status.md"
-        "review.md"
-        "fix.md"
-        "detect.md"
-        "feedback.md"
-    )
-    
-    for file in "${subcommands[@]}"; do
-        echo -n "  - tdd/$file ... "
-        if download_file "$REPO_URL/raw/$BRANCH/src/subcommands/tdd/$file" "$TEMP_DIR/$file"; then
-            # インストールタイプに応じてパスを調整
-            if [ "$INSTALL_TYPE" = "project" ]; then
-                sed -i.bak 's|@~/.claude/commands/shared/|@.claude/commands/shared/|g' "$TEMP_DIR/$file" && rm -f "$TEMP_DIR/$file.bak"
-            fi
-            cp "$TEMP_DIR/$file" "$INSTALL_DIR/tdd/$file"
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC}"
-            echo -e "${RED}❌ ダウンロード失敗: $file${NC}"
-            exit 1
-        fi
-        # GitHub Actions でのレート制限対策
-        [ -n "$GITHUB_ACTIONS" ] && sleep 0.5
-    done
-    
-    # 設定ファイルの作成
-    echo -e "\n${BLUE}⚙️  設定ファイルを作成中...${NC}"
-    cat > "$INSTALL_DIR/.cc-tdd-kit.json" << EOF
-{
-    "version": "$VERSION",
-    "installed_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-    "installation_type": "$INSTALL_TYPE",
-    "install_directory": "$INSTALL_DIR",
-    "repository": "$REPO_URL",
-    "branch": "$BRANCH"
-}
-EOF
-    
-    echo -e "${GREEN}✅ 設定ファイルを作成しました${NC}"
-}
-
-# アンインストール機能
-uninstall_tdd_kit() {
-    echo -e "${YELLOW}🗑️  cc-tdd-kit をアンインストールします${NC}"
-    
-    local found_installation=false
-    
-    # 設定ファイルから情報を読み取る
-    for dir in "$HOME/.claude/commands" ".claude/commands"; do
-        if [ -f "$dir/.cc-tdd-kit.json" ]; then
-            found_installation=true
-            echo -e "${BLUE}アンインストール対象: $dir${NC}"
-            read -p "本当にアンインストールしますか？ [y/N]: " confirm
-            
-            if [[ $confirm =~ ^[Yy]$ ]]; then
-                # ファイルの削除
-                rm -rf "$dir/shared"
-                rm -rf "$dir/tdd"
-                rm -f "$dir/tdd.md"
-                rm -f "$dir/.cc-tdd-kit.json"
-                
-                # ディレクトリが空なら削除
-                if [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
-                    rmdir "$dir" 2>/dev/null || true
-                    # 親の.claudeディレクトリも空なら削除
-                    if [ -d "$(dirname "$dir")" ] && [ -z "$(ls -A "$(dirname "$dir")" 2>/dev/null)" ]; then
-                        rmdir "$(dirname "$dir")" 2>/dev/null || true
-                    fi
-                fi
-                
-                echo -e "${GREEN}✅ アンインストール完了${NC}"
-                return 0
-            else
-                echo "アンインストールをキャンセルしました"
-                return 1
-            fi
-        fi
-    done
-    
-    if [ "$found_installation" = false ]; then
-        echo -e "${RED}❌ cc-tdd-kit のインストールが見つかりません${NC}"
-        return 1
-    fi
-}
-
-# アップデート機能
-update_tdd_kit() {
-    echo -e "${BLUE}🔄 cc-tdd-kit を更新中...${NC}"
-    
-    # 既存のインストールを探す
-    for dir in "$HOME/.claude/commands" ".claude/commands"; do
-        if [ -f "$dir/.cc-tdd-kit.json" ]; then
-            INSTALL_DIR="$dir"
-            INSTALL_TYPE=$(grep -o '"installation_type": "[^"]*"' "$dir/.cc-tdd-kit.json" | cut -d'"' -f4)
-            echo -e "${GREEN}既存のインストールを検出: $dir (${INSTALL_TYPE}用)${NC}"
-            install_tdd_kit
-            return
-        fi
-    done
-    
-    echo -e "${RED}❌ 既存のインストールが見つかりません${NC}"
-    echo "新規インストールを実行してください"
-    exit 1
-}
-
-# メイン処理
-main() {
-    case "${1:-}" in
-        uninstall|--uninstall|-u)
-            uninstall_tdd_kit
+# 引数解析
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -b|--branch)
+            BRANCH="$2"
+            shift 2
             ;;
-        update|--update|-U)
-            check_dependencies
-            update_tdd_kit
+        --user)
+            INSTALL_DIR="$HOME/.claude/commands"
+            INSTALL_TYPE="user"
+            NON_INTERACTIVE=true
+            shift
             ;;
-        version|--version|-v)
-            echo "cc-tdd-kit installer version $VERSION"
+        --project)
+            INSTALL_DIR=".claude/commands"
+            INSTALL_TYPE="project"
+            NON_INTERACTIVE=true
+            shift
             ;;
-        help|--help|-h)
-            echo "使用方法: bash install.sh [オプション]"
-            echo ""
-            echo "オプション:"
-            echo "  (なし)               新規インストール"
-            echo "  uninstall, -u        アンインストール"
-            echo "  update, -U           アップデート"
-            echo "  version, -v          バージョン表示"
-            echo "  help, -h             このヘルプを表示"
+        --local|--dev)
+            INSTALL_DIR=".claude/commands"
+            INSTALL_TYPE="project"
+            NON_INTERACTIVE=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
             ;;
         *)
-            check_dependencies
-            select_install_location
-            install_tdd_kit
-            
-            # 完了メッセージ
-            echo -e "\n${GREEN}========================================${NC}"
-            echo -e "${GREEN}🎉 cc-tdd-kit のインストール完了！${NC}"
-            echo -e "${GREEN}========================================${NC}"
-            echo
-            echo -e "${BLUE}インストール先:${NC} $INSTALL_DIR"
-            echo -e "${BLUE}インストールタイプ:${NC} $INSTALL_TYPE"
-            echo
-            echo -e "${YELLOW}使い方:${NC}"
-            echo "1. プロジェクトディレクトリで Claude Code を開始:"
-            echo -e "   ${GREEN}cd my-project && claude${NC}"
-            echo
-            echo "2. 統合TDD開発（v0.2.0 新機能）:"
-            echo -e "   ${GREEN}/tdd \"作りたいもの\"${NC}     # 統合開発（環境構築→ストーリー→計画→実装案内を一括実行）"
-            echo
-            echo "3. TDD実践コマンド:"
-            echo -e "   ${GREEN}/tdd:run 機能名${NC}          # Kent Beck純正TDD実装（7つの改善システム統合済み）"
-            echo -e "   ${GREEN}/tdd:feedback immediate${NC}  # 継続的フィードバック"
-            echo -e "   ${GREEN}/tdd:status${NC}              # 価値中心進捗確認"
-            echo -e "   ${GREEN}/tdd:review${NC}              # アジャイル価値レビュー"
-            echo
-            echo "4. Kent Beck改善システム（v0.2.0 新機能）:"
-            echo -e "   ${GREEN}bash ~/.claude/commands/shared/progress-dashboard.sh${NC}     # 進捗ダッシュボード"
-            echo -e "   ${GREEN}bash ~/.claude/commands/shared/todo-manager.sh anxiety${NC}   # 不安優先ToDo管理"
-            echo -e "   ${GREEN}bash ~/.claude/commands/shared/micro-feedback.sh step${NC}    # マイクロフィードバック"
-            echo -e "   ${GREEN}bash ~/.claude/commands/shared/acceptance-criteria.sh${NC}    # 受け入れ条件チェック"
-            echo
-            echo -e "${BLUE}詳細: /tdd${NC}"
-            echo
-            if [ "$INSTALL_TYPE" = "user" ]; then
-                echo "✨ v0.2.0 Kent Beck改善システムで開発体験が革新！科学的TDD実践が可能に！"
-            else
-                echo "✨ このプロジェクト専用にv0.2.0 Kent Beck改善TDD環境が構築されました！"
-            fi
-            echo
-            echo -e "${GREEN}Happy Agile TDD! 🚀${NC}"
+            echo -e "${RED}❌ 不明なオプション: $1${NC}"
+            echo "ヘルプを表示するには --help を使用してください。"
+            exit 1
             ;;
     esac
-}
+done
 
-# 実行
-main "$@"
+echo -e "${BLUE}🚀 cc-xp-kit インストーラー${NC}"
+echo -e "${BLUE}XP統合ワークフロー: plan → story → develop → review → retro${NC}"
+if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
+    echo -e "${YELLOW}📋 ブランチ: $BRANCH${NC}"
+fi
+if [ "$NON_INTERACTIVE" = "true" ]; then
+    echo -e "${BLUE}📁 インストール先: $INSTALL_TYPE${NC}"
+fi
+echo ""
+
+# インストール先の選択（非対話モードでない場合のみ）
+if [ "$NON_INTERACTIVE" != "true" ]; then
+    echo "インストール先を選んでください："
+    echo "1) ユーザー用 (~/.claude/commands/) - 推奨"
+    echo "2) プロジェクト用 (.claude/commands/)"
+    echo ""
+    read -p "選択 (1 or 2): " choice
+
+    case $choice in
+        1)
+            INSTALL_DIR="$HOME/.claude/commands"
+            INSTALL_TYPE="user"
+            ;;
+        2)
+            INSTALL_DIR=".claude/commands"
+            INSTALL_TYPE="project"
+            ;;
+        *)
+            echo -e "${RED}無効な選択です${NC}"
+            exit 1
+            ;;
+    esac
+fi
+
+# ディレクトリ作成
+echo -e "${BLUE}ディレクトリを作成中...${NC}"
+mkdir -p "$INSTALL_DIR"
+
+# cc-xp コマンドをインストール
+echo -e "${BLUE}5つのXPコマンドをインストール中...${NC}"
+
+# インストール用のソースディレクトリを特定
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# cc-xp コマンドファイル一覧
+CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
+
+if [ -d "$SCRIPT_DIR/src/cc-xp" ]; then
+    # ローカルファイルからコピー
+    for file in "${CC_XP_FILES[@]}"; do
+        if [ -f "$SCRIPT_DIR/src/cc-xp/$file" ]; then
+            cp "$SCRIPT_DIR/src/cc-xp/$file" "$INSTALL_DIR/"
+            echo -e "${BLUE}  ✓ cc-xp:${file%.md} をコピーしました${NC}"
+        else
+            echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
+        fi
+    done
+    
+elif [ -d "$(pwd)/src/cc-xp" ]; then
+    # カレントディレクトリからコピー
+    for file in "${CC_XP_FILES[@]}"; do
+        if [ -f "$(pwd)/src/cc-xp/$file" ]; then
+            cp "$(pwd)/src/cc-xp/$file" "$INSTALL_DIR/"
+            echo -e "${BLUE}  ✓ cc-xp:${file%.md} をコピーしました${NC}"
+        else
+            echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
+        fi
+    done
+else
+    # GitHub raw URLから直接ダウンロード
+    echo -e "${BLUE}GitHubからダウンロード中...${NC}"
+    BASE_URL="https://raw.githubusercontent.com/B16B1RD/cc-tdd-kit/${BRANCH}/src/cc-xp"
+    
+    if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
+        echo -e "${YELLOW}📁 ブランチ: $BRANCH${NC}"
+    fi
+    
+    # ブランチ存在確認と各ファイルダウンロード
+    download_success=true
+    
+    for file in "${CC_XP_FILES[@]}"; do
+        if curl -fsSL --head "$BASE_URL/$file" >/dev/null 2>&1; then
+            curl -fsSL "$BASE_URL/$file" -o "$INSTALL_DIR/$file"
+            
+            if [ ! -f "$INSTALL_DIR/$file" ] || [ ! -s "$INSTALL_DIR/$file" ]; then
+                echo -e "${RED}❌ $file のダウンロードに失敗しました${NC}"
+                download_success=false
+            else
+                echo -e "${BLUE}  ✓ cc-xp:${file%.md} をダウンロードしました${NC}"
+            fi
+        else
+            echo -e "${YELLOW}⚠️ $file が見つかりません（スキップ）${NC}"
+        fi
+    done
+    
+    if [ "$download_success" = "false" ]; then
+        echo -e "${RED}❌ 一部ファイルのダウンロードに失敗しました${NC}"
+        echo -e "${YELLOW}💡 ブランチ '$BRANCH' を確認してください${NC}"
+        echo "   例: main, develop, feature/branch-name"
+        exit 1
+    fi
+fi
+
+# 完了メッセージ
+echo ""
+echo -e "${GREEN}✅ cc-xp-kit インストール完了！${NC}"
+echo ""
+echo "📋 インストールされた5つのXPコマンド："
+for file in "${CC_XP_FILES[@]}"; do
+    if [ -f "$INSTALL_DIR/$file" ]; then
+        command_name="${file%.md}"
+        echo -e "${BLUE}  ✓ /cc-xp:${command_name}${NC}"
+    fi
+done
+echo ""
+echo "🔄 XP統合ワークフロー："
+echo -e "${BLUE}1. /cc-xp:plan \"作りたいもの\"${NC}     → 計画立案（YAGNI原則）"
+echo -e "${BLUE}2. /cc-xp:story${NC}                  → ユーザーストーリー詳細化"
+echo -e "${BLUE}3. /cc-xp:develop${NC}                → TDD実装（Red→Green→Refactor）"
+echo -e "${BLUE}4. /cc-xp:review [accept/reject]${NC}  → 動作確認とフィードバック"
+echo -e "${BLUE}5. /cc-xp:retro${NC}                  → 振り返りと継続的改善"
+echo ""
+echo "💡 使用例："
+echo "  /cc-xp:plan \"ウェブブラウザで遊べるテトリスが欲しい\""
+echo "  /cc-xp:story"
+echo "  /cc-xp:develop"
+echo "  /cc-xp:review accept"
+echo "  /cc-xp:retro"
+echo ""
+echo "🛠️ モダンツールチェーン対応："
+echo "  JavaScript/TypeScript: Bun, pnpm + Vite"
+echo "  Python: uv + Ruff + pytest"
+echo "  Rust: Cargo, Go: Go modules"
+echo ""
+if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
+    echo -e "${YELLOW}📋 インストール元: $BRANCH ブランチ${NC}"
+    echo ""
+fi
+echo -e "${GREEN}Kent Beck XP + TDD統合開発を実践しましょう！${NC}"
+echo -e "${GREEN}小さく始めて、継続的にフィードバックを得る。それがXPの本質です。${NC}"

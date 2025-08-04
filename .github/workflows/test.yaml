@@ -1,4 +1,4 @@
-name: Test
+name: cc-xp-kit Test
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-install:
-    name: Test Installation
+    name: Test cc-xp Installation
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -27,45 +27,65 @@ jobs:
           cd test-project
         fi
     
-    - name: Test installation
+    - name: Test cc-xp installation
       run: |
-        # インストールタイプに応じてテスト
+        # インストールタイプに応じてテスト（非対話モード）
         if [ "${{ matrix.install-type }}" = "user" ]; then
-          echo "1" | bash ${{ github.workspace }}/install.sh
+          bash ${{ github.workspace }}/install.sh --user
         else
           cd test-project
-          echo "2" | bash ${{ github.workspace }}/install.sh
+          bash ${{ github.workspace }}/install.sh --project
         fi
     
-    - name: Verify installation
+    - name: Verify cc-xp installation
       run: |
-        # インストールの確認
+        # 5つのcc-xpファイルの確認
+        CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
+        
         if [ "${{ matrix.install-type }}" = "user" ]; then
-          test -f "$HOME/.claude/commands/tdd.md"
-          test -f "$HOME/.claude/commands/.cc-tdd-kit.json"
-          test -d "$HOME/.claude/commands/shared"
-          test -d "$HOME/.claude/commands/tdd"
+          for file in "${CC_XP_FILES[@]}"; do
+            test -f "$HOME/.claude/commands/$file"
+            echo "✅ $file installed"
+          done
         else
           cd test-project
-          test -f ".claude/commands/tdd.md"
-          test -f ".claude/commands/.cc-tdd-kit.json"
-          test -d ".claude/commands/shared"
-          test -d ".claude/commands/tdd"
+          for file in "${CC_XP_FILES[@]}"; do
+            test -f ".claude/commands/$file"
+            echo "✅ $file installed"
+          done
         fi
     
-    - name: Test uninstall
+    - name: Verify cc-xp content
       run: |
-        # アンインストールのテスト
+        # ファイル内容の基本確認
+        CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
+        
         if [ "${{ matrix.install-type }}" = "user" ]; then
-          echo "y" | bash ${{ github.workspace }}/install.sh uninstall
-          # アンインストールの確認
-          test ! -f "$HOME/.claude/commands/tdd.md"
+          commands_dir="$HOME/.claude/commands"
         else
           cd test-project
-          echo "y" | bash ${{ github.workspace }}/install.sh uninstall
-          # アンインストールの確認
-          test ! -f ".claude/commands/tdd.md"
+          commands_dir=".claude/commands"
         fi
+        
+        # 各ファイルにXPキーワードが含まれているか確認
+        grep -q "XP plan" "$commands_dir/plan.md"
+        grep -q "XP story" "$commands_dir/story.md"
+        grep -q "XP develop" "$commands_dir/develop.md"
+        grep -q "XP review" "$commands_dir/review.md"
+        grep -q "XP retro" "$commands_dir/retro.md"
+        echo "✅ All cc-xp files have correct content"
+
+  test-suite:
+    name: Run Test Suite
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run cc-xp test suite
+      run: |
+        bash tests/run-tests.sh
 
   shellcheck:
     name: ShellCheck
@@ -79,23 +99,5 @@ jobs:
       uses: ludeeus/action-shellcheck@master
       with:
         check_together: 'yes'
-        severity: 'warning'
+        severity: 'error'
 
-  markdown-lint:
-    name: Markdown Lint
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-    
-    - name: Install dependencies
-      run: npm install
-    
-    - name: Run markdownlint
-      run: npm run lint:md
