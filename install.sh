@@ -27,8 +27,8 @@ show_help() {
     echo "  bash install.sh [オプション]"
     echo ""
     echo "インストール先オプション："
-    echo "  --user             ユーザー用インストール (~/.claude/commands/)"
     echo "  --project          プロジェクト用インストール (.claude/commands/)"
+    echo "  --user             ユーザー用インストール (~/.claude/commands/)"
     echo "  --local, --dev     ローカル開発用 (.claude/commands/ のエイリアス)"
     echo ""
     echo "その他のオプション："
@@ -97,19 +97,19 @@ echo ""
 # インストール先の選択（非対話モードでない場合のみ）
 if [ "$NON_INTERACTIVE" != "true" ]; then
     echo "インストール先を選んでください："
-    echo "1) ユーザー用 (~/.claude/commands/) - 推奨"
-    echo "2) プロジェクト用 (.claude/commands/)"
+    echo "1) プロジェクト用 (.claude/commands/) - 推奨"
+    echo "2) ユーザー用 (~/.claude/commands/)"
     echo ""
     read -p "選択 (1 or 2): " choice
 
     case $choice in
         1)
-            INSTALL_DIR="$HOME/.claude/commands"
-            INSTALL_TYPE="user"
-            ;;
-        2)
             INSTALL_DIR=".claude/commands"
             INSTALL_TYPE="project"
+            ;;
+        2)
+            INSTALL_DIR="$HOME/.claude/commands"
+            INSTALL_TYPE="user"
             ;;
         *)
             echo -e "${RED}無効な選択です${NC}"

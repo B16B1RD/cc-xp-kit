@@ -116,12 +116,13 @@ cc-xp-kit/
 ### ユーザープロジェクト構造
 ```
 your-project/
-├── ~/.claude/commands/       # インストールされたコマンド
-│   ├── plan.md              # /cc-xp:plan
-│   ├── story.md             # /cc-xp:story
-│   ├── develop.md           # /cc-xp:develop
-│   ├── review.md            # /cc-xp:review
-│   └── retro.md             # /cc-xp:retro
+├── .claude/commands/        # インストールされたコマンド（プロジェクトローカル）
+│   └── cc-xp/
+│       ├── plan.md          # /cc-xp:plan
+│       ├── story.md         # /cc-xp:story
+│       ├── develop.md       # /cc-xp:develop
+│       ├── review.md        # /cc-xp:review
+│       └── retro.md         # /cc-xp:retro
 ├── docs/cc-xp/              # プロジェクトデータ（自動生成）
 │   ├── backlog.yaml         # ストーリーバックログ
 │   ├── metrics.json         # ベロシティ・メトリクス
