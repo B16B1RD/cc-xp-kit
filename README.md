@@ -20,6 +20,12 @@ Kent Beck の XP 原則と TDD サイクルを完全統合し、フィーチャ�
 # インストール（10 秒）
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash
 
+# プロジェクト用インストール（推奨・デフォルト）
+curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --project
+
+# ユーザー用インストール（全プロジェクトで共通利用）
+curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --user
+
 # 開発用ブランチからインストール
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --branch develop
 
