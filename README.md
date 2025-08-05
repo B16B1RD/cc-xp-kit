@@ -18,10 +18,10 @@ Kent Beck の XP 原則と TDD サイクルを完全統合し、フィーチャ�
 
 ```bash
 # インストール（10 秒）
-curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-tdd-kit/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash
 
 # 開発用ブランチからインストール
-curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-tdd-kit/main/install.sh | bash -s -- --branch develop
+curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --branch develop
 
 # XP ワークフロー開始
 /cc-xp:plan "ウェブブラウザで遊べるテトリスが欲しい"

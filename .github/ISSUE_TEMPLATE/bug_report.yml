@@ -1,5 +1,5 @@
 name: 🐛 バグ報告
-description: cc-tdd-kit のバグを報告してください
+description: cc-xp-kit のバグを報告してください
 title: "[Bug]: "
 labels: ["bug", "triage"]
 assignees: []
@@ -26,8 +26,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: cc-tdd-kit バージョン
-      description: 使用しているcc-tdd-kitのバージョンを教えてください
+      label: cc-xp-kit バージョン
+      description: 使用しているcc-xp-kitのバージョンを教えてください
       placeholder: "例: v0.1.3"
     validations:
       required: true

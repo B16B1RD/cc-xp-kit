@@ -155,7 +155,7 @@ elif [ -d "$(pwd)/src/cc-xp" ]; then
 else
     # GitHub raw URLから直接ダウンロード
     echo -e "${BLUE}GitHubからダウンロード中...${NC}"
-    BASE_URL="https://raw.githubusercontent.com/B16B1RD/cc-tdd-kit/${BRANCH}/src/cc-xp"
+    BASE_URL="https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/${BRANCH}/src/cc-xp"
     
     if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
         echo -e "${YELLOW}📁 ブランチ: $BRANCH${NC}"
