@@ -100,7 +100,14 @@ if [ "$NON_INTERACTIVE" != "true" ]; then
     echo "1) プロジェクト用 (.claude/commands/) - 推奨"
     echo "2) ユーザー用 (~/.claude/commands/)"
     echo ""
-    read -p "選択 (1 or 2): " choice
+    # パイプ実行対応: タイムアウトとデフォルト選択を追加
+    read -t 10 -p "選択 (1 or 2) [デフォルト: 1]: " choice
+    
+    # 空入力またはタイムアウト時はデフォルト（プロジェクト用）を選択
+    if [ -z "$choice" ]; then
+        choice="1"
+        echo "プロジェクト用インストールを選択しました"
+    fi
 
     case $choice in
         1)
@@ -112,8 +119,11 @@ if [ "$NON_INTERACTIVE" != "true" ]; then
             INSTALL_TYPE="user"
             ;;
         *)
-            echo -e "${RED}無効な選択です${NC}"
-            exit 1
+            echo -e "${RED}無効な選択です: $choice${NC}"
+            echo -e "${YELLOW}有効な選択肢: 1 (プロジェクト用) または 2 (ユーザー用)${NC}"
+            echo -e "${YELLOW}デフォルトでプロジェクト用を選択します${NC}"
+            INSTALL_DIR=".claude/commands"
+            INSTALL_TYPE="project"
             ;;
     esac
 fi
