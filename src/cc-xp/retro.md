@@ -1,6 +1,6 @@
 ---
 description: XP retro – 振り返りと継続的改善
-allowed-tools: Bash(date), Bash(git:*), ReadFile, WriteFile
+allowed-tools: Bash(date), Bash(echo), Bash(git:*), ReadFile, WriteFile
 ---
 
 ## ゴール
@@ -44,7 +44,7 @@ allowed-tools: Bash(date), Bash(git:*), ReadFile, WriteFile
 4. **メトリクス更新**
    現在日時を取得してメトリクスを更新：
    ```bash
-   current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+   current_time=$(date +"%Y-%m-%dT%H:%M:%S%:z")
    ```
    
    metrics.json の内容：

@@ -1,7 +1,7 @@
 ---
 description: XP story – ユーザーストーリーを詳細化（対話重視）
 argument-hint: '[id] ※省略時は最初の selected を使用'
-allowed-tools: Bash(date), Bash(git:*), ReadFile, WriteFile
+allowed-tools: Bash(date), Bash(echo), Bash(git:*), ReadFile, WriteFile
 ---
 
 ## ゴール
@@ -36,7 +36,7 @@ allowed-tools: Bash(date), Bash(git:*), ReadFile, WriteFile
 
 5. 現在日時を取得：
    ```bash
-   current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+   current_time=$(date +"%Y-%m-%dT%H:%M:%S%:z")
    ```
 
 6. @docs/cc-xp/stories/<id>.md に保存（作成日時付き）

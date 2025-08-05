@@ -1,7 +1,7 @@
 ---
 description: XP plan – 次のイテレーションを計画する（YAGNI原則：必要なものだけ）
 argument-hint: '"ウェブブラウザで遊べるテトリスが欲しい"'
-allowed-tools: Bash(date), Bash(git:*), ReadFile, WriteFile
+allowed-tools: Bash(date), Bash(echo), Bash(git:*), ReadFile, WriteFile
 ---
 
 ## ゴール
@@ -41,7 +41,7 @@ $ARGUMENTS から**最小限の価値あるストーリー**を抽出し、1〜2
 
 7. 現在日時を取得してストーリーに記録：
    ```bash
-   current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+   current_time=$(date +"%Y-%m-%dT%H:%M:%S%:z")
    ```
 
 8. **変更をコミット**：

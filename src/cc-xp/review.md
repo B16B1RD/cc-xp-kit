@@ -70,7 +70,7 @@ bunx http-server -p 8080 > server.log 2>&1 &
 
 backlog.yaml の更新時に現在日時を取得：
 ```bash
-current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+current_time=$(date +"%Y-%m-%dT%H:%M:%S%:z")
 # status を review に更新し、updated_at に $current_time を設定
 ```
 

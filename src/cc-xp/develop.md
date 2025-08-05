@@ -72,7 +72,7 @@ allowed-tools: Bash(*), WriteFile, ReadFile
 ### 4. 進捗更新
 - 現在日時を取得：
   ```bash
-  current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  current_time=$(date +"%Y-%m-%dT%H:%M:%S%:z")
   ```
 - backlog.yaml の status を `testing` に更新、`updated_at` を $current_time に設定
 - 変更をコミット：
