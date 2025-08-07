@@ -48,6 +48,126 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 
 ## 🔄 5 つの XP ワークフロー
 
+### ワークフロー全体図
+
+```mermaid
+graph TB
+    Start([開始]) --> Plan["/cc-xp:plan<br/>要望からストーリー抽出"]
+    Plan --> Story["/cc-xp:story<br/>ストーリー詳細化"]
+    Story --> Develop["/cc-xp:develop<br/>TDDサイクル"]
+    Develop --> Review["/cc-xp:review<br/>動作確認"]
+    
+    Review --> ReviewDecision{判定}
+    ReviewDecision -->|accept| Done[完了]
+    ReviewDecision -->|reject| Develop
+    ReviewDecision -->|skip| Review
+    
+    Done --> NextDecision{次は？}
+    NextDecision -->|次のストーリー| Story
+    NextDecision -->|振り返り| Retro["/cc-xp:retro<br/>振り返り"]
+    NextDecision -->|新イテレーション| Plan
+    
+    Retro --> NextDecision2{次は？}
+    NextDecision2 -->|続行| Story
+    NextDecision2 -->|新計画| Plan
+    NextDecision2 -->|終了| End([終了])
+    
+    style Plan fill:#e1f5fe
+    style Story fill:#f3e5f5
+    style Develop fill:#fff3e0
+    style Review fill:#f1f8e9
+    style Retro fill:#fce4ec
+    style Done fill:#c8e6c9
+```
+
+### ステータス遷移図
+
+```mermaid
+stateDiagram-v2
+    [*] --> selected: /cc-xp:plan
+    selected --> in_progress: /cc-xp:story
+    in_progress --> testing: /cc-xp:develop
+    testing --> done: /cc-xp:review accept
+    testing --> in_progress: /cc-xp:review reject
+    done --> [*]
+    
+    note right of selected
+        計画で選定された
+        ストーリー
+    end note
+    
+    note right of in_progress
+        詳細化され
+        開発中
+    end note
+    
+    note right of testing
+        TDD完了
+        レビュー待ち
+    end note
+    
+    note right of done
+        受け入れ完了
+        マージ済み
+    end note
+```
+
+### TDDサイクル詳細（develop内部）
+
+```mermaid
+graph LR
+    subgraph "/cc-xp:develop"
+        Red[Red<br/>失敗するテスト作成] --> Green[Green<br/>最小限の実装]
+        Green --> Refactor[Refactor<br/>コード改善]
+        Refactor --> Commit[testing状態へ]
+    end
+    
+    Start([in-progress]) --> Red
+    Commit --> End([testing])
+    
+    style Red fill:#ffcdd2
+    style Green fill:#c8e6c9
+    style Refactor fill:#bbdefb
+```
+
+### develop ↔ review ループ
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant D as /cc-xp:develop
+    participant R as /cc-xp:review
+    participant Git as Git Repository
+    
+    Dev->>D: 実行
+    D->>D: Red Phase (テスト作成)
+    D->>Git: commit "test: 🔴"
+    D->>D: Green Phase (最小実装)
+    D->>Git: commit "feat: ✅"
+    D->>D: Refactor Phase (改善)
+    D->>Git: commit "refactor: ♻️"
+    D->>Dev: testing状態へ
+    
+    Dev->>R: 実行
+    R->>R: デモ起動
+    R->>Dev: 動作確認依頼
+    
+    alt Accept
+        Dev->>R: accept
+        R->>Git: merge to main
+        R->>Git: tag "story-done"
+        R->>Dev: ✨ 完了！
+    else Reject
+        Dev->>R: reject "理由"
+        R->>R: フィードバック記録
+        R->>Dev: 修正依頼
+        Dev->>D: 再実行（修正）
+    else Skip
+        Dev->>R: skip
+        R->>Dev: 保留
+    end
+```
+
 ### 完全統合された開発サイクル
 
 ```bash
@@ -116,6 +236,38 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 - **実用的 TDD** - Red→Green→Refactor の厳密実行
 - **バックログ管理** - YAML 形式でのストーリー追跡
 
+## 📊 典型的な開発セッション
+
+```mermaid
+gantt
+    title XP開発セッション（2時間）
+    dateFormat HH:mm
+    axisFormat %H:%M
+    
+    section 計画
+    plan (5分)           :done, plan, 00:00, 5m
+    
+    section ストーリー1
+    story詳細化          :done, story1, after plan, 5m
+    develop (TDD)        :done, dev1, after story1, 20m
+    review & accept      :done, rev1, after dev1, 5m
+    
+    section ストーリー2
+    story詳細化          :done, story2, after rev1, 5m
+    develop (TDD)        :done, dev2, after story2, 15m
+    review & reject      :crit, rev2, after dev2, 5m
+    develop (修正)       :done, dev2fix, after rev2, 10m
+    review & accept      :done, rev2fix, after dev2fix, 5m
+    
+    section ストーリー3
+    story詳細化          :done, story3, after rev2fix, 5m
+    develop (TDD)        :done, dev3, after story3, 25m
+    review & accept      :done, rev3, after dev3, 5m
+    
+    section 振り返り
+    retro (10分)         :milestone, retro, after rev3, 10m
+```
+
 ## 🏗️ プロジェクト構造
 
 ### cc-xp-kit 構造
@@ -170,6 +322,39 @@ your-project/
 - **ストーリー単位ブランチ** - `story-{id}` での作業分離
 - **TDD フェーズコミット** - Red → Green → Refactor の段階的コミット
 - **自動マージ・タグ** - 受け入れ時の自動処理
+
+## 📈 メトリクスと改善
+
+```mermaid
+graph TB
+    subgraph "継続的改善サイクル"
+        Metrics[メトリクス収集] --> Analysis[分析]
+        Analysis --> Insights[洞察]
+        Insights --> Actions[アクション]
+        Actions --> Implementation[実装]
+        Implementation --> Metrics
+    end
+    
+    subgraph "収集データ"
+        M1[ベロシティ]
+        M2[サイクルタイム]
+        M3[TDDサイクル数]
+        M4[修正回数]
+        M5[コミット頻度]
+    end
+    
+    M1 --> Metrics
+    M2 --> Metrics
+    M3 --> Metrics
+    M4 --> Metrics
+    M5 --> Metrics
+    
+    style Metrics fill:#e3f2fd
+    style Analysis fill:#f3e5f5
+    style Insights fill:#fff9c4
+    style Actions fill:#ffecb3
+    style Implementation fill:#e8f5e9
+```
 
 ## 📜 ライセンス
 
