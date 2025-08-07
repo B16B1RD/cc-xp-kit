@@ -105,6 +105,7 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 ## 🏗️ プロジェクト構造
 
 ### cc-xp-kit 構造
+
 ```
 cc-xp-kit/
 ├── src/cc-xp/                # 📦 5 つの XP コマンド
@@ -119,6 +120,7 @@ cc-xp-kit/
 ```
 
 ### ユーザープロジェクト構造
+
 ```
 your-project/
 ├── .claude/commands/        # インストールされたコマンド（プロジェクトローカル）
@@ -138,18 +140,21 @@ your-project/
 ## 🎯 実用的な機能
 
 ### バックログ管理
+
 - **YAML 形式** - 人間が読みやすく、Git で追跡可能
 - **ストーリーポイント** - Size (1～8) + Value (High/Medium/Low)
 - **状態管理** - todo → selected → in-progress → testing → done
 
 ### メトリクス追跡
+
 - **ベロシティ** - 完了ストーリーポイント/時間
 - **サイクルタイム** - Red→Green→Refactor の所要時間  
 - **Git 統計** - コミット数、変更行数による客観的分析
 
 ### フィーチャーブランチ戦略
+
 - **ストーリー単位ブランチ** - `story-{id}` での作業分離
-- **TDD フェーズコミット** - Red🔴 → Green✅ → Refactor♻️
+- **TDD フェーズコミット** - Red → Green → Refactor の段階的コミット
 - **自動マージ・タグ** - 受け入れ時の自動処理
 
 ## 🤝 貢献
