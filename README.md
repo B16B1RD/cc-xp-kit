@@ -1,5 +1,7 @@
 # cc-xp-kit
 
+*🤖 このキットは [Claude Code](https://claude.ai/code) を使った Vibe Coding で開発されました*
+
 Kent Beck XP + TDD 統合開発を、5 つのスラッシュコマンドで。
 
 ## 🎯 哲学

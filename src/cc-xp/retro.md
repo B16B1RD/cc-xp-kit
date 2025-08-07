@@ -1,6 +1,6 @@
 ---
 description: XP retro – 振り返りと継続的改善
-allowed-tools: Bash(date), Bash(echo), Bash(git:*), ReadFile, WriteFile
+allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), ReadFile, WriteFile
 ---
 
 ## ゴール
@@ -14,121 +14,251 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), ReadFile, WriteFile
 - **継続的改善**: 小さな改善を積み重ねる
 - **透明性**: Gitログから客観的データを収集
 
-## 手順
+## Gitメトリクスの収集
 
-1. **Gitログから実績データを収集**
-   ```bash
-   # 今回のイテレーションのコミット数
-   commit_count=$(git log --oneline --since="2 hours ago" | wc -l)
-   
-   # TDDサイクルの実施確認（Red/Green/Refactorコミット）
-   red_commits=$(git log --oneline --since="2 hours ago" | grep -c "🔴")
-   green_commits=$(git log --oneline --since="2 hours ago" | grep -c "✅")
-   refactor_commits=$(git log --oneline --since="2 hours ago" | grep -c "♻️")
-   
-   # 完了したストーリー
-   completed_stories=$(git log --oneline --since="2 hours ago" | grep -c "✨")
-   ```
+### イテレーション期間の特定
+- 最初のplanコミット: !git log --reverse --grep="feat: イテレーション計画" --format="%at" -1
+- 現在時刻（UNIX時間）: !date +%s
 
-2. **メトリクスファイルから追加データ収集**
-   - 完了ストーリー数とポイント
-   - サイクルタイム
-   - テストカバレッジ（可能なら）
-   - 使用ツールの効果
+上記の差分から経過時間を計算してください。見つからない場合は、2時間前からを対象期間としてください。
 
-3. **シンプルな振り返り**（多くても3つずつ）
-   - **Good**: うまくいったこと
-   - **Bad**: 改善が必要なこと
-   - **Try**: 次に試すこと
+### コミット統計の収集
+- 総コミット数: !git log --oneline --since="2 hours ago"
+- Redコミット数: !git log --oneline --since="2 hours ago" --grep="🔴"
+- Greenコミット数: !git log --oneline --since="2 hours ago" --grep="✅"
+- Refactorコミット数: !git log --oneline --since="2 hours ago" --grep="♻️"
+- 完了ストーリー数: !git log --oneline --since="2 hours ago" --grep="✨"
 
-4. **メトリクス更新**
-   現在日時を取得してメトリクスを更新：
-   ```bash
-   current_time=$(date +"%Y-%m-%dT%H:%M:%S%:z")
-   ```
-   
-   metrics.json の内容：
-   ```json
-   {
-     "velocity": 8,
-     "cycleTime": 45,
-     "testCoverage": 85,
-     "toolchain": "bun + vitest",
-     "completedStories": $completed_stories,
-     "tddCycles": {
-       "red": $red_commits,
-       "green": $green_commits,
-       "refactor": $refactor_commits
-     },
-     "commitCount": $commit_count,
-     "lastUpdated": "$current_time"
-   }
-   ```
+### 変更統計の収集
+- 変更ファイル数: !git diff --name-only main..HEAD
+- 変更サマリー: !git diff --stat main..HEAD
+- 頻繁に変更されたファイル: !git log --since="2 hours ago" --name-only --pretty=format:
 
-5. **振り返り結果をコミット**
-   ```bash
-   git add docs/cc-xp/metrics.json
-   git commit -m "docs: 📊 イテレーション振り返り - $(date +%Y-%m-%d)"
-   ```
+## 現在のメトリクス分析
 
-6. **次のアクション提示**
-   - 未完了ストーリーがある → 継続
-   - すべて完了 → 新しい計画
-   - ツールチェーンの最適化提案
+### メトリクスファイルの確認
+@docs/cc-xp/metrics.json から以下を確認してください：
+- 現在のベロシティ
+- 平均サイクルタイム
+- 使用中のツールチェーン
+- 過去のイテレーション履歴
 
-## 出力例
+### バックログの確認
+@docs/cc-xp/backlog.yaml から以下をカウントしてください（**読み取りのみ、変更しない**）：
+- 完了ストーリー数（status: done）
+- 進行中ストーリー数（status: in-progress/testing）
+- 残りストーリー数（status: todo/selected）
+
+注意：retro コマンドではステータスを変更しません。
+
+## TDDサイクル健全性の評価
+
+収集したGitメトリクスから、以下の基準で健全性を判定してください：
+
+### 健全性ステータス
+
+**✅ 健全**
+- Red、Green、Refactorのコミット数が同じ
+- すべてのフェーズが実施されている
+- コミット頻度が適切（5コミット以上）
+
+**⚠️ 要注意**
+- Refactorコミットが少ない（Greenの50%未満）
+- コミット頻度が低い（3-4コミット）
+- TDDサイクルがやや不完全
+
+**❌ 要改善**
+- Redコミットがない（テストファーストでない）
+- Red/Greenの数が一致しない
+- Refactorが全くない
+- コミット数が極端に少ない（2以下）
+
+## 振り返りの生成
+
+### Good 👍（うまくいったこと）
+収集したメトリクスから良かった点を**3つ以内**でリストアップしてください：
+- 完了したストーリー数が多い
+- TDDサイクルを適切に実施
+- 高いコミット頻度
+- 適切なリファクタリング実施
+
+### Bad 👎（改善が必要なこと）
+問題点を**3つ以内**でリストアップしてください：
+- TDDサイクルの不完全さ
+- リファクタリングのスキップ
+- コミット頻度の低さ
+- テスト不足
+
+### Try 🚀（次に試すこと）
+具体的な改善アクションを**3つ以内**で提案してください：
+- テストファーストの徹底
+- 各Greenフェーズ後のリファクタリング
+- より小さなステップでの開発
+- ツールチェーンの最適化
+
+## メトリクスの更新
+
+### イテレーション情報の記録
+@docs/cc-xp/metrics.json のiterationsに以下を追加：
+
+```json
+{
+  "id": "[イテレーション開始時刻]",
+  "completed_at": "[現在時刻]",
+  "duration_seconds": [経過秒数],
+  "commits": [コミット数],
+  "stories_completed": [完了ストーリー数],
+  "tdd_cycles": {
+    "red": [Redコミット数],
+    "green": [Greenコミット数],
+    "refactor": [Refactorコミット数]
+  },
+  "health_status": "[健全/要注意/要改善]"
+}
+```
+
+### 全体メトリクスの更新
+- lastUpdated: 現在時刻
+- completedStories: 累計を更新
+- ベロシティの再計算（移動平均）
+
+## アクションアイテムの生成
+
+`docs/cc-xp/action-items-[日付].md` を以下の内容で作成してください：
 
 ```markdown
-## イテレーション振り返り
+# 改善アクションアイテム
 
-### 📊 実績（Gitログより）
-- コミット数: 12
-- TDDサイクル: Red(3) → Green(3) → Refactor(3)
-- 完了ストーリー: 2（8ポイント）
-- サイクルタイム: 45分
-- 使用ツール: Bun + Vitest（起動が高速！）
+生成日: [現在日時]
+イテレーション: [ID]
+健全性: [ステータス]
 
-### 💡 学び
-**Good**: 
-- TDDサイクルを厳密に守れた（Red/Green/Refactor各3回）
-- Bunのテスト実行が爆速
-- フィーチャーブランチで安心して実験できた
+## 優先度: 高
+- [ ] [最重要改善項目]
 
-**Bad**: 
-- 最初のテストが大きすぎた
-- コミットメッセージが曖昧なものがあった
+## 優先度: 中
+- [ ] [改善項目]
 
-**Try**: 
-- より小さなテストから始める
-- Conventional Commitsを徹底する
-- Vitestのwatch機能を活用する
-
-### 🚀 次のステップ
-残りストーリーを継続：
-/cc-xp:story
+## 優先度: 低
+- [ ] [その他の改善項目]
 ```
 
-## Git統計の活用
-
-振り返りで以下のGitコマンドも活用可能：
+## 変更のコミット
 
 ```bash
-# 変更行数の統計
-git diff --stat main..HEAD
-
-# 誰がどれだけ貢献したか（ペアプロの場合）
-git shortlog -sn --since="2 hours ago"
-
-# ファイル変更頻度（リファクタリング対象の発見）
-git log --name-only --since="2 hours ago" | grep -v "^$" | sort | uniq -c | sort -nr
+git add docs/cc-xp/metrics.json docs/cc-xp/action-items-*.md
+git commit -m "docs: 📊 イテレーション振り返り - [日付]"
 ```
 
-## 次コマンド
+## 振り返りサマリーの表示
 
-```text
-新しいイテレーション：
-/cc-xp:plan "次の機能要望"
+以下の形式で結果を表示してください：
 
-継続：
-/cc-xp:story
 ```
+📊 イテレーション振り返り
+========================
+
+【実績】
+期間: [X]時間
+コミット数: [数]
+TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
+完了ストーリー: [数]（[ポイント]ポイント）
+健全性: [ステータス] [絵文字]
+
+【Good 👍】
+• [良かった点1]
+• [良かった点2]
+
+【Bad 👎】
+• [改善点1]
+• [改善点2]
+
+【Try 🚀】
+• [次に試すこと1]
+• [次に試すこと2]
+
+📄 アクションアイテム: docs/cc-xp/action-items-[日付].md
+
+【変更統計】
+変更ファイル: [数]
+[変更行数サマリー]
+
+【頻繁に変更されたファイル】
+[リスト]
+```
+
+## ツールチェーン最適化の提案
+
+現在のツールチェーン（@docs/cc-xp/metrics.json）を確認し、より高速な代替案がある場合は提案してください：
+
+- npm → Bun（JavaScript）
+- pip → uv（Python）
+- 通常のテスト → watch mode
+- 手動ビルド → ホットリロード
+
+## 次のステップの提案
+
+@docs/cc-xp/backlog.yaml の状態から適切な次のアクションを**必ず明確に提案**してください：
+
+```
+🚀 次のステップ
+================
+
+[状況に応じて以下から選択、複数可]
+```
+
+### パターン1: 進行中ストーリーがある場合
+```
+【優先】開発を継続:
+→ /cc-xp:develop
+（in-progress ストーリー: [タイトル]）
+
+修正が必要な場合は develop → review のサイクルを続ける
+```
+
+### パターン2: 選択済みストーリーがある場合
+```
+【優先】次のストーリーを詳細化:
+→ /cc-xp:story
+（selected ストーリー: [タイトル]）
+
+詳細化後は develop → review → accept/reject のサイクル
+```
+
+### パターン3: 未選択ストーリーがある場合
+```
+【優先】次のイテレーション計画:
+→ /cc-xp:plan
+（残り [X] 個のストーリーあり）
+
+新しいストーリーを選定して開発サイクルを継続
+```
+
+### パターン4: すべて完了の場合
+```
+🎉 すべてのストーリーが完了しました！
+
+新しい要望を計画:
+→ /cc-xp:plan "新機能の要望"
+
+プロジェクトの成果物を確認:
+• 完成したファイル: [リスト]
+• 総コミット数: [数]
+• 総開発時間: [時間]
+```
+
+### 共通の追加情報
+```
+💡 ワークフローのヒント
+---------------------
+• develop ↔ review は何度でも繰り返してOK
+• 詰まったら別のストーリーに切り替えもあり
+• 定期的な振り返りで改善を積み重ねる
+• アクションアイテム: docs/cc-xp/action-items-[日付].md
+```
+
+## 注意事項
+
+- メトリクスは客観的データに基づく
+- 改善提案は具体的で実行可能に
+- 良い点も必ず認識して記録する
