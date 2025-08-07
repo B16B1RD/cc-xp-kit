@@ -1,7 +1,7 @@
 ---
 description: XP story – ユーザーストーリーを詳細化（対話重視）
 argument-hint: '[id] ※省略時は最初の selected を使用'
-allowed-tools: Bash(date), Bash(echo), Bash(git:*), ReadFile, WriteFile
+allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(grep), ReadFile, WriteFile
 ---
 
 ## ゴール
@@ -15,70 +15,207 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), ReadFile, WriteFile
 - **勇気**: 不明点があれば仮定を置いて進む
 - **継続的インテグレーション**: 各ステップをコミット
 
-## 手順
+## 現在の状態確認
 
-1. 対象ストーリーを特定（$ARGUMENTS または最初の selected）
+### 環境チェック
+- backlog存在確認: !test -f docs/cc-xp/backlog.yaml
+- Git状態: !git status --short
+- 現在のブランチ: !git branch --show-current
+- 現在時刻: !date +"%Y-%m-%dT%H:%M:%S%:z"
 
-2. **フィーチャーブランチの作成**：
-   ```bash
-   # ストーリー用のブランチを作成
-   git checkout -b story-${id}
-   ```
+### 対象ストーリーの特定
 
-3. ユーザー視点でストーリーを記述：
-   ```
-   As a [ユーザー]
-   I want [機能]
-   So that [価値]
-   ```
+$ARGUMENTS が指定されている場合はそのID、なければ最初の `selected` ステータスのストーリーを使用してください。
 
-4. **具体的な**受け入れ条件を 3つ以内で定義（Given-When-Then形式）
+@docs/cc-xp/backlog.yaml から該当ストーリーの情報を取得：
+- ID
+- タイトル  
+- サイズ
+- 価値
+- 現在のステータス
 
-5. 現在日時を取得：
-   ```bash
-   current_time=$(date +"%Y-%m-%dT%H:%M:%S%:z")
-   ```
+**ステータスバリデーション**：
+- 対象ストーリーが `selected` であることを確認
+- すでに `in-progress` 以降のステータスの場合は、そのまま継続するか確認
+- `done` ステータスのストーリーは詳細化不可
 
-6. @docs/cc-xp/stories/<id>.md に保存（作成日時付き）
+backlogが存在しない場合は、先に `/cc-xp:plan` の実行を案内してください。
 
-7. backlog.yaml の status を `in-progress` に更新、`updated_at` を更新
+## フィーチャーブランチの作成
 
-8. **変更をコミット**：
-   ```bash
-   git add docs/cc-xp/stories/${id}.md docs/cc-xp/backlog.yaml
-   git commit -m "docs: ストーリー詳細化 - ${title}"
-   ```
+### ブランチの確認
+- 既存ブランチ一覧: !git branch -a
 
-## ストーリーファイルの構造
+`story-[ID]` ブランチが既に存在する場合は、チェックアウトするか確認してください：
+```
+ブランチ story-[ID] が既に存在します。
+チェックアウトしますか？ (y/N): 
+```
+
+存在しない場合は新規作成：
+```bash
+git checkout -b story-[ID]
+```
+
+## ストーリーの詳細化
+
+### 1. ユーザーストーリーの作成
+
+選択されたストーリー「[タイトル]」を以下の形式で表現してください：
+
+```
+As a [ユーザーペルソナ]
+I want [機能・要望]
+So that [得られる価値]
+```
+
+例：
+- As a **プレイヤー**
+- I want **ブラウザでテトリスを開く**
+- So that **すぐに遊び始められる**
+
+### 2. 受け入れ条件の定義
+
+**具体的で測定可能な**条件を**3つ以内**で作成してください。Given-When-Then形式：
+
+```gherkin
+シナリオ1: [メインケース]
+Given [前提条件]
+When [アクション]
+Then [結果]
+
+シナリオ2: [エッジケース]
+Given [異常な状況]
+When [操作]
+Then [適切な処理]
+
+シナリオ3: [品質基準]（必要に応じて）
+Given [環境]
+When [処理]
+Then [パフォーマンス基準]
+```
+
+### 3. テスト戦略の判定
+
+各受け入れ条件について、以下を判断してください：
+- **自動テスト可能**: プログラムで検証可能
+- **手動テスト必要**: 人の目で確認が必要
+- **ハイブリッド**: 両方必要
+
+### 4. 実装ヒントの追加
+
+技術的な観点から実装のヒントを簡潔に追加：
+- 推奨ライブラリ/フレームワーク
+- 注意すべきポイント
+- 参考リンク（あれば）
+
+## ストーリーファイルの作成
+
+`docs/cc-xp/stories/[ID].md` を以下の内容で作成してください：
 
 ```markdown
 ---
-created_at: $current_time
+created_at: [現在時刻]
+estimated_time: [推定分数]
+test_strategy: [automated/manual/hybrid]
+difficulty: [easy/medium/hard]
 ---
 
-# Story: ゲーム画面を表示する
+# Story: [タイトル]
 
 ## ユーザーストーリー
-As a プレイヤー
-I want ブラウザでテトリスを開く
-So that すぐに遊び始められる
+As a [ペルソナ]
+I want [要望]
+So that [価値]
 
 ## 受け入れ条件
 
-### シナリオ1: 初回アクセス
-Given ブラウザでURLを開いたとき
-When ページが読み込まれたら
-Then 10×20のゲーム盤面が表示される
+### シナリオ1: [タイトル]
+Given [前提]
+When [アクション]
+Then [結果]
 
-### シナリオ2: ゲーム開始
-Given ゲーム画面が表示されているとき
-When スペースキーを押したら
-Then ブロックが落下し始める
+### シナリオ2: [タイトル]
+Given [前提]
+When [アクション]
+Then [結果]
+
+## テスト戦略
+- 自動テスト: [説明]
+- 手動確認: [説明]
+
+## 実装のヒント
+- [ヒント1]
+- [ヒント2]
+
+## 前提条件
+- [環境要件]
+- [依存関係]
 ```
 
-## 次コマンド
+## backlog.yamlの更新
 
-```text
-TDDサイクルを開始：
-/cc-xp:develop
+@docs/cc-xp/backlog.yaml の該当ストーリーを更新：
+- status: `selected` → `in-progress` （**重要**: doneにはしない）
+- updated_at: 現在時刻
+
+**ステータスの流れ**：
+- `selected` (plan) → `in-progress` (story) → `testing` (develop) → `done` (review accept のみ)
+
+## 変更のコミット
+
+以下でコミットしてください：
+
+```bash
+git add docs/cc-xp/stories/[ID].md docs/cc-xp/backlog.yaml
+git commit -m "docs: ストーリー詳細化 - [タイトル]"
 ```
+
+## 完了サマリーの表示
+
+**必ず以下を表示してください**：
+
+```
+📝 ストーリー詳細化完了
+======================
+
+ストーリー: [タイトル]
+ブランチ: story-[ID]
+ステータス: in-progress ✅
+サイズ: [ポイント]
+価値: [High/Medium/Low]
+
+受け入れ条件:
+✓ [シナリオ1要約]
+✓ [シナリオ2要約]
+✓ [シナリオ3要約]（あれば）
+
+テスト戦略: [automated/manual/hybrid]
+推定時間: [X]分
+```
+
+### 重要：次のコマンドを必ず表示
+
+```
+🚀 次のステップ
+================
+TDDサイクルを開始:
+→ /cc-xp:develop
+
+このコマンドで:
+• Red: 失敗するテストを作成
+• Green: 最小限の実装
+• Refactor: コード改善
+
+💡 TDDのコツ
+-----------
+• 最初のテストは最も簡単なものから
+• 一度に一つずつ進める
+• コミットを細かく分ける
+```
+
+## 注意事項
+
+- 受け入れ条件は具体的で測定可能に
+- YAGNIを意識し、過度な詳細化を避ける
+- ユーザー価値を中心に考える
