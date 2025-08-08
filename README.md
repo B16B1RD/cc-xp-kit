@@ -209,6 +209,43 @@ sequenceDiagram
 /cc-xp:retro
 ```
 
+## 📊 メトリクス責務表
+
+各コマンドがどのメトリクスをいつ更新するかを明確にします：
+
+| コマンド | バックログ状態更新 | メトリクス更新 | ファイル生成 |
+|---------|------------------|--------------|------------|
+| **plan** | `selected` ステータスで新規作成 | `metrics.json` 初期化（初回のみ） | `backlog.yaml` |
+| **story** | `selected` → `in-progress` | - | `stories/[ID].md` |
+| **develop** | `in-progress` → `testing` | `tddCycles` (red/green/refactor) カウント増加 | テストファイル、実装ファイル |
+| **review** | `testing` → `done` (accept時)<br/>`testing` → `in-progress` (reject時) | `completedStories` カウント増加（accept時） | `stories/[ID]-feedback.md` (reject時) |
+| **retro** | 変更なし（読み取りのみ） | `iterations` 追加、`velocity` 再計算 | `action-items-[日付].md` |
+
+### メトリクスファイル構造
+
+**`docs/cc-xp/metrics.json`**
+```json
+{
+  "velocity": 0,           // 移動平均で自動計算（retro）
+  "completedStories": 0,   // accept時に増加（review）
+  "tddCycles": {
+    "red": 0,             // Red フェーズ完了時（develop）
+    "green": 0,           // Green フェーズ完了時（develop）
+    "refactor": 0         // Refactor フェーズ完了時（develop）
+  },
+  "iterations": []        // イテレーション履歴（retro）
+}
+```
+
+**`docs/cc-xp/backlog.yaml`**
+```yaml
+stories:
+  - id: [ID]
+    status: selected/in-progress/testing/done
+    # selected (plan) → in-progress (story) → 
+    # testing (develop) → done (review accept のみ)
+```
+
 ## 🛠️ モダンツールチェーン対応
 
 プロジェクトの言語を自動検出し、最適なツールを使用します。

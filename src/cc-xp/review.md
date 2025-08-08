@@ -1,7 +1,7 @@
 ---
 description: XP review – 動作確認と判定（accept/reject/skipで指定）
 argument-hint: '[accept|reject|skip] [理由（rejectの場合）] [--skip-demo]'
-allowed-tools: Bash(*), ReadFile, WriteFile
+allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(python:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), ReadFile, WriteFile
 ---
 
 ## ゴール
@@ -318,8 +318,36 @@ $ARGUMENTS の最初の単語を確認：
 ## エラーハンドリング
 
 以下の場合は適切なメッセージを表示してください：
+
+### ポート衝突時の対処
+
+ポートが既に使用されている場合の自動対処：
+
+```bash
+# ポート使用状況の確認
+lsof -i :3000 || netstat -an | grep :3000
+
+# 代替ポートの探索（3001, 3002...）
+for port in 3001 3002 3003 8080 8081; do
+  if ! lsof -i :$port > /dev/null 2>&1; then
+    echo "代替ポート $port を使用します"
+    break
+  fi
+done
+```
+
+**エラー時の自動提案**：
+```
+⚠️ ポート3000が使用中です
+
+以下のオプションがあります：
+1. 既存サーバーを使用: /cc-xp:review --skip-demo
+2. 代替ポート3001で起動（自動実行中...）
+3. 既存プロセスを停止: kill $(lsof -t -i:3000)
+```
+
+### その他のエラー
 - testingステータスのストーリーがない
-- ポートが既に使用されている
 - サーバー起動に失敗
 - テスト実行に失敗
 - Gitマージで競合発生

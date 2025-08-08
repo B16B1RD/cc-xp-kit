@@ -1,7 +1,7 @@
 ---
 description: XP develop – TDDサイクル（Red→Green→Refactor）を完走
 argument-hint: '[id] ※省略時は in-progress ストーリーを使用'
-allowed-tools: Bash(*), WriteFile, ReadFile
+allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(uv:*), Bash(python:*), Bash(pytest:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(ls), WriteFile, ReadFile
 ---
 
 ## ゴール
@@ -244,6 +244,37 @@ TDDサイクル完了後、**必ず以下を表示**してください：
 - 変更を確認
 - git diffで差分を表示
 - 前のコミットに戻る方法を案内
+
+## テスト高速化のコツ
+
+開発効率を向上させるため、以下の高速化手法を活用してください：
+
+### 推奨オプション
+
+**JavaScript/TypeScript**
+- `bun test --watch` - ファイル変更時に自動再実行
+- `npm test -- --watch` - watchモードで継続的テスト
+- `vitest --run --reporter=verbose` - 詳細出力で問題を素早く特定
+
+**Python**
+- `pytest --maxfail=1` - 最初の失敗で停止
+- `pytest -k test_name` - 特定テストのみ実行
+- `pytest --tb=short` - 簡潔なトレースバック
+- `pytest-watch` - ファイル監視モード（要インストール）
+
+**Rust**
+- `cargo watch -x test` - ファイル変更時に自動テスト
+- `cargo test --nocapture` - 出力を即座に表示
+
+**Go**
+- `go test -failfast` - 最初の失敗で停止
+- `gow test ./...` - ファイル監視ツール（要インストール）
+
+### 高速化の原則
+- **部分実行**: 関連テストのみを実行して時間短縮
+- **早期失敗**: 最初のエラーで停止して修正サイクルを高速化
+- **自動再実行**: ファイル保存時に自動でテスト実行
+- **並列実行**: 可能な限り並列でテスト実行
 
 ## 注意事項
 

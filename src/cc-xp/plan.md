@@ -22,6 +22,32 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 - 現在のブランチ: !git branch --show-current
 - 未コミット変更: !git status --short
 
+### 未コミット変更の警告
+
+未コミット変更がある場合（`git status --porcelain` の出力が空でない場合）、以下の警告を表示してください：
+
+```
+⚠️ 未コミットの変更が検出されました
+=====================================
+
+以下のファイルに変更があります：
+[git status --short の出力をここに表示]
+
+【推奨アクション】
+1. 現在の変更をコミット:
+   git add .
+   git commit -m "現在の作業を保存"
+
+2. 変更を一時的に退避:
+   git stash push -m "計画前の作業"
+
+3. 変更を破棄（注意！）:
+   git checkout -- .
+
+新しいイテレーション計画を開始する前に、
+現在の作業を適切に処理することを推奨します。
+```
+
 ### プロジェクト構造
 - ディレクトリ確認: !test -d docs/cc-xp/stories
 - backlog確認: !test -f docs/cc-xp/backlog.yaml
