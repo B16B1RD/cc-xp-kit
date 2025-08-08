@@ -1,18 +1,19 @@
 ---
-description: XP develop – TDDサイクル（Red→Green→Refactor）を完走
+description: XP develop – TDD+E2Eサイクル（Red→Green→Refactor→E2E）を完走
 argument-hint: '[id] ※省略時は in-progress ストーリーを使用'
-allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(uv:*), Bash(python:*), Bash(pytest:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(ls), WriteFile, ReadFile
+allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(uv:*), Bash(python:*), Bash(pytest:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(npx:*), Bash(ls), WriteFile, ReadFile, mcp__playwright__*
 ---
 
 ## ゴール
 
-**テストファースト**でストーリーを実装し、動作するコードを素早く作る。各フェーズをGitで記録。
+**テストファースト**でストーリーを実装し、動作するコードを素早く作る。Webアプリケーションの場合はE2Eテストまで含めた完全な品質保証を実現する。各フェーズをGitで記録。
 
-## XP/TDD原則
+## XP/TDD+E2E原則
 
 - **Red**: まず失敗するテストを書く
 - **Green**: テストを通す最小限のコード
 - **Refactor**: 動作を保ちながら改善
+- **E2E**: ユーザー視点での統合テスト（Webアプリの場合）
 - **小さなステップ**: 一度に一つのことだけ
 - **継続的インテグレーション**: 各フェーズをコミット
 
@@ -62,6 +63,19 @@ $ARGUMENTS が指定されている場合はそのID、なければ `in-progress
 - Ruby: `bundle exec rspec`
 - Java: `./gradlew test`
 - C#: `dotnet test`
+
+### E2Eテスト環境の判定
+
+**Webアプリケーションの検出**：
+以下の条件でWebアプリと判定し、E2Eテストフェーズを追加：
+- package.jsonに`"dev"`スクリプトがある
+- index.html、app.js、main.tsなどのWebファイルが存在
+- フレームワーク（React、Vue、Angular、Svelte等）の設定ファイル
+
+**E2Eテスト戦略の選択**：
+1. **MCP Playwright優先**: 利用可能な場合は自動実行
+2. **通常Playwright**: playwright.config.*が存在する場合
+3. **手動E2Eテスト**: Playwright未対応環境では手動確認を推奨
 
 ## TDDサイクルの実施
 
@@ -166,6 +180,57 @@ git commit -m "refactor: ♻️ [ストーリータイトル]のコード改善"
 
 注意：ステータスを `done` にするのは `/cc-xp:review accept` のみです。
 
+## Phase 4: E2E（統合テスト）※Webアプリの場合のみ
+
+### E2Eテストの実施
+
+**Webアプリケーション検出時のみ実行**。ストーリーの受け入れ条件をブラウザ操作に変換します。
+
+#### MCP Playwright利用時
+
+受け入れ条件を基に自動的にE2Eテストを実行：
+
+```typescript
+// 例：ログインフォーム テスト
+await mcp__playwright__browser_navigate("http://localhost:3000")
+await mcp__playwright__browser_snapshot() // 初期状態の記録
+await mcp__playwright__browser_type("Email input field", "ref123", "test@example.com")
+await mcp__playwright__browser_type("Password input field", "ref456", "password123")
+await mcp__playwright__browser_click("Login button", "ref789")
+await mcp__playwright__browser_wait_for("text", "Welcome")
+await mcp__playwright__browser_snapshot() // ログイン後状態の記録
+```
+
+#### 通常Playwright利用時
+
+```bash
+# E2Eテストファイルの生成（tests/e2e/ または e2e/）
+npx playwright test --headed
+```
+
+#### E2E非対応環境
+
+手動テスト手順を生成し、コメントとして記録：
+
+```javascript
+/*
+E2E手動テスト手順:
+1. http://localhost:3000 にアクセス
+2. ログインフォームにtest@example.com, password123を入力
+3. ログインボタンをクリック
+4. "Welcome"メッセージが表示されることを確認
+*/
+```
+
+#### 確認とコミット
+
+E2Eテストが成功したら：
+
+```bash
+git add [E2Eテストファイル]
+git commit -m "test: 🌐 [ストーリータイトル]のE2Eテストを追加"
+```
+
 ### 最終コミット
 ```bash
 git add docs/cc-xp/backlog.yaml docs/cc-xp/metrics.json
@@ -177,8 +242,8 @@ git commit -m "chore: ストーリー [ID] を testing に更新"
 TDDサイクル完了後、**必ず以下を表示**してください：
 
 ```
-📊 TDDサイクル完了
-==================
+📊 TDD+E2Eサイクル完了
+====================
 ストーリー: [タイトル]
 ブランチ: story-[ID]
 ステータス: testing ✅
@@ -192,8 +257,12 @@ TDDサイクル完了後、**必ず以下を表示**してください：
 ✅ Red   - テスト作成（失敗確認）
 ✅ Green - 最小実装（テスト成功）
 ✅ Refactor - コード改善（テスト維持）
+[Webアプリの場合のみ表示]
+✅ E2E   - 統合テスト（ユーザー視点）
 
-使用ツール: [検出されたテストツール]
+使用ツール: 
+- ユニット: [検出されたテストツール]
+- E2E: [MCP Playwright / Playwright / 手動テスト]
 ```
 
 ### 重要：次のコマンドを必ず表示

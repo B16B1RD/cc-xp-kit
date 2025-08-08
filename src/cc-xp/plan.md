@@ -53,6 +53,49 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 - backlog確認: !test -f docs/cc-xp/backlog.yaml
 - metrics確認: !test -f docs/cc-xp/metrics.json
 
+### E2Eテスト環境の確認
+
+**MCP Playwright環境の検出**：
+Claude Code環境でMCP Playwrightが利用可能かどうかを確認してください。利用可能な場合は以下を表示：
+
+```
+✅ MCP Playwright が利用可能です
+==================================
+以下の機能が使用できます：
+• 自動ブラウザ操作
+• スクリーンショット取得
+• 要素の自動検出とクリック
+• フォーム入力の自動化
+
+WebアプリケーションのE2Eテストが自動実行されます。
+```
+
+**通常Playwright環境の検出**：
+- Playwright設定確認: !test -f playwright.config.ts || test -f playwright.config.js
+- package.json内Playwright確認: !grep -q "playwright" package.json 2>/dev/null || echo "not found"
+
+利用可能な場合：
+```
+⚠️ 通常のPlaywrightが検出されました
+=================================
+MCP Playwrightは利用不可ですが、
+通常のPlaywrightでE2Eテストを実行できます。
+
+npx playwright test
+```
+
+**E2Eテスト非対応環境**：
+両方とも利用不可の場合：
+```
+ℹ️ E2Eテスト環境が見つかりません
+==============================
+Webアプリケーションの場合は手動テストを推奨します。
+
+次のツールの導入を検討してください：
+• MCP Playwright（Claude Code環境）
+• Playwright（npm install playwright）
+```
+
 ### タイムスタンプ
 - 現在時刻: !date +"%Y-%m-%dT%H:%M:%S%:z"
 - イテレーションID: !date +%s

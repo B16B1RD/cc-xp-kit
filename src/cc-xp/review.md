@@ -1,7 +1,7 @@
 ---
-description: XP review – 動作確認と判定（accept/reject/skipで指定）
-argument-hint: '[accept|reject|skip] [理由（rejectの場合）] [--skip-demo]'
-allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(python:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), ReadFile, WriteFile
+description: XP review – 動作確認と判定（accept/reject/skipで指定）+ 自動E2E実行
+argument-hint: '[accept|reject|skip] [理由（rejectの場合）] [--skip-demo] [--skip-e2e]'
+allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(python:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), Bash(npx:*), ReadFile, WriteFile, mcp__playwright__*
 ---
 
 ## ゴール
@@ -76,7 +76,49 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 2. アクセスURLを表示
 3. ログファイルの確認方法を案内
 
-## Phase 2: 動作確認ガイドの表示
+## Phase 2: E2E自動テスト実行（--skip-e2eがない場合）
+
+### E2E戦略の確認
+
+ストーリーファイル（@docs/cc-xp/stories/[ID].md）の`e2e_strategy`を確認：
+
+**e2e-required または e2e-optional の場合のみ実行**
+
+#### MCP Playwright利用時の自動E2E実行
+
+```javascript
+// 受け入れ条件を自動的にE2Eテストに変換
+const story = readStoryFile(storyId);
+for (const scenario of story.acceptanceCriteria) {
+  await mcp__playwright__browser_navigate(serverUrl);
+  await executeScenario(scenario);
+  await mcp__playwright__browser_snapshot();
+}
+```
+
+実行結果を表示：
+```
+🌐 E2Eテスト実行結果
+==================
+✅ シナリオ1: ログインフォーム表示
+✅ シナリオ2: 正常ログイン処理  
+✅ シナリオ3: エラーハンドリング
+
+スクリーンショット: 3枚保存
+実行時間: 12.3秒
+```
+
+#### 通常Playwright利用時
+
+```bash
+npx playwright test --headed --reporter=html
+```
+
+#### E2E非対応環境またはunit-onlyの場合
+
+この段階をスキップし、Phase 3へ進む。
+
+## Phase 3: 動作確認ガイドの表示
 
 ストーリーの受け入れ条件を基に、確認すべきポイントを表示してください：
 
@@ -95,7 +137,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 2. [期待される結果]
 ```
 
-## Phase 3: 動作確認と判定
+## Phase 4: 動作確認と判定
 
 ### 引数なしの場合（デフォルト）
 ストーリーの受け入れ条件と確認手順を表示し、以下のガイダンスを提供：
@@ -122,6 +164,10 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 2. [期待される結果]
 
 デモURL: [起動したURL]
+
+E2Eテスト結果:
+[実行された場合のみ表示]
+🌐 E2Eテスト: [✅成功/❌失敗/➖スキップ]
 ```
 
 フィードバックファイルが存在する場合は追加表示：
@@ -164,7 +210,7 @@ $ARGUMENTS の最初の単語を確認：
 - `reject`: Phase 4のReject処理を実行（理由は引数の残り部分）
 - `skip`: Phase 4のSkip処理を実行
 
-## Phase 4: 判定に基づく処理
+## Phase 5: 判定に基づく処理
 
 判定に応じて以下の処理を実行し、**必ず最後に次のコマンドを明確に表示**してください。
 
@@ -308,12 +354,19 @@ $ARGUMENTS の最初の単語を確認：
    → /cc-xp:retro
    ```
 
-## --skip-demo オプション時の処理
+## --skip-demo / --skip-e2e オプション時の処理
 
+### --skip-demo オプション
 引数に `--skip-demo` がある場合：
 1. Phase 1（デモ起動）をスキップ
 2. 既存のサーバープロセスを使用
 3. Phase 2から開始
+
+### --skip-e2e オプション
+引数に `--skip-e2e` がある場合：
+1. Phase 2（E2E自動テスト）をスキップ
+2. Phase 3の動作確認ガイドから開始
+3. 手動確認に特化
 
 ## エラーハンドリング
 
@@ -344,6 +397,30 @@ done
 1. 既存サーバーを使用: /cc-xp:review --skip-demo
 2. 代替ポート3001で起動（自動実行中...）
 3. 既存プロセスを停止: kill $(lsof -t -i:3000)
+```
+
+### E2Eテスト関連エラー
+
+**MCP Playwrightエラー**：
+```
+❌ MCP Playwrightエラーが発生しました
+
+エラー: [具体的なエラーメッセージ]
+
+対処法：
+1. E2Eテストをスキップ: /cc-xp:review --skip-e2e
+2. 通常Playwrightに切り替え: npx playwright install
+3. 手動テストで確認
+```
+
+**通常Playwrightエラー**：
+```
+❌ Playwrightテストが失敗しました
+
+以下のオプションがあります：
+1. テスト修正後に再実行
+2. E2Eをスキップ: /cc-xp:review --skip-e2e  
+3. 手動確認に切り替え
 ```
 
 ### その他のエラー

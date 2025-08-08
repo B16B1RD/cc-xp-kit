@@ -46,7 +46,7 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --user
 ```
 
-## 🔄 5 つの XP ワークフロー
+## 🔄 5 つの XP ワークフロー + E2Eテスト統合
 
 ### ワークフロー全体図
 
@@ -112,14 +112,17 @@ stateDiagram-v2
     end note
 ```
 
-### TDDサイクル詳細（develop内部）
+### TDD+E2Eサイクル詳細（develop内部）
 
 ```mermaid
 graph LR
     subgraph "/cc-xp:develop"
         Red[Red<br/>失敗するテスト作成] --> Green[Green<br/>最小限の実装]
         Green --> Refactor[Refactor<br/>コード改善]
-        Refactor --> Commit[testing状態へ]
+        Refactor --> E2E{Webアプリ？}
+        E2E -->|Yes| E2ETest[E2E<br/>統合テスト実行]
+        E2E -->|No| Commit[testing状態へ]
+        E2ETest --> Commit
     end
     
     Start([in-progress]) --> Red
@@ -128,6 +131,7 @@ graph LR
     style Red fill:#ffcdd2
     style Green fill:#c8e6c9
     style Refactor fill:#bbdefb
+    style E2ETest fill:#e1f5fe
 ```
 
 ### develop ↔ review ループ
@@ -146,10 +150,18 @@ sequenceDiagram
     D->>Git: commit "feat: ✅"
     D->>D: Refactor Phase (改善)
     D->>Git: commit "refactor: ♻️"
+    opt Webアプリの場合
+        D->>D: E2E Phase (統合テスト)
+        D->>Git: commit "test: 🌐"
+    end
     D->>Dev: testing状態へ
     
     Dev->>R: 実行
     R->>R: デモ起動
+    opt E2E戦略がrequired/optional
+        R->>R: E2E自動実行
+        R->>Dev: E2E結果表示
+    end
     R->>Dev: 動作確認依頼
     
     alt Accept
@@ -177,7 +189,7 @@ sequenceDiagram
 # 2. ユーザーストーリー詳細化
 /cc-xp:story
 
-# 3. TDD 実装（Red→Green→Refactor）
+# 3. TDD+E2E 実装（Red→Green→Refactor→E2E）
 /cc-xp:develop
 
 # 4. 動作確認とフィードバック
@@ -250,6 +262,7 @@ stories:
 
 プロジェクトの言語を自動検出し、最適なツールを使用します。
 
+### ユニットテスト対応
 - **JavaScript/TypeScript**: Bun または pnpm + Vite
 - **Python**: uv + Ruff + pytest  
 - **Rust**: Cargo（標準）
@@ -258,19 +271,44 @@ stories:
 - **Java**: SDKMAN + Gradle/Maven
 - **C#**: .NET CLI（標準）
 
+### E2Eテスト対応（Webアプリケーション）
+
+自動的にE2Eテスト環境を検出・実行します：
+
+#### 🎯 MCP Playwright（推奨）
+```bash
+✅ Claude Code環境で利用可能
+• 自動ブラウザ操作
+• スクリーンショット取得  
+• 要素の自動検出とクリック
+• フォーム入力の自動化
+```
+
+#### ⚡ 通常Playwright
+```bash
+npm install playwright
+npx playwright install
+npx playwright test
+```
+
+#### 📋 手動E2Eテスト
+Playwright非対応環境では手動テスト手順を自動生成
+
 ## 💡 なぜ cc-xp-kit を選ぶのか
 
 ### 従来の XP/TDD ツールの問題
 
 - 概念的すぎて実装が曖昧
 - ツールチェーン統合の複雑さ
+- E2Eテストの統合不足
 - フィーチャーレベルでの実用性不足
 
 ### cc-xp-kit の解決策
 
 - **明確な 5 ステップ** - 迷わない開発フロー
 - **フィーチャーブランチ統合** - Git ワークフローと完全連携
-- **実用的 TDD** - Red→Green→Refactor の厳密実行
+- **実用的 TDD+E2E** - Red→Green→Refactor→E2E の完全サイクル
+- **MCP Playwright統合** - Claude Code環境での自動E2Eテスト
 - **バックログ管理** - YAML 形式でのストーリー追跡
 
 ## 📊 典型的な開発セッション
