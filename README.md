@@ -84,11 +84,11 @@ graph TB
 
 ```mermaid
 stateDiagram-v2
-    [*] --> selected: /cc-xp:plan
-    selected --> in_progress: /cc-xp:story
-    in_progress --> testing: /cc-xp:develop
-    testing --> done: /cc-xp:review accept
-    testing --> in_progress: /cc-xp:review reject
+    [*] --> selected
+    selected --> in_progress
+    in_progress --> testing
+    testing --> done
+    testing --> in_progress
     done --> [*]
     
     note right of selected
