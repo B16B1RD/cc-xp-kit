@@ -1,0 +1,12 @@
+{
+  "name": "tetris-value-test",
+  "version": "1.0.0",
+  "description": "価値中心のテトリス実装検証",
+  "main": "index.js",
+  "scripts": {
+    "dev": "http-server -p 3000"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}

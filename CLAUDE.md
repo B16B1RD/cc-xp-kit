@@ -4,7 +4,7 @@ Claude Code (claude.ai/code) でこのリポジトリのコード作業をする
 
 ## プロジェクト概要
 
-cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と TDD サイクルを統合した開発支援ツールキットです。5 つのスラッシュコマンドで体系的な開発ワークフローを提供します。
+cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD サイクルを統合した価値中心開発支援ツールキットです。5 つのスラッシュコマンドで体系的な開発ワークフローを提供します。
 
 ## 重要な言語設定
 
@@ -35,11 +35,11 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と TDD サイクル�
 
 ### ワークフロー進行
 
-1. **plan** → backlog.yaml 生成（戦略的ストーリー抽出）
-2. **story** → 受け入れ条件定義、フィーチャーブランチ作成
-3. **develop** → Red→Green→Refactor サイクル（仮説駆動 TDD）
-4. **review** → E2E 統合テスト、仮説検証
-5. **retro** → KPI 分析、健全性評価
+1. **plan** → backlog.yaml 生成（価値中心ストーリー抽出）
+2. **story** → 価値実現条件定義、フィーチャーブランチ作成
+3. **develop** → Red→Green→Refactor サイクル（価値駆動 TDD）
+4. **review** → 価値×技術の二軸評価、価値体験検証
+5. **retro** → 価値実現分析、健全性評価
 
 ## アーキテクチャ
 
@@ -64,22 +64,25 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と TDD サイクル�
 ```yaml
 iteration:
   id: タイムスタンプ
-  business_goal: ビジネス目標
-  success_criteria: 成功基準
-  target_users: 対象ユーザー
+  core_value: 本質価値（最重要）
+  minimum_experience: 最小価値体験
+  target_experience: 目標価値体験
+  value_experiencers: 価値体験者
 
 stories:
   - id: ストーリーID
     title: タイトル
-    # 戦略的情報
-    business_value: 1-10
-    user_value: 1-10
-    hypothesis: 仮説
-    kpi_target: KPI目標
+    value_story: 価値ストーリー
+    # 価値実現情報
+    core_value: 本質価値
+    minimum_experience: 最小価値体験
+    hypothesis: 価値仮説
+    kpi_target: 価値測定目標
     # ステータス管理
     status: selected|in-progress|testing|done
+    priority: "Core Value|Experience Enhancement|Context Optimization"
     # 検証結果
-    hypothesis_validation: 検証結果（完了時）
+    value_realization: 価値実現状況（完了時）
 ```
 
 ### plan.mdのシンプル化について
@@ -105,18 +108,29 @@ backlog.yaml の内容は以下のルールで日本語化：
   - URL やファイルパスは英語
   - 技術用語（TDD, KPI 等）は英語可
 
-### 仮説駆動開発の要素
+### 価値駆動開発の要素
 
 すべてのストーリーには以下が必須：
-- **hypothesis**: 検証すべき仮説（日本語）。
-- **kpi_target**: 測定可能な成功指標（日本語）。
-- **success_metrics**: 測定方法（日本語）。
+- **core_value**: 実現すべき本質価値（日本語）。
+- **minimum_experience**: 最低限必要な価値体験（日本語）。
+- **hypothesis**: 価値体験を中心とした検証可能な仮説（日本語）。
+- **success_metrics**: 価値体験測定方法（日本語）。
 
 ### Git操作の権限
 
 .claude/settings.local.json で設定済み。
 - コミット、ブランチ操作は許可
 - SKIP_HOOKS=1 を使用した直接コミット可能
+
+### 価値中心哲学への転換 (v0.2.2)
+
+**重大な哲学的変更**: 「Technical Excellence」から「User Value Excellence」への転換
+- **従来**: 技術的に完璧だが価値がない実装を許容
+- **新規**: ユーザーが実際に価値を体験できる実装を必須化
+
+**テトリス例での改善**:
+- 従来: テトロミノデータ構造は完璧だが、プレイできない
+- 新規: プレイヤーが実際にゲームを楽しめる実装を必須
 
 ## 開発時の注意事項
 
@@ -128,10 +142,10 @@ backlog.yaml の内容は以下のルールで日本語化：
    - story-{id}形式でフィーチャーブランチ作成
    - main へのマージはレビュー後。
 
-3. **テスト優先**
-   - 必ず Red→Green→Refactor サイクルを守る
-   - E2E テストによる仮説検証を重視
+3. **価値優先**
+   - 必ず Red→Green→Refactor サイクルで価値実現を確認
+   - ユーザーが実際に価値を体験できることを重視
 
-4. **言語混在の修正**
+4. **言語統一の維持**
    - backlog.yaml で英語が混入した場合、生成元の.md ファイルを修正
-   - 特に persona, user_story, value などの文字列項目に注意
+   - 特に value_experiencer, core_value, value_story などの文字列項目に注意
