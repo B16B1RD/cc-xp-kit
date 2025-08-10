@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "textlint": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "textlint",
+        "--mcp",
+        "--config",
+        ".textlintrc.json",
+        "--quiet"
+      ],
+      "env": {}
+    }
+  }
+}
