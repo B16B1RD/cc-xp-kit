@@ -47,21 +47,14 @@ Gitリポジトリが初期化されているか確認してください。初�
 
 Git設定（user.name, user.email）が未設定の場合も適切に設定してください。設定が必要な場合はグローバル設定として自動設定してください。
 
-### STEP 0-2: STATUS 更新処理
+### STEP 0-2: STATUS 原子的更新処理
 
 **🚨 この処理を次に必ず実行 🚨**
 
-backlog.yamlのステータスを確認し、以下の処理を実行してください：
+backlog.yamlのステータスを原子的に更新してください。現在のステータスが `in-progress` の場合のみ `testing` に更新し、
+既に `done` の場合は処理を停止してください。更新後は status が testing であることと updated_at が現在時刻になっていることを確認してください。
 
-1. 現在のステータスを確認
-2. `status: done`になっている場合は**CRITICAL ERROR**として処理を停止
-3. `status: in-progress`を`status: testing`に更新
-4. 更新後のステータスを確認
-
-**✅ 確認必須項目**:
-- [ ] status が testing に正しく更新された
-- [ ] done になっていない  
-- [ ] updated_at が現在時刻
+**✅ 更新完了の確認**: status=testing かつ updated_at=現在時刻
 
 ### STEP 1: 価値理解確認
 
@@ -74,9 +67,7 @@ backlog.yaml から確認。
 
 ### Phase 1: Value-First Red（価値優先失敗テスト）
 
-**🚨 フェーズ開始前の status 確認 🚨**
-
-Red Phase開始前にbacklog.yamlのステータスを確認してください。`status: done`になっている場合は、処理を停止し、適切なエラーメッセージを表示してください。
+**🚨 STEP 0-2でstatus確認済み - 安全に開始 🚨**
 
 #### 1. 本質価値テスト作成
 
@@ -91,9 +82,7 @@ Red Phase開始前にbacklog.yamlのステータスを確認してください�
 
 ### Phase 2: Value-Driven Green（価値実現実装）
 
-**🚨 フェーズ開始前の status 確認 🚨**
-
-backlog.yamlのステータスを確認してください。`status: done`になっている場合は処理を停止してください。
+**🚨 STEP 0-2でstatus確認済み - 安全に続行 🚨**
 
 #### 1. 本質価値実装
 
@@ -110,9 +99,7 @@ backlog.yamlのステータスを確認してください。`status: done`にな
 
 ### Phase 3: Value-Maximizing Refactor（価値最大化の最適化）
 
-**🚨 フェーズ開始前の status 確認 🚨**
-
-backlog.yamlのステータスを確認してください。`status: done`になっている場合はRefactor Phaseを停止してください。
+**🚨 STEP 0-2でstatus確認済み - 安全に最適化 🚨**
 
 #### 1. 品質最適化
 
@@ -122,16 +109,13 @@ backlog.yamlのステータスを確認してください。`status: done`にな
 
 ## 🛡️ 防御層3: 完了前の最終確認
 
-### STEP FINAL: 絶対確認処理
+### STEP FINAL: 安全な最終確認
 
 **🚨 この処理を完了前に必ず実行 🚨**
 
-最終STATUS確認を実行してください：
+backlog.yamlの最終ステータスを確認してください。`status: testing` であることを確認し、testing 以外の場合（特に done の場合）は **CRITICAL ERROR** として処理を停止し、エラーメッセージを表示してください。
 
-1. backlog.yamlのステータスを確認
-2. `status: done`になっている場合は**CRITICAL ERROR**として強制的に`status: testing`に修正
-3. 最終的に`status: testing`であることを確認
-4. testing以外の場合は処理を停止
+**✅ 最終確認**: status=testing のみで続行、それ以外は停止
 
 ### コミット処理
 
@@ -189,13 +173,17 @@ backlog.yamlのステータスを確認してください。`status: done`にな
 
 ## エラーハンドリング
 
-### status が done になった場合の緊急対応
+### status が done になった場合の安全対応
 
-backlog.yamlで`status: done`を検出した場合は、即座に`status: testing`に修正してください。
+backlog.yamlで`status: done`を検出した場合は、**CRITICAL ERROR** として処理を停止し、以下のエラーメッセージを表示してください：
 
-修正後は以下を実行してください：
-1. 修正ファイルをコミット（メッセージ: "EMERGENCY: status を done から testing に緊急修正"）
-2. ステータスが正しく修正されたかを確認
+```
+⛔ CRITICAL ERROR: developでstatus=doneへの不正変更を検出
+⚙️ 原因: 並列実行や競合状態による意図しない変更
+🔄 対応: review reject で in-progress に戻し、この問題を修正後に再実行
+```
+
+**重要**: 自動修正は行わず、ユーザーの手動対応を求める
 
 ## 重要な注意事項
 
