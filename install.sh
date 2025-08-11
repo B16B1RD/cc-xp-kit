@@ -21,7 +21,7 @@ INSTALL_TYPE=""
 show_help() {
     echo -e "${BLUE}🚀 cc-xp-kit インストーラー${NC}"
     echo ""
-    echo "5つのXPスラッシュコマンドによる統合開発ワークフロー"
+    echo "6つのXPスラッシュコマンドによる統合開発ワークフロー"
     echo ""
     echo "使用方法："
     echo "  bash install.sh [オプション]"
@@ -85,7 +85,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo -e "${BLUE}🚀 cc-xp-kit インストーラー${NC}"
-echo -e "${BLUE}XP統合ワークフロー: plan → story → develop → review → retro${NC}"
+echo -e "${BLUE}XP統合ワークフロー: plan → story → research → develop → review → retro${NC}"
 if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
     echo -e "${YELLOW}📋 ブランチ: $BRANCH${NC}"
 fi
@@ -133,13 +133,13 @@ echo -e "${BLUE}ディレクトリを作成中...${NC}"
 mkdir -p "$INSTALL_DIR/cc-xp"
 
 # cc-xp コマンドをインストール
-echo -e "${BLUE}5つのXPコマンドをインストール中...${NC}"
+echo -e "${BLUE}6つのXPコマンドをインストール中...${NC}"
 
 # インストール用のソースディレクトリを特定
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # cc-xp コマンドファイル一覧
-CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
+CC_XP_FILES=("plan.md" "story.md" "research.md" "develop.md" "review.md" "retro.md")
 
 if [ -d "$SCRIPT_DIR/src/cc-xp" ]; then
     # ローカルファイルからコピー
@@ -152,6 +152,13 @@ if [ -d "$SCRIPT_DIR/src/cc-xp" ]; then
         fi
     done
     
+    # テンプレートディレクトリをコピー
+    if [ -d "$SCRIPT_DIR/src/cc-xp/templates" ]; then
+        mkdir -p "$INSTALL_DIR/cc-xp/templates"
+        cp -r "$SCRIPT_DIR/src/cc-xp/templates/"* "$INSTALL_DIR/cc-xp/templates/"
+        echo -e "${BLUE}  ✓ 調査記録テンプレートをコピーしました${NC}"
+    fi
+    
 elif [ -d "$(pwd)/src/cc-xp" ]; then
     # カレントディレクトリからコピー
     for file in "${CC_XP_FILES[@]}"; do
@@ -162,6 +169,13 @@ elif [ -d "$(pwd)/src/cc-xp" ]; then
             echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
         fi
     done
+    
+    # テンプレートディレクトリをコピー
+    if [ -d "$(pwd)/src/cc-xp/templates" ]; then
+        mkdir -p "$INSTALL_DIR/cc-xp/templates"
+        cp -r "$(pwd)/src/cc-xp/templates/"* "$INSTALL_DIR/cc-xp/templates/"
+        echo -e "${BLUE}  ✓ 調査記録テンプレートをコピーしました${NC}"
+    fi
 else
     # GitHub raw URLから直接ダウンロード
     echo -e "${BLUE}GitHubからダウンロード中...${NC}"
@@ -189,6 +203,33 @@ else
         fi
     done
     
+    # テンプレートディレクトリをダウンロード
+    echo -e "${BLUE}調査記録テンプレートをダウンロード中...${NC}"
+    TEMPLATE_FILES=("research-specifications.md" "research-implementation.md" "research-references.md" "research-decisions.md")
+    TEMPLATE_URL="https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/${BRANCH}/src/cc-xp/templates"
+    
+    mkdir -p "$INSTALL_DIR/cc-xp/templates"
+    template_success=true
+    
+    for template in "${TEMPLATE_FILES[@]}"; do
+        if curl -fsSL --head "$TEMPLATE_URL/$template" >/dev/null 2>&1; then
+            curl -fsSL "$TEMPLATE_URL/$template" -o "$INSTALL_DIR/cc-xp/templates/$template"
+            
+            if [ -f "$INSTALL_DIR/cc-xp/templates/$template" ] && [ -s "$INSTALL_DIR/cc-xp/templates/$template" ]; then
+                echo -e "${BLUE}  ✓ $template をダウンロードしました${NC}"
+            else
+                echo -e "${YELLOW}  ⚠️ $template のダウンロードに失敗しました${NC}"
+                template_success=false
+            fi
+        else
+            echo -e "${YELLOW}  ⚠️ $template が見つかりません（スキップ）${NC}"
+        fi
+    done
+    
+    if [ "$template_success" = "true" ]; then
+        echo -e "${BLUE}  ✓ 調査記録テンプレートをダウンロードしました${NC}"
+    fi
+    
     if [ "$download_success" = "false" ]; then
         echo -e "${RED}❌ 一部ファイルのダウンロードに失敗しました${NC}"
         echo -e "${YELLOW}💡 ブランチ '$BRANCH' を確認してください${NC}"
@@ -201,7 +242,7 @@ fi
 echo ""
 echo -e "${GREEN}✅ cc-xp-kit インストール完了！${NC}"
 echo ""
-echo "📋 インストールされた5つのXPコマンド："
+echo "📋 インストールされた6つのXPコマンド："
 for file in "${CC_XP_FILES[@]}"; do
     if [ -f "$INSTALL_DIR/cc-xp/$file" ]; then
         command_name="${file%.md}"
@@ -212,13 +253,15 @@ echo ""
 echo "🔄 XP統合ワークフロー："
 echo -e "${BLUE}1. /cc-xp:plan \"作りたいもの\"${NC}     → 計画立案（YAGNI原則）"
 echo -e "${BLUE}2. /cc-xp:story${NC}                  → ユーザーストーリー詳細化"
-echo -e "${BLUE}3. /cc-xp:develop${NC}                → TDD実装（Red→Green→Refactor）"
-echo -e "${BLUE}4. /cc-xp:review [accept/reject]${NC}  → 動作確認とフィードバック"
-echo -e "${BLUE}5. /cc-xp:retro${NC}                  → 振り返りと継続的改善"
+echo -e "${BLUE}3. /cc-xp:research${NC}               → 技術調査・仕様確認（新機能）"
+echo -e "${BLUE}4. /cc-xp:develop${NC}                → TDD実装（Red→Green→Refactor）"
+echo -e "${BLUE}5. /cc-xp:review [accept/reject]${NC}  → 動作確認とフィードバック"
+echo -e "${BLUE}6. /cc-xp:retro${NC}                  → 振り返りと継続的改善"
 echo ""
 echo "💡 使用例："
 echo "  /cc-xp:plan \"ウェブブラウザで遊べるテトリスが欲しい\""
 echo "  /cc-xp:story"
+echo "  /cc-xp:research"
 echo "  /cc-xp:develop"
 echo "  /cc-xp:review accept"
 echo "  /cc-xp:retro"
