@@ -75,14 +75,8 @@ backlog.yaml から確認。
 ### Phase 1: Value-First Red（価値優先失敗テスト）
 
 **🚨 フェーズ開始前の status 確認 🚨**
-```bash
-echo "=== Red Phase 開始前 status 確認 ==="
-if grep -q "status: done" docs/cc-xp/backlog.yaml; then
-    echo "🚨 ERROR: status が done に変更されています！"
-    echo "❌ Red Phase を停止します"
-    exit 1
-fi
-```
+
+Red Phase開始前にbacklog.yamlのステータスを確認してください。`status: done`になっている場合は、処理を停止し、適切なエラーメッセージを表示してください。
 
 #### 1. 本質価値テスト作成
 
