@@ -4,436 +4,263 @@ argument-hint: '[id] ※省略時は in-progress ストーリーを使用'
 allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(uv:*), Bash(python:*), Bash(pytest:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(npx:*), Bash(ls), WriteFile, ReadFile, mcp__playwright__*
 ---
 
-# XP Develop - 価値駆動 TDD 実装
+# 🚨 絶対禁止事項 - 必読 🚨
+
+## ⛔ STATUS = DONE への変更は絶対禁止 ⛔
+
+```
+🚨 CRITICAL WARNING 🚨
+❌ develop では status: done への変更は絶対に禁止
+❌ done に設定すると重大なワークフロー破壊が発生
+❌ 一度でも done にすると後続処理に深刻な影響
+
+✅ develop では必ず status: testing で停止
+✅ done への変更は /cc-xp:review accept でのみ許可
+✅ この禁止事項を違反した場合は即座にエラー停止
+```
+
+**🔒 三層防御システム 🔒**
+- **防御層1**: 開始時の強制確認
+- **防御層2**: 各フェーズでの status 確認  
+- **防御層3**: 完了前の最終確認
+
+---
+
+# XP Develop - 価値駆動 TDD
 
 ## ゴール
 
-**Value-Driven TDD** により、ユーザーが実際に価値を体験できるソフトウェアを実装する。従来の「技術駆動開発」から「価値駆動開発」へ変革し、本質価値の実現を確実にする。
+**Value-Driven TDD** により、ユーザーが実際に価値を体験できるソフトウェアを実装する。
 
-## 重要：価値実現原則
+## 🛡️ 防御層1: 開始時の強制確認
 
-このコマンドは以下の**価値実現原則**に従ってください：
+### STEP 0: STATUS 更新処理（最優先）
 
-- **価値確認優先**: 本質価値が体験できるまで次フェーズへ進まない
-- **体験可能性**: ユーザーが実際に体験できない実装は価値がない
-- **最小体験優先**: まず最小限の価値体験を実現する
-- **満足度確認**: 「楽しい」「便利」と感じられる実装を目指す
+**🚨 この処理を最初に必ず実行 🚨**
 
-## Phase 0: 価値理解確認チェック
+```bash
+# backlog.yaml の status を確認
+echo "=== 現在のステータス確認 ==="
+grep -A 5 -B 5 "status:" docs/cc-xp/backlog.yaml | head -20
 
-**以下すべて完了まで、Red Phase 開始を禁止してください：**
-
-### 0. ステータス更新処理
-
-対象ストーリーのステータスを更新してください：
-- @docs/cc-xp/backlog.yaml の該当ストーリーを特定
-- status: `in-progress` → `testing` に更新
-- updated_at: 現在時刻を設定
-- 変更を保存（コミットは完了時に実施）
-
-**重要な禁止事項**：
-- ❌ **絶対に `done` に変更してはいけません**
-- ❌ `done` にできるのは `/cc-xp:review accept` のみです
-- ✅ develop では必ず `testing` で停止してください
-- ✅ review.md の内容と混同しないでください
-
-### 1. 本質価値理解確認
-
-backlog.yamlから以下を確認してください：
-- `core_value`（本質価値）が明確に定義されているか
-- `minimum_experience`（最小価値体験）が具体的か
-- `value_story`が価値体験を中心に書かれているか
-- ユーザーが実際に何を体験できるのか明確か
-
-### 2. 価値体験条件確認
-
-ストーリーファイル(@docs/cc-xp/stories/[ID].md)から：
-- すべてのGiven-When-Thenが価値体験を表現しているか確認
-- Core Value層の条件が最優先されているか確認
-- 技術的詳細ではなく、価値体験が中心か確認
-- ユーザーが「楽しい」「便利」と感じる条件か確認
-
-### 3. 価値実現環境確認
-
-プロジェクトタイプを判定してください：
-- **Webアプリ**: ブラウザで視覚的・操作可能な実装が必須
-- **CLIツール**: コマンドで実際に操作できる実装が必須
-- **API**: エンドポイントが実際に動作することが必須
-- **ライブラリ**: サンプルコードで価値を示すことが必須
-
-**準備不備時の処理**:
-"Phase 0 価値理解不足 - [具体的問題]" を表示して処理を停止
-
-## Phase 1: Value-First Red（価値優先失敗テスト）
-
-**以下すべて完了まで、Green Phase 進行を禁止してください：**
-
-### 1. 本質価値テスト作成
-
-`core_value`を検証するテストを作成してください：
-- ユーザーが実際に体験できることをテスト
-- 最小価値体験が提供されることをテスト
-- 「楽しい」「便利」と感じる要素があることをテスト
-- 技術的詳細ではなく、価値体験をテスト
-
-### 2. 価値体験測定テスト作成
-
-`success_metrics`の価値測定項目をテストしてください：
-- 価値体験が実際に可能かテスト
-- 操作がスムーズにできるかテスト
-- 視覚的フィードバックがあるかテスト
-- 満足度・継続意欲が生まれるかテスト
-
-### 3. 受け入れ条件テスト作成
-
-ストーリーファイルの各条件に対して：
-- **Core Value層**の条件を最優先でテスト作成
-- Given: 価値体験が可能な状態をテスト
-- When: ユーザーの実際の操作をテスト
-- Then: 価値が体験できることをテスト
-
-### 4. Red状態確認
-
-テストを実行して以下を確認してください：
-- すべてのテストが失敗（Red状態）であること
-- 失敗理由が「価値がまだ実現されていない」こと
-- テストが価値体験を正しく検証しようとしていること
-
-**Red Phase 未完了時の処理**:
-"Red Phase 未完了 - 価値テストが不十分" を表示して Green Phase 進行を停止
-
-## Phase 2: Value-Driven Green（価値実現実装）
-
-**以下すべて達成まで、Refactor Phase 進行を禁止してください：**
-
-### 1. 本質価値実装
-
-`core_value`を実現する実装を作成してください：
-- ユーザーが実際に価値を体験できる実装
-- 最小価値体験が提供される実装
-- 「楽しい」「便利」と感じられる実装
-- 技術的完全性より価値体験を優先
-
-### 2. 価値体験目標達成
-
-`success_metrics`の各項目を実現してください：
-- 価値体験が実際に可能になる実装
-- 操作がスムーズにできる実装
-- 視覚的フィードバックがある実装
-- 満足度・継続意欲が生まれる実装
-
-### 3. 受け入れ条件満足
-
-各受け入れ条件に対して：
-- **Core Value層**の条件を最優先で実装
-- Given: 価値体験が可能な状態を実装
-- When: ユーザーの実際の操作を実装
-- Then: 価値が体験できることを実装
-
-### 4. 価値実現記録
-
-以下を記録してください：
-- 本質価値が実現された証拠
-- 価値体験が可能になった証拠
-- ユーザー満足度の指標
-- 継続利用意欲の指標
-
-### 5. 価値体験可能性確認（プロジェクトタイプ別）
-
-**Webアプリケーションの場合**:
-package.jsonに"dev"スクリプトまたはindex.htmlが存在する場合、以下を確認してください：
-- index.htmlファイルが作成されている
-- ブラウザでアクセスして表示される
-- 視覚的に価値が体験できる
-- 操作が実際に可能である
-- ユーザーが「楽しい」「便利」と感じる
-
-開発サーバーを起動し、実際にブラウザで確認してください。
-  pkill -f "npm.*dev" 2>/dev/null || true
-  
-# バックグラウンド開発サーバー起動
-
-  echo "🚀 開発サーバーをバックグラウンドで起動..."
-  if [ -f package.json ] && grep -q '"dev"' package.json; then
-    nohup npm run dev > dev.log 2>&1 & echo $! > .dev-server.pid
-    DEV_PORT=5173  # Vite default
-  fi
-  
-# 静的サーバーも起動（フォールバック用）
-
-  nohup npx http-server . -p 8080 -c-1 > static.log 2>&1 & echo $! > .static-server.pid
-  
-# サーバー起動待機（タイムアウト制御）
-
-  echo "⏳ サーバー起動確認中..."
-  sleep 3
-  
-# 接続確認
-
-  if curl -s <http://localhost:${DEV_PORT:-8080}> >/dev/null 2>&1; then
-    echo "✅ ブラウザアクセス可能: <http://localhost:${DEV_PORT:-8080}>"
-  elif curl -s <http://localhost:8080> >/dev/null 2>&1; then
-    echo "✅ ブラウザアクセス可能: <http://localhost:8080>"
-  else
-    echo "❌ ブラウザ実装未完了: サーバーにアクセスできません"
+# done になっていたら CRITICAL ERROR
+if grep -q "status: done" docs/cc-xp/backlog.yaml; then
+    echo "🚨 CRITICAL ERROR: status が done になっています！"
+    echo "❌ develop では done への変更は絶対禁止"
+    echo "❌ 即座に停止します"
     exit 1
-  fi
-  
-  echo "🔍 ブラウザで以下を手動確認してください:"
-  echo "  - 仮説検証項目の視覚的確認"
-  echo "  - KPI測定結果の表示確認"
-  echo "  - 実装機能の動作デモ確認"
+fi
+
+# in-progress から testing に更新
+sed -i 's/status: in-progress/status: testing/' docs/cc-xp/backlog.yaml
+
+echo "=== 更新後のステータス確認 ==="
+grep -A 5 -B 5 "status:" docs/cc-xp/backlog.yaml | head -20
+```
+
+**✅ 確認必須項目**:
+- [ ] status が testing に正しく更新された
+- [ ] done になっていない  
+- [ ] updated_at が現在時刻
+
+### STEP 1: 価値理解確認
+
+backlog.yaml から確認。
+- `core_value`（本質価値）が明確。
+- `minimum_experience`（最小価値体験）が具体的。
+- `value_story`が価値体験中心。
+
+## 🛡️ 防御層2: Red-Green-Refactor フェーズ
+
+### Phase 1: Value-First Red（価値優先失敗テスト）
+
+**🚨 フェーズ開始前の status 確認 🚨**
+```bash
+echo "=== Red Phase 開始前 status 確認 ==="
+if grep -q "status: done" docs/cc-xp/backlog.yaml; then
+    echo "🚨 ERROR: status が done に変更されています！"
+    echo "❌ Red Phase を停止します"
+    exit 1
 fi
 ```
 
-**価値体験不可時の処理**:
-"価値体験不可 - [未実現価値項目] により Green Phase 進行不可"
-ユーザーが実際に価値を体験できない実装は価値なし
+#### 1. 本質価値テスト作成
 
-**価値実現状況表示**:
-以下の状況を報告してください：
+- `core_value`を検証するテスト
+- ユーザーが実際に体験できることをテスト
+- 技術的詳細ではなく、価値体験をテスト
 
-本質価値実現状況:
-- Core Value: [実現された本質価値]
-- 体験可能性: [可能/不可]
-- 満足度: [ユーザーが感じる満足度]
+#### 2. Red状態確認
 
-価値体験状況:
-- 最小体験: [実現された最小体験]
-- 操作性: [スムーズ/問題あり]
-- 視覚性: [適切/不十分]
-- 継続意欲: [あり/なし]
+- すべてのテストが失敗（Red 状態）
+- 失敗理由が「価値がまだ実現されていない」
 
-**Green Phase 未達成時の処理**:
-"Green Phase 未達成 - 価値体験が不十分" を表示して Refactor Phase 進行を停止
+### Phase 2: Value-Driven Green（価値実現実装）
 
-## Phase 3: Value-Maximizing Refactor（価値最大化最適化）
-
-**以下すべて維持まで、開発完了を禁止してください：**
-
-### 1. 証拠データ維持強制確認
-
-```
-□ 仮説検証テストが引き続きすべて成功状態であることを確認
-□ KPI実測値が引き続き目標値以上を維持していることを確認
-□ 受け入れ条件がすべて引き続き満たされていることを確認
-□ すべての証拠データが最新状態で記録されていることを確認
+**🚨 フェーズ開始前の status 確認 🚨**
+```bash
+echo "=== Green Phase 開始前 status 確認 ==="
+if grep -q "status: done" docs/cc-xp/backlog.yaml; then
+    echo "🚨 ERROR: status が done に変更されています！"
+    echo "❌ Green Phase を停止します"
+    exit 1
+fi
 ```
 
-### 2. 価値向上実装
+#### 1. 本質価値実装
 
-```
-□ business_value指標の維持または向上を確認
-□ user_value指標の維持または向上を確認
-□ 競合差別化要因の維持または強化を確認
-□ 収集された証拠データを分析し改善余地があれば最適化を実施
-```
+- `core_value`を実現する実装
+- ユーザーが実際に価値を体験できる実装
+- 「楽しい」「便利」と感じられる実装
 
-### 3. 品質最適化
+#### 2. 価値体験確認（プロジェクトタイプ別）
 
-```
-□ コードの可読性・保守性を向上（但し証拠データを維持）
-□ パフォーマンスの最適化（但しKPI目標を維持）
-□ エラーハンドリングの強化
-□ ログ・監視機能の充実
-```
-
-**Refactor Phase 未完了時の処理**:
-"Refactor Phase 未完了 - [劣化項目] により開発完了不可"
-リファクタリング前後の証拠データ比較を表示
-
-## 失敗時診断システム
-
-開発が停止した場合、以下の診断を実行してください：
-
-### 診断テンプレート
-
+**Webアプリケーションの場合**:
+```bash
+# 開発サーバーをバックグラウンドで起動
+if [ -f package.json ] && grep -q '"dev"' package.json; then
+    echo "🚀 開発サーバー起動中..."
+    pkill -f "npm.*dev" 2>/dev/null || true
+    nohup npm run dev > dev.log 2>&1 & echo $! > .dev-server.pid
+    sleep 3
+    
+    if curl -s http://localhost:5173 >/dev/null 2>&1; then
+        echo "✅ アクセス可能: http://localhost:5173"
+    else
+        echo "❌ サーバー起動失敗"
+    fi
+fi
 ```
 
-## 🚫 開発失敗診断
+### Phase 3: Value-Maximizing Refactor（価値最大化の最適化）
 
-失敗タイプ: [仮説検証失敗/KPI達成失敗/受け入れ条件失敗/テスト実装失敗]
-失敗フェーズ: [Red/Green/Refactor]
-
-詳細診断:
-❌ 失敗項目: [具体的項目名]
-📊 現在状態: [実測値/状態]
-🎯 要求状態: [目標値/状態]
-📋 差分詳細: [不足分の具体的内容]
-
-根本原因:
-🔍 [技術的・概念的原因分析]
-
-修正方針:
-1. [優先度高] [具体的修正方法1]
-2. [優先度中] [具体的修正方法2]
-3. [優先度低] [具体的修正方法3]
-
-再実行指示:
-[修正後の次のステップ]
+**🚨 フェーズ開始前の status 確認 🚨**
+```bash
+echo "=== Refactor Phase 開始前 status 確認 ==="
+if grep -q "status: done" docs/cc-xp/backlog.yaml; then
+    echo "🚨 ERROR: status が done に変更されています！"
+    echo "❌ Refactor Phase を停止します"
+    exit 1
+fi
 ```
 
-### 修正優先度の判定基準
+#### 1. 品質最適化
 
-- **優先度高**: 仮説検証・KPI達成・受け入れ条件に直接影響
-- **優先度中**: 品質・パフォーマンス・保守性に影響
-- **優先度低**: 将来の拡張性・最適化に影響
+- コードの可読性・保守性向上
+- パフォーマンス最適化
+- エラーハンドリング強化
 
-## ステータス確認と更新コミット
+## 🛡️ 防御層3: 完了前の最終確認
 
-開発完了時に、必ず以下を確認してからコミットしてください：
+### STEP FINAL: 絶対確認処理
 
-### ステータス確認（重要）
-
-**必須確認事項**：
-1. @docs/cc-xp/backlog.yaml の該当ストーリーのstatusが `testing` であることを確認
-2. もし誤って `done` になっていたら、即座に `testing` に修正
-3. `done` への変更は `/cc-xp:review accept` でのみ許可されている
+**🚨 この処理を完了前に必ず実行 🚨**
 
 ```bash
-# ステータス確認
-grep "status:" docs/cc-xp/backlog.yaml
+echo "=== 最終 STATUS 確認（CRITICAL） ==="
 
-# もし done になっていたら修正（例）
-# sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
+# done になっていたら緊急停止
+if grep -q "status: done" docs/cc-xp/backlog.yaml; then
+    echo "🚨🚨🚨 CRITICAL ERROR 🚨🚨🚨"
+    echo "❌ status が done に変更されています！"
+    echo "❌ これは重大な違反です"
+    echo "❌ 即座に修正します"
+    
+    # 強制修正
+    sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
+    echo "✅ status を testing に強制修正しました"
+fi
+
+# 最終確認
+echo "=== 最終確認結果 ==="
+grep -A 3 -B 3 "status:" docs/cc-xp/backlog.yaml
+
+# testing であることを確認
+if grep -q "status: testing" docs/cc-xp/backlog.yaml; then
+    echo "✅ status: testing - 正常"
+else
+    echo "❌ status が testing ではありません - 修正が必要"
+    exit 1
+fi
 ```
 
-### 更新のコミット
-
-ステータス確認後、コミットしてください：
+### コミット処理
 
 ```bash
+# backlog.yaml をコミット
 git add docs/cc-xp/backlog.yaml
-git commit -m "status: ストーリー [ID] を testing に更新"
+git commit -m "develop: ストーリーを testing に更新 - done 禁止厳守"
+
+# 実装ファイルをコミット  
+git add .
+git commit -m "feat: 価値駆動TDD実装完了 - testing段階"
 ```
 
 ## 完了サマリー
 
-Evidence-Driven TDD サイクル完了後、**必ず以下を表示**してください：
+開発完了後、以下を表示。
 
 ```
-🎯 Evidence-Driven TDD 完了
-========================
+🎯 Value-Driven TDD 完了
+=========================
 ストーリー: [ストーリータイトル]
-仮説: [hypothesis内容]
 ブランチ: story-[ID]
-
-仮説検証結果:
-✅ 仮説実証: [実証内容]
-✅ 証拠収集: [収集された証拠データ]
-✅ 競合差別化: [実現された差別化要因]
-
-KPI達成状況:
-✅ [KPI項目1]: 目標[数値] → 実測[数値] (達成率[X]%)
-✅ [KPI項目2]: 目標[数値] → 実測[数値] (達成率[X]%)
-✅ 総合KPI達成率: [X]% (100%必須)
-
-受け入れ条件満足状況:
-✅ Given条件: [X]/[総数] 満足 (100%)
-✅ When条件: [X]/[総数] 満足 (100%)
-✅ Then条件: [X]/[総数] 満足 (100%)
-✅ 総合満足率: 100%
+ステータス: testing ✅
 
 実施フェーズ:
-✅ Evidence-First Red - 証拠収集テスト作成
-✅ Hypothesis-Driven Green - 仮説検証実装  
-✅ Value-Maximizing Refactor - 価値最大化最適化
+✅ Value-First Red - 価値テスト作成
+✅ Value-Driven Green - 価値実現実装  
+✅ Value-Maximizing Refactor - 価値最大化。
 
-証拠データ保存場所:
-📁 [テストファイル場所]
-📁 [KPI測定データ場所]
-📁 [ログファイル場所]
-
-使用ツール: [検出されたテストツール] 
+🚨 重要確認事項 🚨
+✅ status = testing (done ではない)
+✅ 価値体験が実装済み
+✅ すべてのテストが成功
 ```
 
 ## 次のステップ
 
-開発完了後、**必ず以下を表示**してください：
-
 ```
 🚀 次のステップ
 ================
-動作確認とレビューを実施:
+価値検証とレビューを実施:
 → /cc-xp:review
 
-レビューで以下を選択できます:
-• accept - 仮説検証・KPI達成・受け入れ条件がすべて満足
-• reject "理由" - 証拠不十分・目標未達・条件未満足により修正要求
-• skip - 判定を保留
+レビューオプション:
+• accept - すべて満足時のみ
+• reject "理由" - 修正要求
+• skip - 判定保留
 
-💡 重要な確認ポイント
-- 仮説が実測値で実証されているか
-- KPI目標が100%達成されているか  
-- 受け入れ条件がすべて実装で満たされているか
-- 証拠データが後で検証可能な状態か
+💡 重要
+- status は testing のまま
+- done への変更は review accept でのみ
 ```
 
 ## エラーハンドリング
 
-以下のエラーが発生した場合の対応：
+### status が done になった場合の緊急対応
 
-### ステータスが誤って `done` になってしまった場合
+```bash
+# 1. 即座に検出・修正
+grep -q "status: done" docs/cc-xp/backlog.yaml && {
+    echo "🚨 EMERGENCY: status=done を検出"
+    sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
+    echo "✅ testing に緊急修正完了"
+}
 
-**緊急復旧手順**：
+# 2. 修正をコミット
+git add docs/cc-xp/backlog.yaml
+git commit -m "EMERGENCY: status を done から testing に緊急修正"
 
-1. **即座に修正**：
-   ```bash
-   # backlog.yamlのステータスを確認
-   grep -n "status:" docs/cc-xp/backlog.yaml
-   
-   # done になっている場合は testing に修正
-   sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
-   
-   # 修正結果を確認
-   grep -n "status:" docs/cc-xp/backlog.yaml
-   ```
-
-2. **修正をコミット**：
-   ```bash
-   git add docs/cc-xp/backlog.yaml
-   git commit -m "fix: ステータスを誤った done から testing に修正"
-   ```
-
-3. **原因確認**：
-   - develop.md と review.md の内容を混同していないか確認
-   - 他のファイルの内容を誤って適用していないか確認
-
-**予防策**：
-- 常に Phase 0 の禁止事項を確認する
-- 完了前のステータス確認を必ず実行する
-- done への変更は review accept でのみ行う
-
-### テストツールが見つからない場合
-
-- 利用可能なテストツールを検索
-- インストール方法を提示
-- 代替ツールを提案
-
-### テストが最初から成功する場合
-
-- Red Phase のやり直しを指示
-- より厳密なテストの作成を要求
-- 実装削除を提案
-
-### KPI測定が不可能な場合
-
-- KPI目標の見直しを提案
-- 測定可能な代替指標を提案
-- ストーリー仕様の修正を要求
-
-### 仮説が検証不可能な場合
-
-- 仮説の具体化を要求
-- 検証可能な仮説への修正を提案
-- 証拠収集方法の明確化を要求
+# 3. 確認
+grep "status:" docs/cc-xp/backlog.yaml
+```
 
 ## 重要な注意事項
 
-- **強制停止**: 条件未満足時は必ず処理を停止する
-- **証拠要求**: 実測値なしには完了を認めない
-- **全項目実装**: 受け入れ条件の部分実装は失格
-- **ハードコーディング禁止**: 偽装KPI測定は即座に却下
-- **仮説証明必須**: 仮説が実証されない実装は無価値
+- **🚨 絶対禁止**: develop で status を done にすることは絶対禁止
+- **✅ 必須**: 各フェーズで status 確認する
+- **🔒 防御**: 三層防御システムで完全ガード
+- **⚡ 緊急**: done 検出時は即座に停止・修正
 
-このEvidence-Driven TDDにより、真の価値を実現するソフトウェア開発を確実に実行してください。
+この防御システムにより、status=done 問題を完全に解決します。
