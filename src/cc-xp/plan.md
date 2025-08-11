@@ -125,10 +125,7 @@ Experience Criteria:
 
 ### 環境確認
 
-```bash
-# プロジェクト構造作成
-test -d docs/cc-xp || mkdir -p docs/cc-xp
-```
+docs/cc-xpディレクトリが存在しない場合は作成してください。
 
 ### 分析実行
 

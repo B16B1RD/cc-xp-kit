@@ -38,60 +38,25 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Ba
 
 **🚨 最初に必ず実行してください 🚨**
 
-```bash
-# Git Repository Check
-echo "=== Git リポジトリ確認 ==="
-if [ ! -d ".git" ]; then
-    echo "❌ エラー: Gitリポジトリが初期化されていません"
-    echo ""
-    echo "🔧 解決方法:"
-    echo "1. 新規プロジェクトの場合:"
-    echo "   git init"
-    echo "   git add ."
-    echo "   git commit -m \"Initial commit\""
-    echo ""
-    echo "🚫 処理を中止します"
-    exit 1
-fi
+Gitリポジトリが初期化されているか確認してください。初期化されていない場合は以下を自動実行してください：
 
-# Git設定確認
-if ! git config user.name > /dev/null 2>&1 || ! git config user.email > /dev/null 2>&1; then
-    echo "⚠️  警告: Git設定が不完全です"
-    echo "🔧 以下のコマンドでGit設定を行ってください:"
-    echo "   git config --global user.name \"Your Name\""
-    echo "   git config --global user.email \"your.email@example.com\""
-    echo ""
-    echo "🚫 処理を中止します"
-    exit 1
-fi
+1. `git init` でリポジトリを初期化
+2. `git branch -m main` でデフォルトブランチをmainに変更
+3. `git add .` で全ファイルをステージング
+4. `git commit -m "Initial commit"` で初期コミットを作成
 
-echo "✅ Git リポジトリ確認完了"
-echo ""
-```
+Git設定（user.name, user.email）が未設定の場合も適切に設定してください。設定が必要な場合はグローバル設定として自動設定してください。
 
 ### STEP 0-2: STATUS 更新処理
 
 **🚨 この処理を次に必ず実行 🚨**
 
-```bash
-# backlog.yaml の status を確認
-echo "=== 現在のステータス確認 ==="
-grep -A 5 -B 5 "status:" docs/cc-xp/backlog.yaml | head -20
+backlog.yamlのステータスを確認し、以下の処理を実行してください：
 
-# done になっていたら CRITICAL ERROR
-if grep -q "status: done" docs/cc-xp/backlog.yaml; then
-    echo "🚨 CRITICAL ERROR: status が done になっています！"
-    echo "❌ develop では done への変更は絶対禁止"
-    echo "❌ 即座に停止します"
-    exit 1
-fi
-
-# in-progress から testing に更新
-sed -i 's/status: in-progress/status: testing/' docs/cc-xp/backlog.yaml
-
-echo "=== 更新後のステータス確認 ==="
-grep -A 5 -B 5 "status:" docs/cc-xp/backlog.yaml | head -20
-```
+1. 現在のステータスを確認
+2. `status: done`になっている場合は**CRITICAL ERROR**として処理を停止
+3. `status: in-progress`を`status: testing`に更新
+4. 更新後のステータスを確認
 
 **✅ 確認必須項目**:
 - [ ] status が testing に正しく更新された
@@ -133,14 +98,8 @@ fi
 ### Phase 2: Value-Driven Green（価値実現実装）
 
 **🚨 フェーズ開始前の status 確認 🚨**
-```bash
-echo "=== Green Phase 開始前 status 確認 ==="
-if grep -q "status: done" docs/cc-xp/backlog.yaml; then
-    echo "🚨 ERROR: status が done に変更されています！"
-    echo "❌ Green Phase を停止します"
-    exit 1
-fi
-```
+
+backlog.yamlのステータスを確認してください。`status: done`になっている場合は処理を停止してください。
 
 #### 1. 本質価値実装
 
@@ -151,33 +110,15 @@ fi
 #### 2. 価値体験確認（プロジェクトタイプ別）
 
 **Webアプリケーションの場合**:
-```bash
-# 開発サーバーをバックグラウンドで起動
-if [ -f package.json ] && grep -q '"dev"' package.json; then
-    echo "🚀 開発サーバー起動中..."
-    pkill -f "npm.*dev" 2>/dev/null || true
-    nohup npm run dev > dev.log 2>&1 & echo $! > .dev-server.pid
-    sleep 3
-    
-    if curl -s http://localhost:5173 >/dev/null 2>&1; then
-        echo "✅ アクセス可能: http://localhost:5173"
-    else
-        echo "❌ サーバー起動失敗"
-    fi
-fi
-```
+開発サーバーをバックグラウンドで起動してください。package.jsonに"dev"スクリプトがある場合は、既存の同名プロセスを停止してからnpm run devを実行してください。
+
+起動後は適切なポート（5173など）でアクセス可能か確認してください。
 
 ### Phase 3: Value-Maximizing Refactor（価値最大化の最適化）
 
 **🚨 フェーズ開始前の status 確認 🚨**
-```bash
-echo "=== Refactor Phase 開始前 status 確認 ==="
-if grep -q "status: done" docs/cc-xp/backlog.yaml; then
-    echo "🚨 ERROR: status が done に変更されています！"
-    echo "❌ Refactor Phase を停止します"
-    exit 1
-fi
-```
+
+backlog.yamlのステータスを確認してください。`status: done`になっている場合はRefactor Phaseを停止してください。
 
 #### 1. 品質最適化
 
@@ -191,76 +132,26 @@ fi
 
 **🚨 この処理を完了前に必ず実行 🚨**
 
-```bash
-echo "=== 最終 STATUS 確認（CRITICAL） ==="
+最終STATUS確認を実行してください：
 
-# done になっていたら緊急停止
-if grep -q "status: done" docs/cc-xp/backlog.yaml; then
-    echo "🚨🚨🚨 CRITICAL ERROR 🚨🚨🚨"
-    echo "❌ status が done に変更されています！"
-    echo "❌ これは重大な違反です"
-    echo "❌ 即座に修正します"
-    
-    # 強制修正
-    sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
-    echo "✅ status を testing に強制修正しました"
-fi
-
-# 最終確認
-echo "=== 最終確認結果 ==="
-grep -A 3 -B 3 "status:" docs/cc-xp/backlog.yaml
-
-# testing であることを確認
-if grep -q "status: testing" docs/cc-xp/backlog.yaml; then
-    echo "✅ status: testing - 正常"
-else
-    echo "❌ status が testing ではありません - 修正が必要"
-    exit 1
-fi
-```
+1. backlog.yamlのステータスを確認
+2. `status: done`になっている場合は**CRITICAL ERROR**として強制的に`status: testing`に修正
+3. 最終的に`status: testing`であることを確認
+4. testing以外の場合は処理を停止
 
 ### コミット処理
 
-```bash
-# Safe Git Commit Function
-safe_git_commit() {
-    local files="$1"
-    local message="$2"
-    
-    echo "=== Git コミット実行 ==="
-    echo "対象ファイル: $files"
-    echo "コミットメッセージ: $message"
-    
-    # git add の実行
-    echo "📁 ファイルをステージング..."
-    if ! git add $files; then
-        echo "❌ エラー: ファイルのステージングに失敗しました"
-        return 1
-    fi
-    
-    # 変更があるか確認
-    if git diff --cached --quiet; then
-        echo "ℹ️  情報: コミットする変更がありません"
-        return 0
-    fi
-    
-    # git commit の実行
-    echo "💾 変更をコミット..."
-    if ! git commit -m "$message"; then
-        echo "❌ エラー: コミットに失敗しました"
-        return 1
-    fi
-    
-    echo "✅ コミット完了"
-    return 0
-}
+以下の手順でコミットを実行してください：
 
-# backlog.yaml をコミット
-safe_git_commit "docs/cc-xp/backlog.yaml" "develop: ストーリーを testing に更新 - done 禁止厳守"
+1. **backlog.yamlのコミット**:
+   - ファイル: `docs/cc-xp/backlog.yaml`
+   - メッセージ: "develop: ストーリーを testing に更新 - done 禁止厳守"
 
-# 実装ファイルをコミット  
-safe_git_commit "." "feat: 価値駆動TDD実装完了 - testing段階"
-```
+2. **実装ファイルのコミット**:
+   - ファイル: 全ての変更ファイル（`.`）
+   - メッセージ: "feat: 価値駆動TDD実装完了 - testing段階"
+
+各コミット前に、ステージング、変更確認、コミット実行の手順を実行してください。
 
 ## 完了サマリー
 
@@ -306,21 +197,11 @@ safe_git_commit "." "feat: 価値駆動TDD実装完了 - testing段階"
 
 ### status が done になった場合の緊急対応
 
-```bash
-# 1. 即座に検出・修正
-grep -q "status: done" docs/cc-xp/backlog.yaml && {
-    echo "🚨 EMERGENCY: status=done を検出"
-    sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
-    echo "✅ testing に緊急修正完了"
-}
+backlog.yamlで`status: done`を検出した場合は、即座に`status: testing`に修正してください。
 
-# 2. 修正をコミット
-git add docs/cc-xp/backlog.yaml
-git commit -m "EMERGENCY: status を done から testing に緊急修正"
-
-# 3. 確認
-grep "status:" docs/cc-xp/backlog.yaml
-```
+修正後は以下を実行してください：
+1. 修正ファイルをコミット（メッセージ: "EMERGENCY: status を done から testing に緊急修正"）
+2. ステータスが正しく修正されたかを確認
 
 ## 重要な注意事項
 

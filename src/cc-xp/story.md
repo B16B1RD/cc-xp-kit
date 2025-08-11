@@ -23,39 +23,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(grep), Read
 
 **🚨 最初に必ず実行してください 🚨**
 
-```bash
-# Git Repository Check
-echo "=== Git リポジトリ確認 ==="
-if [ ! -d ".git" ]; then
-    echo "❌ エラー: Gitリポジトリが初期化されていません"
-    echo ""
-    echo "🔧 解決方法:"
-    echo "1. 新規プロジェクトの場合:"
-    echo "   git init"
-    echo "   git add ."
-    echo "   git commit -m \"Initial commit\""
-    echo ""
-    echo "2. 既存プロジェクトの場合:"
-    echo "   適切なGitリポジトリディレクトリに移動してください"
-    echo ""
-    echo "🚫 処理を中止します"
-    exit 1
-fi
+Gitリポジトリが初期化されているか確認してください。初期化されていない場合は以下を自動実行してください：
 
-# Git設定確認
-if ! git config user.name > /dev/null 2>&1 || ! git config user.email > /dev/null 2>&1; then
-    echo "⚠️  警告: Git設定が不完全です"
-    echo "🔧 以下のコマンドでGit設定を行ってください:"
-    echo "   git config --global user.name \"Your Name\""
-    echo "   git config --global user.email \"your.email@example.com\""
-    echo ""
-    echo "🚫 処理を中止します"
-    exit 1
-fi
+1. `git init` でリポジトリを初期化
+2. `git branch -m main` でデフォルトブランチをmainに変更
+3. `git add .` で全ファイルをステージング
+4. `git commit -m "Initial commit"` で初期コミットを作成
 
-echo "✅ Git リポジトリ確認完了"
-echo ""
-```
+Git設定（user.name, user.email）が未設定の場合も適切に設定してください。設定が必要な場合はグローバル設定として自動設定してください。
 
 ### 環境チェック
 
@@ -116,15 +91,7 @@ backlog が存在しない場合は、先に `/cc-xp:plan` の実行を案内し
 存在しない場合は、限定的なストーリー詳細化のみ実行してください。
 
 **活用方法**:
-```bash
-# AI分析レポートの確認
-if [ -f docs/cc-xp/analysis_summary.md ]; then
-  echo "✅ AI分析レポート参照可能"
-  echo "📊 ビジネス戦略を考慮したストーリー詳細化を実行"
-else
-  echo "⚠️ AI分析レポートなし - 基本的なストーリー詳細化のみ実行"
-fi
-```
+AI分析レポート（docs/cc-xp/analysis_summary.md）が存在するか確認してください。存在する場合はビジネス戦略を考慮したストーリー詳細化を、存在しない場合は基本的なストーリー詳細化のみを実行してください。
 
 ## フィーチャーブランチの作成
 
@@ -132,28 +99,13 @@ fi
 
 - 既存ブランチ一覧: !git branch -a
 
-`story-[ID]` ブランチが既に存在する場合は、チェックアウトするか確認してください：
-```
-ブランチ story-[ID] が既に存在します。
-チェックアウトしますか？ (y/N): 
-```
+**ブランチ作成手順**：
 
-存在しない場合は新規作成：
-```bash
-# Safe Branch Creation
-echo "🌱 新しいブランチを作成..."
-BRANCH_NAME="story-[ID]"
+1. `story-[ID]`形式のブランチが既に存在するか確認してください
+2. **既存の場合**: ユーザーにチェックアウトするか確認してください
+3. **新規作成の場合**: `story-[ID]`ブランチを作成し、チェックアウトしてください
 
-if ! git checkout -b "$BRANCH_NAME"; then
-    echo "❌ エラー: ブランチ作成に失敗しました"
-    echo "確認事項:"
-    echo "- 同名のブランチが既に存在しないか"
-    echo "- 未コミットの変更がないか"
-    exit 1
-fi
-
-echo "✅ ブランチ '$BRANCH_NAME' を作成し、切り替えました"
-```
+ブランチ作成に失敗した場合は、同名ブランチの存在や未コミット変更の有無を確認してください。
 
 ## 戦略的ストーリー詳細化
 
@@ -436,53 +388,17 @@ Then [競合優位性を示す結果]
 
 ## 変更のコミット
 
-以下でコミットしてください：
+以下の手順でコミットしてください：
 
-```bash
-# Safe Git Commit
-echo "=== Git コミット実行 ==="
-FILES="docs/cc-xp/stories/[ID].md docs/cc-xp/backlog.yaml"
-MESSAGE="docs: ストーリー詳細化 - [タイトル]"
+1. **対象ファイル**: `docs/cc-xp/stories/[ID].md` と `docs/cc-xp/backlog.yaml`
+2. **コミットメッセージ**: "docs: ストーリー詳細化 - [タイトル]"
+3. **実行手順**:
+   - ファイルの存在を確認
+   - git addでステージング
+   - 変更があることを確認
+   - 適切なコミットメッセージでコミット実行
 
-echo "対象ファイル: $FILES"
-echo "コミットメッセージ: $MESSAGE"
-
-# ファイル存在確認
-for file in $FILES; do
-    if [ ! -f "$file" ]; then
-        echo "⚠️  警告: ファイル '$file' が見つかりません"
-    fi
-done
-
-# git add の実行
-echo "📁 ファイルをステージング..."
-if ! git add $FILES; then
-    echo "❌ エラー: ファイルのステージングに失敗しました"
-    echo "確認事項:"
-    echo "- ファイルが存在するか"
-    echo "- ファイルのパーミッションが正しいか"
-    exit 1
-fi
-
-# 変更があるか確認
-if git diff --cached --quiet; then
-    echo "ℹ️  情報: コミットする変更がありません"
-    exit 0
-fi
-
-# git commit の実行
-echo "💾 変更をコミット..."
-if ! git commit -m "$MESSAGE"; then
-    echo "❌ エラー: コミットに失敗しました"
-    echo "確認事項:"
-    echo "- Git設定（user.name, user.email）が正しいか"
-    echo "- コミットメッセージが適切か"
-    echo "- リポジトリの状態に問題がないか"
-    exit 1
-fi
-
-echo "✅ コミット完了"
-```
+コミットに失敗した場合は、ファイルの存在、パーミッション、Git設定を確認してください。
 
 ## 戦略的完了サマリーの表示
 

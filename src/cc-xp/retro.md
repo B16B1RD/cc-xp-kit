@@ -20,25 +20,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 
 **🚨 最初に必ず実行してください 🚨**
 
-```bash
-# Git Repository Check
-echo "=== Git リポジトリ確認 ==="
-if [ ! -d ".git" ]; then
-    echo "❌ エラー: Gitリポジトリが初期化されていません"
-    echo ""
-    echo "🔧 解決方法:"
-    echo "1. 新規プロジェクトの場合:"
-    echo "   git init"
-    echo "   git add ."
-    echo "   git commit -m \"Initial commit\""
-    echo ""
-    echo "🚫 処理を中止します"
-    exit 1
-fi
+Gitリポジトリが初期化されているか確認してください。初期化されていない場合は以下を自動実行してください：
 
-echo "✅ Git リポジトリ確認完了"
-echo ""
-```
+1. `git init` でリポジトリを初期化
+2. `git branch -m main` でデフォルトブランチをmainに変更
+3. `git add .` で全ファイルをステージング
+4. `git commit -m "Initial commit"` で初期コミットを作成
+
+Git設定（user.name, user.email）が未設定の場合も適切に設定してください。設定が必要な場合はグローバル設定として自動設定してください。
 
 ## Gitメトリクスの収集
 
@@ -319,42 +308,17 @@ echo ""
 
 ## 変更のコミット
 
-```bash
-# Safe Git Commit
-echo "=== Git コミット実行 ==="
-FILES="docs/cc-xp/metrics.json docs/cc-xp/observations-*.md"
-MESSAGE="docs: 📊 イテレーション振り返り - [日付]"
+以下の手順でコミットを実行してください：
 
-echo "対象ファイル: $FILES"
-echo "コミットメッセージ: $MESSAGE"
+1. **対象ファイル**: `docs/cc-xp/metrics.json` と `docs/cc-xp/observations-*.md`
+2. **コミットメッセージ**: "docs: 📊 イテレーション振り返り - [日付]"
+3. **実行手順**:
+   - ファイルの存在を確認
+   - git addでステージング
+   - 変更があることを確認
+   - 適切なコミットメッセージでコミット実行
 
-# git add の実行
-echo "📁 ファイルをステージング..."
-if ! git add $FILES; then
-    echo "❌ エラー: ファイルのステージングに失敗しました"
-    echo "確認事項:"
-    echo "- ファイルが存在するか"
-    echo "- ファイルのパーミッションが正しいか"
-    exit 1
-fi
-
-# 変更があるか確認
-if git diff --cached --quiet; then
-    echo "ℹ️  情報: コミットする変更がありません"
-    exit 0
-fi
-
-# git commit の実行
-echo "💾 変更をコミット..."
-if ! git commit -m "$MESSAGE"; then
-    echo "❌ エラー: コミットに失敗しました"
-    echo "確認事項:"
-    echo "- Git設定（user.name, user.email）が正しいか"
-    echo "- リポジトリの状態に問題がないか"
-    exit 1
-fi
-
-echo "✅ コミット完了"
+コミットに失敗した場合は、ファイルの存在、パーミッション、Git設定を確認してください。
 ```
 
 ## 戦略的振り返りサマリーの表示
@@ -362,8 +326,8 @@ echo "✅ コミット完了"
 以下の**拡張された形式**で結果を表示してください。
 
 ```
-🎯 戦略的イテレーション振り返り  
-===============================
+
+## 🎯 戦略的イテレーション振り返り
 
 【ビジネス価値実現状況】
 仮説検証成功率: [X%]（[成功数]/[検証数]）
@@ -444,8 +408,8 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 @docs/cc-xp/backlog.yaml の状態から適切な次のアクションを**必ず明確に提案**してください。
 
 ```
-🚀 次のステップ
-================
+
+## 🚀 次のステップ
 
 [状況に応じて以下から選択、複数可]
 ```
@@ -497,8 +461,9 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 ### 共通の補足情報
 
 ```
-💡 ワークフローのヒント
----------------------
+
+## 💡 ワークフローのヒント
+
 • develop ↔ review は何度でも繰り返してOK
 • 詰まったら別のストーリーに切り替えもあり
 • 定期的な振り返りで観察を積み重ねる
@@ -513,16 +478,7 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 
 #### 自動判定と適応
 
-```bash
-# 戦略的データの存在確認
-if grep -q "hypothesis" docs/cc-xp/backlog.yaml 2>/dev/null; then
-  echo "✅ 拡張形式検出 - 戦略的振り返りを実行"
-  ENHANCED_MODE=true
-else
-  echo "⚠️ 基本形式検出 - 従来振り返りのみ実行"
-  ENHANCED_MODE=false
-fi
-```
+backlog.yamlで"hypothesis"が存在するか確認してください。存在する場合は拡張形式として戦略的振り返りを実行し、存在しない場合は基本形式として従来振り返りのみを実行してください。
 
 #### フォールバック動作
 
@@ -533,8 +489,9 @@ fi
 #### 移行ガイダンス表示
 
 ```
-ℹ️ 拡張機能のご案内
-====================
+
+## ℹ️ 拡張機能のご案内
+
 このプロジェクトは従来形式で動作しています。
 
 新機能（仮説駆動開発）を利用するには:

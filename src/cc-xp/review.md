@@ -21,36 +21,14 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bas
 
 **🚨 最初に必ず実行してください 🚨**
 
-```bash
-# Git Repository Check
-echo "=== Git リポジトリ確認 ==="
-if [ ! -d ".git" ]; then
-    echo "❌ エラー: Gitリポジトリが初期化されていません"
-    echo ""
-    echo "🔧 解決方法:"
-    echo "1. 新規プロジェクトの場合:"
-    echo "   git init"
-    echo "   git add ."
-    echo "   git commit -m \"Initial commit\""
-    echo ""
-    echo "🚫 処理を中止します"
-    exit 1
-fi
+Gitリポジトリが初期化されているか確認してください。初期化されていない場合は以下を自動実行してください：
 
-# Git設定確認
-if ! git config user.name > /dev/null 2>&1 || ! git config user.email > /dev/null 2>&1; then
-    echo "⚠️  警告: Git設定が不完全です"
-    echo "🔧 以下のコマンドでGit設定を行ってください:"
-    echo "   git config --global user.name \"Your Name\""
-    echo "   git config --global user.email \"your.email@example.com\""
-    echo ""
-    echo "🚫 処理を中止します"
-    exit 1
-fi
+1. `git init` でリポジトリを初期化
+2. `git branch -m main` でデフォルトブランチをmainに変更
+3. `git add .` で全ファイルをステージング
+4. `git commit -m "Initial commit"` で初期コミットを作成
 
-echo "✅ Git リポジトリ確認完了"
-echo ""
-```
+Git設定（user.name, user.email）が未設定の場合も適切に設定してください。設定が必要な場合はグローバル設定として自動設定してください。
 
 ## ステータス遷移ルール
 
@@ -171,9 +149,7 @@ for (const scenario of story.acceptanceCriteria) {
 
 #### 通常Playwright利用時
 
-```bash
-npx playwright test --headed --reporter=html
-```
+Playwrightテストを実行してください（`npx playwright test --headed --reporter=html`）。
 
 #### E2E非対応環境またはunit-onlyの場合
 
@@ -396,52 +372,18 @@ $ARGUMENTS の最初の単語を確認：
    ```
 
 3. **Gitマージ処理**
-   ```bash
-   # テスト実行（プロジェクトに応じたコマンド）
-   
-   # Safe Git Operations
-   echo "=== Git マージ・タグ処理 ==="
-   STORY_BRANCH="story-[ID]"
-   STORY_ID="[ID]"
-   STORY_TITLE="[タイトル]"
-   
-   # mainブランチへ切り替え
-   echo "🔄 mainブランチに切り替え..."
-   if ! git checkout main; then
-       echo "❌ エラー: mainブランチへの切り替えに失敗しました"
-       echo "確認事項:"
-       echo "- mainブランチが存在するか"
-       echo "- 未コミットの変更がないか"
-       exit 1
-   fi
-   
-   # ブランチをマージ
-   echo "🔀 ブランチをマージ..."
-   if ! git merge --no-ff "$STORY_BRANCH" -m "merge: ストーリー $STORY_ID - $STORY_TITLE"; then
-       echo "❌ エラー: マージに失敗しました"
-       echo "確認事項:"
-       echo "- マージコンフリクトが発生していないか"
-       echo "- ブランチ '$STORY_BRANCH' が存在するか"
-       exit 1
-   fi
-   
-   # タグ付け
-   echo "🏷️  タグを作成..."
-   if ! git tag -a "$STORY_ID-done" -m "完了: $STORY_TITLE"; then
-       echo "❌ エラー: タグ作成に失敗しました"
-       echo "確認事項:"
-       echo "- 同名のタグが既に存在しないか"
-       exit 1
-   fi
-   
-   echo "✅ Git操作完了"
-   ```
 
-4. **サーバー停止**（.server.pid がある場合）
-   ```bash
-   kill $(cat .server.pid)
-   rm .server.pid
-   ```
+   以下の手順でGitマージを実行してください：
+
+   - mainブランチに切り替え
+   - story-[ID]ブランチをno-fastforwardでマージ
+   - [ID]-doneタグを作成
+
+   各ステップでエラーが発生した場合は、適切なエラーハンドリングを実行してください。
+
+4. **サーバー停止**（.server.pidファイルがある場合）
+
+   開発サーバーが起動している場合は、pidファイルを使用してプロセスを停止し、pidファイルを削除してください。
 
 5. **完了メッセージ**
    ```
@@ -582,18 +524,7 @@ $ARGUMENTS の最初の単語を確認：
 
 ポートが既に使用されている場合の自動対処：
 
-```bash
-# ポート使用状況の確認
-lsof -i :3000 || netstat -an | grep :3000
-
-# 代替ポートの探索（3001, 3002...）
-for port in 3001 3002 3003 8080 8081; do
-  if ! lsof -i :$port > /dev/null 2>&1; then
-    echo "代替ポート $port を使用します"
-    break
-  fi
-done
-```
+ポート使用状況を確認し、代替ポート（3001, 3002, 3003, 8080, 8081）を探索して利用可能なポートを使用してください。
 
 **エラー時の自動提案**：
 ```
