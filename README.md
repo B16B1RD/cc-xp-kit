@@ -41,10 +41,9 @@ cd your-existing-project
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --project
 ```
 
-**ユーザー用インストール**（全プロジェクトで共通利用）：
+**ユーザー用インストール**（全プロジェクトで共通利用）。
 ```bash
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --user
-```
 
 ## 🔄 5 つの XP ワークフロー + E2Eテスト統合
 
@@ -223,14 +222,14 @@ sequenceDiagram
 
 ## 📊 メトリクス責務表
 
-各コマンドがどのメトリクスをいつ更新するかを明確にします：
+各コマンドがどのメトリクスをいつ更新するかを明確にします。
 
 | コマンド | バックログ状態更新 | メトリクス更新 | ファイル生成 |
 |---------|------------------|--------------|------------|
 | **plan** | `selected` ステータスで新規作成 | `metrics.json` 初期化（初回のみ） | `backlog.yaml` |
 | **story** | `selected` → `in-progress` | - | `stories/[ID].md` |
 | **develop** | `in-progress` → `testing` | `tddCycles` (red/green/refactor) カウント増加 | テストファイル、実装ファイル |
-| **review** | `testing` → `done` (accept時)<br/>`testing` → `in-progress` (reject時) | `completedStories` カウント増加（accept時） | `stories/[ID]-feedback.md` (reject時) |
+| **review** | `testing` → `done` (accept時) / `testing` → `in-progress` (reject時) | `completedStories` カウント増加（accept時） | `stories/[ID]-feedback.md` (reject時) |
 | **retro** | 変更なし（読み取りのみ） | `iterations` 追加、`velocity` 再計算 | `action-items-[日付].md` |
 
 ### メトリクスファイル構造
@@ -263,6 +262,7 @@ stories:
 プロジェクトの言語を自動検出し、最適なツールを使用します。
 
 ### ユニットテスト対応
+
 - **JavaScript/TypeScript**: Bun または pnpm + Vite
 - **Python**: uv + Ruff + pytest  
 - **Rust**: Cargo（標準）
@@ -273,9 +273,10 @@ stories:
 
 ### E2Eテスト対応（Webアプリケーション）
 
-自動的にE2Eテスト環境を検出・実行します：
+自動的に E2E テスト環境を検出・実行します。
 
 #### 🎯 MCP Playwright（推奨）
+
 ```bash
 ✅ Claude Code環境で利用可能
 • 自動ブラウザ操作
@@ -285,6 +286,7 @@ stories:
 ```
 
 #### ⚡ 通常Playwright
+
 ```bash
 npm install playwright
 npx playwright install
@@ -292,7 +294,8 @@ npx playwright test
 ```
 
 #### 📋 手動E2Eテスト
-Playwright非対応環境では手動テスト手順を自動生成
+
+Playwright 非対応環境では手動テスト手順を自動生成。
 
 ## 💡 なぜ cc-xp-kit を選ぶのか
 
@@ -300,7 +303,7 @@ Playwright非対応環境では手動テスト手順を自動生成
 
 - 概念的すぎて実装が曖昧
 - ツールチェーン統合の複雑さ
-- E2Eテストの統合不足
+- E2E テストの統合不足
 - フィーチャーレベルでの実用性不足
 
 ### cc-xp-kit の解決策
@@ -308,7 +311,7 @@ Playwright非対応環境では手動テスト手順を自動生成
 - **明確な 5 ステップ** - 迷わない開発フロー
 - **フィーチャーブランチ統合** - Git ワークフローと完全連携
 - **実用的 TDD+E2E** - Red→Green→Refactor→E2E の完全サイクル
-- **MCP Playwright統合** - Claude Code環境での自動E2Eテスト
+- **MCP Playwright統合** - Claude Code 環境での自動 E2E テスト
 - **バックログ管理** - YAML 形式でのストーリー追跡
 
 ## 📊 典型的な開発セッション

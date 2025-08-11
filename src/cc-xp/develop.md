@@ -4,6 +4,8 @@ argument-hint: '[id] ※省略時は in-progress ストーリーを使用'
 allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(uv:*), Bash(python:*), Bash(pytest:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(npx:*), Bash(ls), WriteFile, ReadFile, mcp__playwright__*
 ---
 
+# XP Develop - 価値駆動 TDD 実装
+
 ## ゴール
 
 **Value-Driven TDD** により、ユーザーが実際に価値を体験できるソフトウェアを実装する。従来の「技術駆動開発」から「価値駆動開発」へ変革し、本質価値の実現を確実にする。
@@ -143,25 +145,29 @@ package.jsonに"dev"スクリプトまたはindex.htmlが存在する場合、�
 開発サーバーを起動し、実際にブラウザで確認してください。
   pkill -f "npm.*dev" 2>/dev/null || true
   
-  # バックグラウンド開発サーバー起動
+# バックグラウンド開発サーバー起動
+
   echo "🚀 開発サーバーをバックグラウンドで起動..."
   if [ -f package.json ] && grep -q '"dev"' package.json; then
     nohup npm run dev > dev.log 2>&1 & echo $! > .dev-server.pid
     DEV_PORT=5173  # Vite default
   fi
   
-  # 静的サーバーも起動（フォールバック用）
+# 静的サーバーも起動（フォールバック用）
+
   nohup npx http-server . -p 8080 -c-1 > static.log 2>&1 & echo $! > .static-server.pid
   
-  # サーバー起動待機（タイムアウト制御）
+# サーバー起動待機（タイムアウト制御）
+
   echo "⏳ サーバー起動確認中..."
   sleep 3
   
-  # 接続確認
-  if curl -s http://localhost:${DEV_PORT:-8080} >/dev/null 2>&1; then
-    echo "✅ ブラウザアクセス可能: http://localhost:${DEV_PORT:-8080}"
-  elif curl -s http://localhost:8080 >/dev/null 2>&1; then
-    echo "✅ ブラウザアクセス可能: http://localhost:8080"
+# 接続確認
+
+  if curl -s <http://localhost:${DEV_PORT:-8080}> >/dev/null 2>&1; then
+    echo "✅ ブラウザアクセス可能: <http://localhost:${DEV_PORT:-8080}>"
+  elif curl -s <http://localhost:8080> >/dev/null 2>&1; then
+    echo "✅ ブラウザアクセス可能: <http://localhost:8080>"
   else
     echo "❌ ブラウザ実装未完了: サーバーにアクセスできません"
     exit 1
@@ -237,8 +243,9 @@ fi
 ### 診断テンプレート
 
 ```
-🚫 開発失敗診断
-================
+
+## 🚫 開発失敗診断
+
 失敗タイプ: [仮説検証失敗/KPI達成失敗/受け入れ条件失敗/テスト実装失敗]
 失敗フェーズ: [Red/Green/Refactor]
 

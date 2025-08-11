@@ -1,0 +1,29 @@
+{
+  "name": "cc-tdd-kit",
+  "version": "0.2.2",
+  "description": "Value-Driven TDD Support Toolkit - XP原則と価値中心開発を統合した開発支援ツール",
+  "keywords": ["tdd", "xp", "value-driven", "claude-code", "development-toolkit"],
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "lint": "npm run lint:md && npm run lint:text",
+    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore tmp",
+    "lint:text": "textlint '**/*.md' --cache",
+    "lint:fix": "markdownlint '**/*.md' --fix --ignore node_modules --ignore tmp && textlint '**/*.md' --fix",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.41.0",
+    "textlint": "^14.0.4",
+    "textlint-rule-preset-ja-spacing": "^2.4.3",
+    "textlint-rule-preset-ja-technical-writing": "^10.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cc-tdd-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/cc-tdd-kit/issues"
+  },
+  "homepage": "https://github.com/yourusername/cc-tdd-kit#readme"
+}

@@ -4,11 +4,11 @@ Claude Code (claude.ai/code) でこのリポジトリのコード作業をする
 
 ## プロジェクト概要
 
-cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD サイクルを統合した価値中心開発支援ツールキットです。5 つのスラッシュコマンドで体系的な開発ワークフローを提供します。
+cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD サイクルを統合した価値中心の開発支援ツールキットです。5 つのスラッシュコマンドで体系的な開発ワークフローを提供します。
 
 ## 重要な言語設定
 
-**すべての出力は日本語で行ってください。** ただし以下を除く：
+**すべての出力は日本語で行ってください。** ただし以下を除く。
 - YAML のキー名（id, title, status 等）
 - 英語が標準のテクニカルターム（TDD, XP, hypothesis 等）
 
@@ -36,7 +36,7 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD �
 ### ワークフロー進行
 
 1. **plan** → backlog.yaml 生成（価値中心ストーリー抽出）
-2. **story** → 価値実現条件定義、フィーチャーブランチ作成
+2. **story** → 価値実現の条件定義、フィーチャーブランチ作成
 3. **develop** → Red→Green→Refactor サイクル（価値駆動 TDD）
 4. **review** → 価値×技術の二軸評価、価値体験検証
 5. **retro** → 価値実現分析、健全性評価
@@ -100,7 +100,7 @@ stories:
 
 ### 日本語統一に関する重要事項
 
-backlog.yaml の内容は以下のルールで日本語化：
+backlog.yaml の内容は以下のルールで日本語化。
 - **値（value）**: すべて日本語
 - **キー（key）**: 英語のまま維持
 - **例外**:
@@ -110,11 +110,11 @@ backlog.yaml の内容は以下のルールで日本語化：
 
 ### 価値駆動開発の要素
 
-すべてのストーリーには以下が必須：
+すべてのストーリーには以下が必須。
 - **core_value**: 実現すべき本質価値（日本語）。
 - **minimum_experience**: 最低限必要な価値体験（日本語）。
 - **hypothesis**: 価値体験を中心とした検証可能な仮説（日本語）。
-- **success_metrics**: 価値体験測定方法（日本語）。
+- **success_metrics**: 価値体験の測定方法（日本語）。
 
 ### Git操作の権限
 
@@ -124,7 +124,7 @@ backlog.yaml の内容は以下のルールで日本語化：
 
 ### 価値中心哲学への転換 (v0.2.2)
 
-**重大な哲学的変更**: 「Technical Excellence」から「User Value Excellence」への転換
+**重大な哲学的変更**:「Technical Excellence」から「User Value Excellence」への転換。
 - **従来**: 技術的に完璧だが価値がない実装を許容
 - **新規**: ユーザーが実際に価値を体験できる実装を必須化
 
@@ -143,7 +143,7 @@ backlog.yaml の内容は以下のルールで日本語化：
    - main へのマージはレビュー後。
 
 3. **価値優先**
-   - 必ず Red→Green→Refactor サイクルで価値実現を確認
+   - 必ず Red→Green→Refactor サイクルで価値実現を確認。
    - ユーザーが実際に価値を体験できることを重視
 
 4. **言語統一の維持**

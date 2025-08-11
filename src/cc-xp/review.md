@@ -4,6 +4,8 @@ argument-hint: '[accept|reject|skip] [理由（rejectの場合）] [--skip-demo]
 allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(python:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), Bash(npx:*), ReadFile, WriteFile, mcp__playwright__*
 ---
 
+# XP Review - 価値×技術 二軸評価
+
 ## ゴール
 
 実際に価値を体験してユーザー視点で評価し、価値実現度と技術品質の二軸で承認/却下を判定する。**1回のコマンドで完結**。
@@ -36,9 +38,11 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 @docs/cc-xp/backlog.yaml から `testing` ステータスのストーリーを確認し、**価値実現に必要な全情報**を取得してください：
 
 #### 基本情報
+
 - ストーリーID, タイトル, created_at, updated_at
 
 #### 価値実現項目（評価の核心）
+
 - **core_value**: 実現すべき本質価値
 - **minimum_experience**: 最小価値体験
 - **value_story**: 価値体験を中心としたストーリー
@@ -46,12 +50,14 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 - **value_realization_status**: 価値実現状況（realized/partial/failed）
 
 #### 戦略的評価情報  
+
 - **business_value**, **user_value**: 価値スコア
 - **user_persona**: 対象ユーザー
 - **competition_analysis**: 競合差別化要因
 - **development_notes**: 開発時の仮説検証メモ
 
 #### 従来情報
+
 - 受け入れ条件（@docs/cc-xp/stories/[ID].md）
 - フィードバック履歴（@docs/cc-xp/stories/[ID]-feedback.md）
 
@@ -67,6 +73,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 **重要**: 戦略的情報が存在しない場合は旧形式として扱い、基本レビューのみ実行してください。
 
 ### 既存プロセスの確認
+
 - サーバー稼働確認: !test -f .server.pid
 - 現在のブランチ: !git branch --show-current
 
@@ -203,6 +210,7 @@ npx playwright test --headed --reporter=html
 **重要**: まず引数をチェックし、引数がない場合は判定ガイダンス表示のみで終了する。
 
 ### 引数チェック
+
 $ARGUMENTS の最初の単語を確認：
 - 引数なし: ガイダンス表示のみで終了（Phase 5 は実行しない）
 - `accept`: Phase 5 のAccept処理を実行
@@ -210,6 +218,7 @@ $ARGUMENTS の最初の単語を確認：
 - `skip`: Phase 5 のSkip処理を実行
 
 ### 引数なしの場合（デフォルト） - 仮説検証ガイダンス表示
+
 ストーリーの仮説検証状況とKPI実績を表示し、以下のガイダンスを提供：
 
 ```
@@ -294,6 +303,7 @@ KPI未達成または仮説検証不十分な場合:
 **重要**: 引数なしの場合、ここで処理が終了します。E2E テストの結果に関わらず、自動判定は行いません。
 
 ### 引数で判定が指定された場合
+
 $ARGUMENTS の最初の単語を確認：
 - `accept`: Phase 5 のAccept処理を実行
 - `reject`: Phase 5 のReject処理を実行（理由は引数の残り部分）
@@ -310,7 +320,7 @@ $ARGUMENTS の最初の単語を確認：
 **重要**: この処理でのみステータスを `done` に変更し、**仮説検証結果を永続記録**します。
 
 1. **仮説検証成功の記録**
-   
+
    @docs/cc-xp/backlog.yaml の該当ストーリーに以下を追加記録：
    ```yaml
    # 完了処理
@@ -335,7 +345,7 @@ $ARGUMENTS の最初の単語を確認：
    ```
 
 2. **拡張メトリクス記録**
-   
+
    @docs/cc-xp/metrics.json に仮説検証成功データを追加：
    ```json
    {
@@ -350,7 +360,7 @@ $ARGUMENTS の最初の単語を確認：
    }
    ```
 
-2. **Gitマージ処理**
+3. **Gitマージ処理**
    ```bash
    # テスト実行（プロジェクトに応じたコマンド）
    # mainブランチへマージ
@@ -360,13 +370,13 @@ $ARGUMENTS の最初の単語を確認：
    git tag -a "story-[ID]-done" -m "完了: [タイトル]"
    ```
 
-3. **サーバー停止**（.server.pidがある場合）
+4. **サーバー停止**（.server.pidがある場合）
    ```bash
    kill $(cat .server.pid)
    rm .server.pid
    ```
 
-4. **完了メッセージ**
+5. **完了メッセージ**
    ```
    ✨ ストーリー完了！
    ==================
@@ -375,7 +385,7 @@ $ARGUMENTS の最初の単語を確認：
    タグ: story-[ID]-done
    ```
 
-5. **次のコマンド案内**（重要：必ず最後に明確に表示）
+6. **次のコマンド案内**（重要：必ず最後に明確に表示）
    ```
    🚀 次のステップ
    ================
@@ -484,12 +494,14 @@ $ARGUMENTS の最初の単語を確認：
 ## --skip-demo / --skip-e2e オプション時の処理
 
 ### --skip-demo オプション
+
 引数に `--skip-demo` がある場合：
 1. Phase 1（デモ起動）をスキップ
 2. 既存のサーバープロセスを使用
 3. Phase 2から開始
 
 ### --skip-e2e オプション
+
 引数に `--skip-e2e` がある場合：
 1. Phase 2（E2E自動テスト）をスキップ
 2. Phase 3の動作確認ガイドから開始
@@ -551,6 +563,7 @@ done
 ```
 
 ### その他のエラー
+
 - testingステータスのストーリーがない
 - サーバー起動に失敗
 - テスト実行に失敗

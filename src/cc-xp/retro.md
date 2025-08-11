@@ -3,6 +3,8 @@ description: XP retro – 価値実現振り返りと継続的改善
 allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), ReadFile, WriteFile
 ---
 
+# XP Retro - 価値実現振り返り
+
 ## ゴール
 
 価値実現の観点から短いサイクルを振り返り、**次をもっと価値ある**ものにするための学びを得る。
@@ -17,12 +19,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 ## Gitメトリクスの収集
 
 ### イテレーション期間の特定
+
 - 最初のplanコミット: !git log --reverse --grep="feat: イテレーション計画" --format="%at" -1
 - 現在時刻（UNIX時間）: !date +%s
 
 上記の差分から経過時間を計算してください。見つからない場合は、2時間前からを対象期間としてください。
 
 ### コミット統計の収集
+
 - 総コミット数: !git log --oneline --since="2 hours ago"
 - Redコミット数: !git log --oneline --since="2 hours ago" --grep="🔴"
 - Greenコミット数: !git log --oneline --since="2 hours ago" --grep="✅"
@@ -30,6 +34,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 - 完了ストーリー数: !git log --oneline --since="2 hours ago" --grep="✨"
 
 ### 変更統計の収集
+
 - 変更ファイル数: !git diff --name-only main..HEAD
 - 変更サマリー: !git diff --stat main..HEAD
 - 頻繁に変更されたファイル: !git log --since="2 hours ago" --name-only --pretty=format:
@@ -41,12 +46,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 @docs/cc-xp/metrics.json から**従来と新規の両方の指標**を確認してください：
 
 #### 従来指標
+
 - 現在のベロシティ
 - 平均サイクルタイム  
 - 使用中のツールチェーン
 - 過去のイテレーション履歴
 
 #### 価値実現開発指標（新規）
+
 ```json
 "valueRealizationDriven": {
   "coreValuesRealized": [実現した本質価値数],
@@ -68,17 +75,20 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 @docs/cc-xp/backlog.yaml から以下をカウント（**読み取りのみ、変更しない**）：
 
 #### 基本カウント
+
 - 完了ストーリー数（status: done）
 - 進行中ストーリー数（status: in-progress/testing）
 - 残りストーリー数（status: todo/selected）
 
 #### 価値実現成功率分析（拡張形式の場合）
+
 - value_realization_status: "realized" のストーリー数
 - 価値体験成功ストーリー数（user_satisfaction ≥ 7/10）
 - 本質価値実現度の平均値
 - 独自価値実現済みストーリー数
 
 #### 価値体験者対応度分析
+
 - 各value_experiencerごとのストーリー完了数
 - 価値体験者別の満足度評価
 
@@ -142,6 +152,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 **ビジネス価値観点**と**技術観点**から良かった点を**各3つ以内**でリストアップしてください：
 
 #### 🎯 ビジネス価値面での成功
+
 - 仮説検証成功率が高い（X%達成）
 - KPI目標を上回る成果（例: 起動時間2.85秒 vs 目標3秒）
 - ペルソナニーズへの的確な対応
@@ -149,6 +160,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 - ユーザー価値の定量的な向上
 
 #### 🔧 技術面での成功（従来通り）
+
 - TDDサイクルを適切に実施
 - 高いコミット頻度
 - 適切なリファクタリング実施
@@ -157,6 +169,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 ### Bad 👎（改善が必要なこと）
 
 #### 🎯 ビジネス価値面での課題
+
 - 仮説検証の精度不足
 - KPI測定の実装不備
 - ペルソナ理解の浅さ
@@ -164,6 +177,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 - ビジネス価値実現度の低さ
 
 #### 🔧 技術面での課題（従来通り）
+
 - TDDサイクルの不完全さ
 - リファクタリングのスキップ
 - コミット頻度の低さ
@@ -174,16 +188,19 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 **優先順位付けされた**改善アクションを提案してください：
 
 #### 🥇 最高優先（ビジネス価値向上）
+
 - 仮説の精密化（より検証可能な仮説設計）
 - KPI測定の自動化（リアルタイム測定システム）
 - ペルソナインタビュー実施（実際のユーザーフィードバック取得）
 
 #### 🥈 高優先（開発プロセス改善）
+
 - 仮説検証テストファーストの徹底
 - KPI達成度を含むリファクタリング
 - ビジネス価値を意識した小さなステップ開発
 
 #### 🥉 中優先（技術改善）
+
 - ツールチェーンの最適化
 - テスト自動化の改善
 - コード品質の向上
@@ -237,11 +254,13 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 ### 全体メトリクスの拡張更新
 
 #### 従来メトリクス
+
 - lastUpdated: 現在時刻
 - completedStories: 累計を更新
 - ベロシティの再計算（移動平均）
 
 #### 戦略的メトリクス累積更新
+
 ```json
 "hypothesisDriven": {
   "totalHypothesesTested": += [今回のテスト数],
@@ -377,6 +396,7 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 ```
 
 ### パターン1: 進行中ストーリーがある場合
+
 ```
 【優先】開発を継続:
 → /cc-xp:develop
@@ -386,6 +406,7 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 ```
 
 ### パターン2: 選択済みストーリーがある場合
+
 ```
 【優先】次のストーリーを詳細化:
 → /cc-xp:story
@@ -395,6 +416,7 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 ```
 
 ### パターン3: 未選択ストーリーがある場合
+
 ```
 【優先】次のイテレーション計画:
 → /cc-xp:plan
@@ -404,6 +426,7 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 ```
 
 ### パターン4: すべて完了の場合
+
 ```
 🎉 すべてのストーリーが完了しました！
 
@@ -417,6 +440,7 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 ```
 
 ### 共通の追加情報
+
 ```
 💡 ワークフローのヒント
 ---------------------
@@ -433,6 +457,7 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 **重要**: 既存プロジェクトで戦略的情報が存在しない場合の対処法：
 
 #### 自動判定と適応
+
 ```bash
 # 戦略的データの存在確認
 if grep -q "hypothesis" docs/cc-xp/backlog.yaml 2>/dev/null; then
@@ -445,11 +470,13 @@ fi
 ```
 
 #### フォールバック動作
+
 - **hypothesis_driven** セクションが存在しない → 基本TDD分析のみ実行
 - **backlog.yamlが旧形式** → ステータスカウントのみで戦略分析スキップ  
 - **metrics.jsonが基本構造** → 従来指標のみで振り返り実行
 
 #### 移行ガイダンス表示
+
 ```
 ℹ️ 拡張機能のご案内
 ====================
@@ -464,6 +491,7 @@ fi
 ```
 
 ### エラー時の安全な動作
+
 - JSON解析エラー → デフォルト値で継続実行  
 - YAML読み取りエラー → ファイル再生成を提案
 - 計算エラー → 該当部分をスキップして他の分析を継続
