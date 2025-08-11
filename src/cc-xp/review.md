@@ -70,7 +70,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 
 ### 価値実現中心のストーリー情報取得
 
-@docs/cc-xp/backlog.yaml から `testing` ステータスのストーリーを確認し、**価値実現に必要な全情報**を取得してください：
+@docs/cc-xp/backlog.yaml から `testing` ステータスのストーリーを確認し、**価値実現に必要な全情報**を取得してください。
 
 #### 基本情報
 
@@ -81,14 +81,14 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 - **core_value**: 実現すべき本質価値
 - **minimum_experience**: 最小価値体験
 - **value_story**: 価値体験を中心としたストーリー
-- **success_metrics**: 価値体験可能性の測定方法
+- **success_metrics**: 価値体験の可能性測定方法
 - **value_realization_status**: 価値実現状況（realized/partial/failed）
 
-#### 戦略的評価情報  
+#### 戦略的な評価情報  
 
 - **business_value**, **user_value**: 価値スコア
 - **user_persona**: 対象ユーザー
-- **competition_analysis**: 競合差別化要因
+- **competition_analysis**: 競合との差別化要因
 - **development_notes**: 開発時の仮説検証メモ
 
 #### 従来情報
@@ -116,7 +116,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 
 ### プロジェクトタイプの判定と起動
 
-プロジェクトの構成ファイルを確認し、適切な方法でアプリケーションを起動してください：
+プロジェクトの構成ファイルを確認し、適切な方法でアプリケーションを起動してください。
 
 **検出方法：**
 - package.json → Node.js/JavaScript
@@ -132,7 +132,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 - API: エンドポイント一覧とテスト方法を表示
 - 静的 HTML: http-server や Python の SimpleHTTPServer で起動
 
-起動後は以下を実行してください：
+起動後は以下を実行してください。
 1. プロセス ID を `.server.pid` に保存
 2. アクセス URL を表示
 3. ログファイルの確認方法を案内
@@ -141,7 +141,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 
 ### E2E戦略の確認
 
-ストーリーファイル（@docs/cc-xp/stories/[ID].md）の`e2e_strategy`を確認：
+ストーリーファイル（@docs/cc-xp/stories/[ID].md）の`e2e_strategy`を確認する。
 
 **e2e-required または e2e-optional の場合のみ実行**
 
@@ -157,7 +157,7 @@ for (const scenario of story.acceptanceCriteria) {
 }
 ```
 
-実行結果を表示：
+実行結果を表示する。
 ```
 🌐 E2Eテスト実行結果
 ==================
