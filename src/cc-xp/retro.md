@@ -16,14 +16,38 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 - **継続的価値向上**: 小さな価値向上を積み重ねる
 - **透明性**: 価値実現のデータを客観的に収集
 
+## Git リポジトリ確認（必須）
+
+**🚨 最初に必ず実行してください 🚨**
+
+```bash
+# Git Repository Check
+echo "=== Git リポジトリ確認 ==="
+if [ ! -d ".git" ]; then
+    echo "❌ エラー: Gitリポジトリが初期化されていません"
+    echo ""
+    echo "🔧 解決方法:"
+    echo "1. 新規プロジェクトの場合:"
+    echo "   git init"
+    echo "   git add ."
+    echo "   git commit -m \"Initial commit\""
+    echo ""
+    echo "🚫 処理を中止します"
+    exit 1
+fi
+
+echo "✅ Git リポジトリ確認完了"
+echo ""
+```
+
 ## Gitメトリクスの収集
 
 ### イテレーション期間の特定
 
-- 最初のplanコミット: !git log --reverse --grep="feat: イテレーション計画" --format="%at" -1
-- 現在時刻（UNIX時間）: !date +%s
+- 最初の plan コミット: !git log --reverse --grep="feat: イテレーション計画" --format="%at" -1
+- 現在時刻（UNIX 時間）: !date +%s
 
-上記の差分から経過時間を計算してください。見つからない場合は、2時間前からを対象期間としてください。
+上記の差分から経過時間を計算してください。見つからない場合は、2 時間前からを対象期間としてください。
 
 ### コミット統計の収集
 
@@ -87,14 +111,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 
 #### 価値体験者対応度分析
 
-- 各value_experiencerごとのストーリー完了数
+- 各 value_experiencer ごとのストーリー完了数
 - 価値体験者別の満足度評価
 
 **注意**: retro コマンドではステータスを変更しません。分析のみ実行します。
 
 ## 価値中心開発サイクル健全性の評価
 
-収集したGitメトリクスと価値実現データから、**価値実現を最優先とした2階層の健全性**を判定してください：
+収集した Git メトリクスと価値実現データから、**価値実現を最優先とした2階層の健全性**を判定してください：
 
 ### 第1階層: 価値実現健全性（最重要 70%）
 
@@ -119,20 +143,20 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 ### 第2階層: 技術品質健全性（補助 30%）
 
 **✅ 健全**
-- Red、Green、Refactorのコミット数が同じ
+- Red、Green、Refactor のコミット数が同じ
 - すべてのフェーズが実施されている
-- コミット頻度が適切（5コミット以上）
+- コミット頻度が適切（5 コミット以上）
 
 **⚠️ 要注意**
-- Refactorコミットが少ない（Greenの50%未満）
-- コミット頻度が低い（3-4コミット）
-- TDDサイクルがやや不完全
+- Refactor コミットが少ない（Green の 50%未満）
+- コミット頻度が低い（3-4 コミット）
+- TDD サイクルがやや不完全
 
 **❌ 要確認**
-- Redコミットがない（テストファーストでない）
-- Red/Greenの数が一致しない
-- Refactorが全くない
-- コミット数が極端に少ない（2以下）
+- Red コミットがない（テストファーストでない）
+- Red/Green の数が一致しない
+- Refactor が全くない
+- コミット数が極端に少ない（2 以下）
 
 ### 総合評価ロジック
 
@@ -152,14 +176,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 #### 🎯 ビジネス価値面での成功
 
 - 仮説検証成功率が高い（X%達成）
-- KPI目標を上回る成果（例: 起動時間2.85秒 vs 目標3秒）
+- KPI 目標を上回る成果（例: 起動時間 2.85 秒 vs 目標 3 秒）
 - ペルソナニーズへの的確な対応
 - 競合優位性の明確な実現
 - ユーザー価値の定量的な向上
 
 #### 🔧 技術面での成功（従来通り）
 
-- TDDサイクルを適切に実施
+- TDD サイクルを適切に実施
 - 高いコミット頻度
 - 適切なリファクタリング実施
 - 完了したストーリー数が多い
@@ -169,14 +193,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 #### 🎯 ビジネス価値面での課題
 
 - 仮説検証の精度不足
-- KPI測定の実装不備
+- KPI 測定の実装不備
 - ペルソナ理解の浅さ
 - 競合分析の不十分さ
 - ビジネス価値実現度の低さ
 
 #### 🔧 技術面での課題（従来通り）
 
-- TDDサイクルの不完全さ
+- TDD サイクルの不完全さ
 - リファクタリングのスキップ
 - コミット頻度の低さ
 - テスト不足
@@ -188,13 +212,13 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 #### 🥇 最高優先（ビジネス価値向上）
 
 - 仮説の精密化（より検証可能な仮説設計）
-- KPI測定の自動化（リアルタイム測定システム）
+- KPI 測定の自動化（リアルタイム測定システム）
 - ペルソナインタビュー実施（実際のユーザーフィードバック取得）
 
 #### 🥈 高優先（開発プロセス観察）
 
 - 仮説検証テストファーストの徹底
-- KPI達成度を含むリファクタリング
+- KPI 達成度を含むリファクタリング
 - ビジネス価値を意識した小さなステップ開発
 
 #### 🥉 中優先（技術観察）
@@ -207,7 +231,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 
 ### イテレーション情報の拡張記録
 
-@docs/cc-xp/metrics.json のiterationsに**戦略的情報を含む**以下を記録：
+@docs/cc-xp/metrics.json の iterations に**戦略的情報を含む**以下を記録：
 
 ```json
 {
@@ -296,8 +320,41 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 ## 変更のコミット
 
 ```bash
-git add docs/cc-xp/metrics.json docs/cc-xp/observations-*.md
-git commit -m "docs: 📊 イテレーション振り返り - [日付]"
+# Safe Git Commit
+echo "=== Git コミット実行 ==="
+FILES="docs/cc-xp/metrics.json docs/cc-xp/observations-*.md"
+MESSAGE="docs: 📊 イテレーション振り返り - [日付]"
+
+echo "対象ファイル: $FILES"
+echo "コミットメッセージ: $MESSAGE"
+
+# git add の実行
+echo "📁 ファイルをステージング..."
+if ! git add $FILES; then
+    echo "❌ エラー: ファイルのステージングに失敗しました"
+    echo "確認事項:"
+    echo "- ファイルが存在するか"
+    echo "- ファイルのパーミッションが正しいか"
+    exit 1
+fi
+
+# 変更があるか確認
+if git diff --cached --quiet; then
+    echo "ℹ️  情報: コミットする変更がありません"
+    exit 0
+fi
+
+# git commit の実行
+echo "💾 変更をコミット..."
+if ! git commit -m "$MESSAGE"; then
+    echo "❌ エラー: コミットに失敗しました"
+    echo "確認事項:"
+    echo "- Git設定（user.name, user.email）が正しいか"
+    echo "- リポジトリの状態に問題がないか"
+    exit 1
+fi
+
+echo "✅ コミット完了"
 ```
 
 ## 戦略的振り返りサマリーの表示
@@ -469,7 +526,7 @@ fi
 
 #### フォールバック動作
 
-- **hypothesis_driven** セクションが存在しない → 基本TDD分析のみ実行
+- **hypothesis_driven** セクションが存在しない → 基本 TDD 分析のみ実行
 - **backlog.yamlが旧形式** → ステータスカウントのみで戦略分析スキップ  
 - **metrics.jsonが基本構造** → 従来指標のみで振り返り実行
 
@@ -490,8 +547,8 @@ fi
 
 ### エラー時の安全な動作
 
-- JSON解析エラー → デフォルト値で継続実行  
-- YAML読み取りエラー → ファイル再生成を提案
+- JSON 解析エラー → デフォルト値で継続実行  
+- YAML 読み取りエラー → ファイル再生成を提案
 - 計算エラー → 該当部分をスキップして他の分析を継続
 
 ## 注意事項

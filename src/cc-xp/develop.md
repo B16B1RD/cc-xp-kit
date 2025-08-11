@@ -34,9 +34,44 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Ba
 
 ## 🛡️ 防御層1: 開始時の強制確認
 
-### STEP 0: STATUS 更新処理（最優先）
+### STEP 0-1: Git リポジトリ確認（最優先）
 
-**🚨 この処理を最初に必ず実行 🚨**
+**🚨 最初に必ず実行してください 🚨**
+
+```bash
+# Git Repository Check
+echo "=== Git リポジトリ確認 ==="
+if [ ! -d ".git" ]; then
+    echo "❌ エラー: Gitリポジトリが初期化されていません"
+    echo ""
+    echo "🔧 解決方法:"
+    echo "1. 新規プロジェクトの場合:"
+    echo "   git init"
+    echo "   git add ."
+    echo "   git commit -m \"Initial commit\""
+    echo ""
+    echo "🚫 処理を中止します"
+    exit 1
+fi
+
+# Git設定確認
+if ! git config user.name > /dev/null 2>&1 || ! git config user.email > /dev/null 2>&1; then
+    echo "⚠️  警告: Git設定が不完全です"
+    echo "🔧 以下のコマンドでGit設定を行ってください:"
+    echo "   git config --global user.name \"Your Name\""
+    echo "   git config --global user.email \"your.email@example.com\""
+    echo ""
+    echo "🚫 処理を中止します"
+    exit 1
+fi
+
+echo "✅ Git リポジトリ確認完了"
+echo ""
+```
+
+### STEP 0-2: STATUS 更新処理
+
+**🚨 この処理を次に必ず実行 🚨**
 
 ```bash
 # backlog.yaml の status を確認
@@ -187,13 +222,44 @@ fi
 ### コミット処理
 
 ```bash
+# Safe Git Commit Function
+safe_git_commit() {
+    local files="$1"
+    local message="$2"
+    
+    echo "=== Git コミット実行 ==="
+    echo "対象ファイル: $files"
+    echo "コミットメッセージ: $message"
+    
+    # git add の実行
+    echo "📁 ファイルをステージング..."
+    if ! git add $files; then
+        echo "❌ エラー: ファイルのステージングに失敗しました"
+        return 1
+    fi
+    
+    # 変更があるか確認
+    if git diff --cached --quiet; then
+        echo "ℹ️  情報: コミットする変更がありません"
+        return 0
+    fi
+    
+    # git commit の実行
+    echo "💾 変更をコミット..."
+    if ! git commit -m "$message"; then
+        echo "❌ エラー: コミットに失敗しました"
+        return 1
+    fi
+    
+    echo "✅ コミット完了"
+    return 0
+}
+
 # backlog.yaml をコミット
-git add docs/cc-xp/backlog.yaml
-git commit -m "develop: ストーリーを testing に更新 - done 禁止厳守"
+safe_git_commit "docs/cc-xp/backlog.yaml" "develop: ストーリーを testing に更新 - done 禁止厳守"
 
 # 実装ファイルをコミット  
-git add .
-git commit -m "feat: 価値駆動TDD実装完了 - testing段階"
+safe_git_commit "." "feat: 価値駆動TDD実装完了 - testing段階"
 ```
 
 ## 完了サマリー

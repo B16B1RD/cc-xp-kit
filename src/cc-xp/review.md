@@ -17,6 +17,41 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bas
 - **素早いフィードバック**: 価値確認から判定まで一気通貫
 - **継続的価値提供**: 承認後は即座にユーザーに価値提供
 
+## Git リポジトリ確認（必須）
+
+**🚨 最初に必ず実行してください 🚨**
+
+```bash
+# Git Repository Check
+echo "=== Git リポジトリ確認 ==="
+if [ ! -d ".git" ]; then
+    echo "❌ エラー: Gitリポジトリが初期化されていません"
+    echo ""
+    echo "🔧 解決方法:"
+    echo "1. 新規プロジェクトの場合:"
+    echo "   git init"
+    echo "   git add ."
+    echo "   git commit -m \"Initial commit\""
+    echo ""
+    echo "🚫 処理を中止します"
+    exit 1
+fi
+
+# Git設定確認
+if ! git config user.name > /dev/null 2>&1 || ! git config user.email > /dev/null 2>&1; then
+    echo "⚠️  警告: Git設定が不完全です"
+    echo "🔧 以下のコマンドでGit設定を行ってください:"
+    echo "   git config --global user.name \"Your Name\""
+    echo "   git config --global user.email \"your.email@example.com\""
+    echo ""
+    echo "🚫 処理を中止します"
+    exit 1
+fi
+
+echo "✅ Git リポジトリ確認完了"
+echo ""
+```
+
 ## ステータス遷移ルール
 
 **重要**: ステータスの正しい遷移を厳守してください。
@@ -67,7 +102,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 
 **仮説検証レビューサイクルの確認**：
 - フィードバックファイルから何回目のレビューかをカウント
-- 前回のKPI測定結果と改善状況を確認
+- 前回の KPI 測定結果と改善状況を確認
 - 仮説検証の進捗状況を評価
 
 **重要**: 戦略的情報が存在しない場合は旧形式として扱い、基本レビューのみ実行してください。
@@ -89,17 +124,17 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 - Cargo.toml → Rust
 - go.mod → Go
 - Gemfile → Ruby
-- 単独のHTMLファイル → 静的サイト
+- 単独の HTML ファイル → 静的サイト
 
 **起動コマンドの例：**
-- Webアプリ: 開発サーバーを起動（npm run dev, python manage.py runserver等）
-- CLIツール: ヘルプとデモコマンドを表示
+- Web アプリ: 開発サーバーを起動（npm run dev, python manage.py runserver 等）
+- CLI ツール: ヘルプとデモコマンドを表示
 - API: エンドポイント一覧とテスト方法を表示
-- 静的HTML: http-serverやPythonのSimpleHTTPServerで起動
+- 静的 HTML: http-server や Python の SimpleHTTPServer で起動
 
 起動後は以下を実行してください：
-1. プロセスIDを `.server.pid` に保存
-2. アクセスURLを表示
+1. プロセス ID を `.server.pid` に保存
+2. アクセス URL を表示
 3. ログファイルの確認方法を案内
 
 ## Phase 2: E2E自動テスト実行（--skip-e2eがない場合）
@@ -142,7 +177,7 @@ npx playwright test --headed --reporter=html
 
 #### E2E非対応環境またはunit-onlyの場合
 
-この段階をスキップし、Phase 3へ進む。
+この段階をスキップし、Phase 3 へ進む。
 
 **重要**: E2E テストの実行結果（成功/失敗/スキップ）に関わらず、必ず Phase 3（動作確認ガイド表示）に進みます。テスト結果による自動判定は行いません。
 
@@ -188,22 +223,22 @@ npx playwright test --headed --reporter=html
 | **1-4❌** | ⚠️Reject | ⚠️Reject | ⚠️Reject | ❌**Reject** |
 
 **判定ルール**:
-- **価値実現度 < 5**: 自動Reject (価値が体験できない)
-- **技術品質 < 5**: 自動Reject (動作しない)
-- **価値実現度 ≥ 7**: 優先Accept (ユーザーに価値提供)
+- **価値実現度 < 5**: 自動 Reject (価値が体験できない)
+- **技術品質 < 5**: 自動 Reject (動作しない)
+- **価値実現度 ≥ 7**: 優先 Accept (ユーザーに価値提供)
 - **総合スコア ≥ 6.0**: Accept
 
 ### 📈 技術中心から価値中心への転換
 
 **従来の確認** (技術中心)：
-- テトリス盤面が10x20で表示されるか？ → 技術的完全性
-- テトリミノが正常に落下するか？ → 機能的正確性
-- ライン消去が動作するか？ → アルゴリズムの正確性
+- テトリス盤面が 10x20 で表示されるか？　→ 技術的完全性
+- テトリミノが正常に落下するか？　→ 機能的正確性
+- ライン消去が動作するか？　→ アルゴリズムの正確性
 
 **価値中心の確認** (本修正後)：
-- プレイヤーが実際にゲームを楽しめるか？ → 本質価値
-- 操作が直感的でストレスなくできるか？ → 体験品質  
-- もう一度プレイしたくなるか？ → 継続意欲
+- プレイヤーが実際にゲームを楽しめるか？　→ 本質価値
+- 操作が直感的でストレスなくできるか？　→ 体験品質  
+- もう一度プレイしたくなるか？　→ 継続意欲
 
 ## Phase 4: 動作確認と判定
 
@@ -213,13 +248,13 @@ npx playwright test --headed --reporter=html
 
 $ARGUMENTS の最初の単語を確認：
 - 引数なし: ガイダンス表示のみで終了（Phase 5 は実行しない）
-- `accept`: Phase 5 のAccept処理を実行
-- `reject`: Phase 5 のReject処理を実行（理由は引数の残り部分）
-- `skip`: Phase 5 のSkip処理を実行
+- `accept`: Phase 5 の Accept 処理を実行
+- `reject`: Phase 5 の Reject 処理を実行（理由は引数の残り部分）
+- `skip`: Phase 5 の Skip 処理を実行
 
 ### 引数なしの場合（デフォルト） - 仮説検証ガイダンス表示
 
-ストーリーの仮説検証状況とKPI実績を表示し、以下のガイダンスを提供：
+ストーリーの仮説検証状況と KPI 実績を表示し、以下のガイダンスを提供：
 
 ```
 🎯 仮説検証レビューガイド
@@ -305,9 +340,9 @@ KPI未達成または仮説検証不十分な場合:
 ### 引数で判定が指定された場合
 
 $ARGUMENTS の最初の単語を確認：
-- `accept`: Phase 5 のAccept処理を実行
-- `reject`: Phase 5 のReject処理を実行（理由は引数の残り部分）
-- `skip`: Phase 5 のSkip処理を実行
+- `accept`: Phase 5 の Accept 処理を実行
+- `reject`: Phase 5 の Reject 処理を実行（理由は引数の残り部分）
+- `skip`: Phase 5 の Skip 処理を実行
 
 ## Phase 5: 判定に基づく処理
 
@@ -363,14 +398,46 @@ $ARGUMENTS の最初の単語を確認：
 3. **Gitマージ処理**
    ```bash
    # テスト実行（プロジェクトに応じたコマンド）
-   # mainブランチへマージ
-   git checkout main
-   git merge --no-ff story-[ID] -m "merge: ストーリー [ID] - [タイトル]"
+   
+   # Safe Git Operations
+   echo "=== Git マージ・タグ処理 ==="
+   STORY_BRANCH="story-[ID]"
+   STORY_ID="[ID]"
+   STORY_TITLE="[タイトル]"
+   
+   # mainブランチへ切り替え
+   echo "🔄 mainブランチに切り替え..."
+   if ! git checkout main; then
+       echo "❌ エラー: mainブランチへの切り替えに失敗しました"
+       echo "確認事項:"
+       echo "- mainブランチが存在するか"
+       echo "- 未コミットの変更がないか"
+       exit 1
+   fi
+   
+   # ブランチをマージ
+   echo "🔀 ブランチをマージ..."
+   if ! git merge --no-ff "$STORY_BRANCH" -m "merge: ストーリー $STORY_ID - $STORY_TITLE"; then
+       echo "❌ エラー: マージに失敗しました"
+       echo "確認事項:"
+       echo "- マージコンフリクトが発生していないか"
+       echo "- ブランチ '$STORY_BRANCH' が存在するか"
+       exit 1
+   fi
+   
    # タグ付け
-   git tag -a "story-[ID]-done" -m "完了: [タイトル]"
+   echo "🏷️  タグを作成..."
+   if ! git tag -a "$STORY_ID-done" -m "完了: $STORY_TITLE"; then
+       echo "❌ エラー: タグ作成に失敗しました"
+       echo "確認事項:"
+       echo "- 同名のタグが既に存在しないか"
+       exit 1
+   fi
+   
+   echo "✅ Git操作完了"
    ```
 
-4. **サーバー停止**（.server.pidがある場合）
+4. **サーバー停止**（.server.pid がある場合）
    ```bash
    kill $(cat .server.pid)
    rm .server.pid
@@ -437,7 +504,7 @@ $ARGUMENTS の最初の単語を確認：
    3. 実装を改善
    4. `/cc-xp:develop` を実行して修正を実装
    ```
-   - @docs/cc-xp/backlog.yaml のstatusを `testing` → `in-progress` に戻す（**重要**: doneにはしない）
+   - @docs/cc-xp/backlog.yaml の status を `testing` → `in-progress` に戻す（**重要**: done にはしない）
 
 3. **修正ガイドの表示**
    ```
@@ -498,13 +565,13 @@ $ARGUMENTS の最初の単語を確認：
 引数に `--skip-demo` がある場合：
 1. Phase 1（デモ起動）をスキップ
 2. 既存のサーバープロセスを使用
-3. Phase 2から開始
+3. Phase 2 から開始
 
 ### --skip-e2e オプション
 
 引数に `--skip-e2e` がある場合：
-1. Phase 2（E2E自動テスト）をスキップ
-2. Phase 3の動作確認ガイドから開始
+1. Phase 2（E2E 自動テスト）をスキップ
+2. Phase 3 の動作確認ガイドから開始
 3. 手動確認に特化
 
 ## エラーハンドリング
@@ -564,10 +631,10 @@ done
 
 ### その他のエラー
 
-- testingステータスのストーリーがない
+- testing ステータスのストーリーがない
 - サーバー起動に失敗
 - テスト実行に失敗
-- Gitマージで競合発生
+- Git マージで競合発生
 
 ## メトリクスの更新
 

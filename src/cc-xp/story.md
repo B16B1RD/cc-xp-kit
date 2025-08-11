@@ -19,16 +19,54 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(grep), Read
 
 ## 現在の状態確認
 
+### Git リポジトリ確認（必須）
+
+**🚨 最初に必ず実行してください 🚨**
+
+```bash
+# Git Repository Check
+echo "=== Git リポジトリ確認 ==="
+if [ ! -d ".git" ]; then
+    echo "❌ エラー: Gitリポジトリが初期化されていません"
+    echo ""
+    echo "🔧 解決方法:"
+    echo "1. 新規プロジェクトの場合:"
+    echo "   git init"
+    echo "   git add ."
+    echo "   git commit -m \"Initial commit\""
+    echo ""
+    echo "2. 既存プロジェクトの場合:"
+    echo "   適切なGitリポジトリディレクトリに移動してください"
+    echo ""
+    echo "🚫 処理を中止します"
+    exit 1
+fi
+
+# Git設定確認
+if ! git config user.name > /dev/null 2>&1 || ! git config user.email > /dev/null 2>&1; then
+    echo "⚠️  警告: Git設定が不完全です"
+    echo "🔧 以下のコマンドでGit設定を行ってください:"
+    echo "   git config --global user.name \"Your Name\""
+    echo "   git config --global user.email \"your.email@example.com\""
+    echo ""
+    echo "🚫 処理を中止します"
+    exit 1
+fi
+
+echo "✅ Git リポジトリ確認完了"
+echo ""
+```
+
 ### 環境チェック
 
-- backlog存在確認: !test -f docs/cc-xp/backlog.yaml
-- Git状態: !git status --short
+- backlog 存在確認: !test -f docs/cc-xp/backlog.yaml
+- Git 状態: !git status --short
 - 現在のブランチ: !git branch --show-current
 - 現在時刻: !date +"%Y-%m-%dT%H:%M:%S%:z"
 
 ### 対象ストーリーの特定
 
-$ARGUMENTS が指定されている場合はそのID、なければ最初の `selected` ステータスのストーリーを使用してください。
+$ARGUMENTS が指定されている場合はその ID、なければ最初の `selected` ステータスのストーリーを使用してください。
 
 @docs/cc-xp/backlog.yaml から該当ストーリーの**全情報**を取得：
 
@@ -61,13 +99,13 @@ $ARGUMENTS が指定されている場合はそのID、なければ最初の `se
 - すでに `in-progress` 以降のステータスの場合は、そのまま継続するか確認
 - `done` ステータスのストーリーは詳細化不可
 
-**重要**: 上記の戦略的情報が存在しない場合は、旧形式のbacklog.yamlとして扱い、基本機能のみで進行してください。
+**重要**: 上記の戦略的情報が存在しない場合は、旧形式の backlog.yaml として扱い、基本機能のみで進行してください。
 
-backlogが存在しない場合は、先に `/cc-xp:plan` の実行を案内してください。
+backlog が存在しない場合は、先に `/cc-xp:plan` の実行を案内してください。
 
 ### AI分析レポートの参照
 
-**重要**: ストーリー詳細化前に、plan.mdで生成されたAI分析結果を必ず参照してください。
+**重要**: ストーリー詳細化前に、plan.md で生成された AI 分析結果を必ず参照してください。
 
 @docs/cc-xp/analysis_summary.md が存在する場合：
 - 市場・競合分析結果を確認
@@ -102,7 +140,19 @@ fi
 
 存在しない場合は新規作成：
 ```bash
-git checkout -b story-[ID]
+# Safe Branch Creation
+echo "🌱 新しいブランチを作成..."
+BRANCH_NAME="story-[ID]"
+
+if ! git checkout -b "$BRANCH_NAME"; then
+    echo "❌ エラー: ブランチ作成に失敗しました"
+    echo "確認事項:"
+    echo "- 同名のブランチが既に存在しないか"
+    echo "- 未コミットの変更がないか"
+    exit 1
+fi
+
+echo "✅ ブランチ '$BRANCH_NAME' を作成し、切り替えました"
 ```
 
 ## 戦略的ストーリー詳細化
@@ -113,7 +163,7 @@ git checkout -b story-[ID]
 
 #### 🎯 本質価値の確認と詳細化
 
-**最重要**: backlog.yamlの項目が価値実現レベルに達していない場合、以下に従って**価値中心に詳細化**してください：
+**最重要**: backlog.yaml の項目が価値実現レベルに達していない場合、以下に従って**価値中心に詳細化**してください：
 
 ##### core_value の明確化
 
@@ -134,7 +184,7 @@ git checkout -b story-[ID]
 ```
 
 **最小体験例**:
-- 技術的 ❌: "7種類のテトロミノが正確に生成される"
+- 技術的 ❌: "7 種類のテトロミノが正確に生成される"
 - 価値中心 ✅: "ブロックが落下し、キーで移動・回転でき、ラインが消える"
 
 ##### 価値測定方法の明確化
@@ -151,8 +201,8 @@ git checkout -b story-[ID]
 #### 👤 戦略的ペルソナの活用
 
 以下を統合してペルソナを定義：
-- backlog.yamlの`user_persona`
-- analysis_summary.mdのペルソナ分析
+- backlog.yaml の`user_persona`
+- analysis_summary.md のペルソナ分析
 - 競合分析結果(`competition_analysis`)
 
 #### 📝 Value Story形式
@@ -251,7 +301,7 @@ And ユーザー体験が一貫している AND 技術的問題が発生しな�
 
 各受け入れ条件について、以下を確認してください：
 - [ ] 定量的な測定が可能
-- [ ] backlog.yamlの`kpi_target`に対応
+- [ ] backlog.yaml の`kpi_target`に対応
 - [ ] `success_metrics`で測定手法が明確
 - [ ] 仮説検証に直結している
 
@@ -267,8 +317,8 @@ And ユーザー体験が一貫している AND 技術的問題が発生しな�
 
 #### E2Eテスト戦略（Webアプリケーション限定）
 
-- **e2e-required**: E2Eテスト必須（UI操作の核心機能）
-- **e2e-optional**: E2Eテスト推奨（品質向上のため）
+- **e2e-required**: E2E テスト必須（UI 操作の核心機能）
+- **e2e-optional**: E2E テスト推奨（品質向上のため）
 - **unit-only**: ユニットテストのみで十分（ロジック中心）
 
 #### 判定基準
@@ -277,10 +327,10 @@ And ユーザー体験が一貫している AND 技術的問題が発生しな�
 - ユーザーの主要なワークフロー（ログイン、購入、投稿など）
 - フォーム送信とバリデーション
 - ナビゲーションとページ遷移
-- 外部APIとの統合部分
+- 外部 API との統合部分
 
 **E2Eテストが推奨（e2e-optional）**：
-- 補助的なUI機能
+- 補助的な UI 機能
 - アニメーションや視覚効果
 - レスポンシブデザインの確認
 
@@ -305,7 +355,7 @@ And ユーザー体験が一貫している AND 技術的問題が発生しな�
 **ストーリーファイル作成後、以下を必ず確認**：
 1. ✅ hypothesis に具体的数値・測定条件が含まれている
 2. ✅ kpi_target に複数の数値基準が設定されている
-3. ✅ success_metrics に4つ以上の具体的測定項目がリストされている
+3. ✅ success_metrics に 4 つ以上の具体的測定項目がリストされている
 4. ✅ 各受け入れ条件が実装・測定可能で具体的である
 
 **品質チェック失敗時は、該当項目を上記詳細化指示に従って修正**
@@ -378,7 +428,7 @@ Then [競合優位性を示す結果]
 ## backlog.yamlの更新
 
 @docs/cc-xp/backlog.yaml の該当ストーリーを更新：
-- status: `selected` → `in-progress` （**重要**: doneにはしない）
+- status: `selected` → `in-progress`（**重要**: done にはしない）
 - updated_at: 現在時刻
 
 **ステータスの流れ**：
@@ -389,8 +439,49 @@ Then [競合優位性を示す結果]
 以下でコミットしてください：
 
 ```bash
-git add docs/cc-xp/stories/[ID].md docs/cc-xp/backlog.yaml
-git commit -m "docs: ストーリー詳細化 - [タイトル]"
+# Safe Git Commit
+echo "=== Git コミット実行 ==="
+FILES="docs/cc-xp/stories/[ID].md docs/cc-xp/backlog.yaml"
+MESSAGE="docs: ストーリー詳細化 - [タイトル]"
+
+echo "対象ファイル: $FILES"
+echo "コミットメッセージ: $MESSAGE"
+
+# ファイル存在確認
+for file in $FILES; do
+    if [ ! -f "$file" ]; then
+        echo "⚠️  警告: ファイル '$file' が見つかりません"
+    fi
+done
+
+# git add の実行
+echo "📁 ファイルをステージング..."
+if ! git add $FILES; then
+    echo "❌ エラー: ファイルのステージングに失敗しました"
+    echo "確認事項:"
+    echo "- ファイルが存在するか"
+    echo "- ファイルのパーミッションが正しいか"
+    exit 1
+fi
+
+# 変更があるか確認
+if git diff --cached --quiet; then
+    echo "ℹ️  情報: コミットする変更がありません"
+    exit 0
+fi
+
+# git commit の実行
+echo "💾 変更をコミット..."
+if ! git commit -m "$MESSAGE"; then
+    echo "❌ エラー: コミットに失敗しました"
+    echo "確認事項:"
+    echo "- Git設定（user.name, user.email）が正しいか"
+    echo "- コミットメッセージが適切か"
+    echo "- リポジトリの状態に問題がないか"
+    exit 1
+fi
+
+echo "✅ コミット完了"
 ```
 
 ## 戦略的完了サマリーの表示
@@ -457,5 +548,5 @@ TDDサイクルを開始:
 ## 注意事項
 
 - 受け入れ条件は具体的で測定可能に
-- YAGNIを意識し、過度な詳細化を避ける
+- YAGNI を意識し、過度な詳細化を避ける
 - ユーザー価値を中心に考える
