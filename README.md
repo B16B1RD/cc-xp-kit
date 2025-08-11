@@ -45,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 ```bash
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --user
 
-## 🔄 5 つの XP ワークフロー + E2Eテスト統合
+## 🔄 6 つの XP ワークフロー + E2Eテスト統合
 
 ### ワークフロー全体図
 
@@ -53,7 +53,8 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 graph TB
     Start([開始]) --> Plan["/cc-xp:plan<br/>要望からストーリー抽出"]
     Plan --> Story["/cc-xp:story<br/>ストーリー詳細化"]
-    Story --> Develop["/cc-xp:develop<br/>TDDサイクル"]
+    Story --> Research["/cc-xp:research<br/>技術調査・仕様確認"]
+    Research --> Develop["/cc-xp:develop<br/>TDDサイクル"]
     Develop --> Review["/cc-xp:review<br/>動作確認"]
     
     Review --> ReviewDecision{判定}
@@ -73,6 +74,7 @@ graph TB
     
     style Plan fill:#e1f5fe
     style Story fill:#f3e5f5
+    style Research fill:#e8f5e9
     style Develop fill:#fff3e0
     style Review fill:#f1f8e9
     style Retro fill:#fce4ec
@@ -188,13 +190,16 @@ sequenceDiagram
 # 2. ユーザーストーリー詳細化
 /cc-xp:story
 
-# 3. TDD+E2E 実装（Red→Green→Refactor→E2E）
+# 3. 技術調査・仕様確認
+/cc-xp:research
+
+# 4. TDD+E2E 実装（Red→Green→Refactor→E2E）
 /cc-xp:develop
 
-# 4. 動作確認とフィードバック
+# 5. 動作確認とフィードバック
 /cc-xp:review [accept/reject]
 
-# 5. 振り返りと継続的改善
+# 6. 振り返りと継続的改善
 /cc-xp:retro
 ```
 
@@ -206,6 +211,9 @@ sequenceDiagram
 
 # ストーリー詳細化
 /cc-xp:story
+
+# 技術調査（仕様・ベストプラクティス確認）
+/cc-xp:research
 
 # TDD 実装
 /cc-xp:develop
@@ -228,6 +236,7 @@ sequenceDiagram
 |---------|------------------|--------------|------------|
 | **plan** | `selected` ステータスで新規作成 | `metrics.json` 初期化（初回のみ） | `backlog.yaml` |
 | **story** | `selected` → `in-progress` | - | `stories/[ID].md` |
+| **research** | `research_status` → `completed` | - | `research/[ID]/*.md` (仕様書・実装ガイド等) |
 | **develop** | `in-progress` → `testing` | `tddCycles` (red/green/refactor) カウント増加 | テストファイル、実装ファイル |
 | **review** | `testing` → `done` (accept時) / `testing` → `in-progress` (reject時) | `completedStories` カウント増加（accept時） | `stories/[ID]-feedback.md` (reject時) |
 | **retro** | 変更なし（読み取りのみ） | `iterations` 追加、`velocity` 再計算 | `action-items-[日付].md` |
@@ -352,12 +361,18 @@ gantt
 
 ```
 cc-xp-kit/
-├── src/cc-xp/                # 📦 5 つの XP コマンド
+├── src/cc-xp/                # 📦 6 つの XP コマンド
 │   ├── plan.md              # 計画立案
 │   ├── story.md             # ストーリー詳細化
+│   ├── research.md          # 技術調査（新規追加）
 │   ├── develop.md           # TDD 実装
 │   ├── review.md            # 動作確認
-│   └── retro.md             # 振り返り
+│   ├── retro.md             # 振り返り
+│   └── templates/           # 調査記録テンプレート
+│       ├── research-specifications.md
+│       ├── research-implementation.md
+│       ├── research-references.md
+│       └── research-decisions.md
 ├── install.sh                # モダンインストーラー
 ├── tests/                    # テストスイート
 └── docs/                     # ドキュメント
@@ -371,13 +386,20 @@ your-project/
 │   └── cc-xp/
 │       ├── plan.md          # /cc-xp:plan
 │       ├── story.md         # /cc-xp:story
+│       ├── research.md      # /cc-xp:research
 │       ├── develop.md       # /cc-xp:develop
 │       ├── review.md        # /cc-xp:review
 │       └── retro.md         # /cc-xp:retro
 ├── docs/cc-xp/              # プロジェクトデータ（自動生成）
 │   ├── backlog.yaml         # ストーリーバックログ
 │   ├── metrics.json         # ベロシティ・メトリクス
-│   └── stories/             # 詳細化されたストーリー
+│   ├── stories/             # 詳細化されたストーリー
+│   └── research/            # 調査結果（新規追加）
+│       └── [story-id]/      # ストーリー別調査記録
+│           ├── specifications.md  # 仕様書
+│           ├── implementation.md  # 実装ガイド
+│           ├── references.md      # 参考資料
+│           └── decisions.md       # 技術的決定
 └── .git/                    # フィーチャーブランチ管理
 ```
 
@@ -388,6 +410,13 @@ your-project/
 - **YAML 形式** - 人間が読みやすく、Git で追跡可能
 - **ストーリーポイント** - Size (1～8) + Value (High/Medium/Low)
 - **状態管理** - todo → selected → in-progress → testing → done
+
+### 技術調査機能（新機能 v0.2.2）
+
+- **公式仕様の確認** - AI の知識に頼らず、最新の公式ドキュメントを調査
+- **ベストプラクティス収集** - 実装前に推奨パターンを把握
+- **調査結果の記録** - `research/[ID]/*.md` に体系的に保存
+- **アンチパターン回避** - 事前に問題を認識して品質向上
 
 ### メトリクス追跡
 
