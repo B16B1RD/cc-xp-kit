@@ -31,6 +31,12 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Ba
 - updated_at: 現在時刻を設定
 - 変更を保存（コミットは完了時に実施）
 
+**重要な禁止事項**：
+- ❌ **絶対に `done` に変更してはいけません**
+- ❌ `done` にできるのは `/cc-xp:review accept` のみです
+- ✅ develop では必ず `testing` で停止してください
+- ✅ review.md の内容と混同しないでください
+
 ### 1. 本質価値理解確認
 
 backlog.yamlから以下を確認してください：
@@ -273,9 +279,28 @@ fi
 - **優先度中**: 品質・パフォーマンス・保守性に影響
 - **優先度低**: 将来の拡張性・最適化に影響
 
-## backlog.yaml の更新コミット
+## ステータス確認と更新コミット
 
-開発完了時に、ステータス更新をコミットしてください：
+開発完了時に、必ず以下を確認してからコミットしてください：
+
+### ステータス確認（重要）
+
+**必須確認事項**：
+1. @docs/cc-xp/backlog.yaml の該当ストーリーのstatusが `testing` であることを確認
+2. もし誤って `done` になっていたら、即座に `testing` に修正
+3. `done` への変更は `/cc-xp:review accept` でのみ許可されている
+
+```bash
+# ステータス確認
+grep "status:" docs/cc-xp/backlog.yaml
+
+# もし done になっていたら修正（例）
+# sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
+```
+
+### 更新のコミット
+
+ステータス確認後、コミットしてください：
 
 ```bash
 git add docs/cc-xp/backlog.yaml
@@ -347,6 +372,37 @@ KPI達成状況:
 ## エラーハンドリング
 
 以下のエラーが発生した場合の対応：
+
+### ステータスが誤って `done` になってしまった場合
+
+**緊急復旧手順**：
+
+1. **即座に修正**：
+   ```bash
+   # backlog.yamlのステータスを確認
+   grep -n "status:" docs/cc-xp/backlog.yaml
+   
+   # done になっている場合は testing に修正
+   sed -i 's/status: done/status: testing/' docs/cc-xp/backlog.yaml
+   
+   # 修正結果を確認
+   grep -n "status:" docs/cc-xp/backlog.yaml
+   ```
+
+2. **修正をコミット**：
+   ```bash
+   git add docs/cc-xp/backlog.yaml
+   git commit -m "fix: ステータスを誤った done から testing に修正"
+   ```
+
+3. **原因確認**：
+   - develop.md と review.md の内容を混同していないか確認
+   - 他のファイルの内容を誤って適用していないか確認
+
+**予防策**：
+- 常に Phase 0 の禁止事項を確認する
+- 完了前のステータス確認を必ず実行する
+- done への変更は review accept でのみ行う
 
 ### テストツールが見つからない場合
 
