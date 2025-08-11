@@ -21,6 +21,14 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Ba
 
 **以下すべて完了まで、Red Phase 開始を禁止してください：**
 
+### 0. ステータス更新処理
+
+対象ストーリーのステータスを更新してください：
+- @docs/cc-xp/backlog.yaml の該当ストーリーを特定
+- status: `in-progress` → `testing` に更新
+- updated_at: 現在時刻を設定
+- 変更を保存（コミットは完了時に実施）
+
 ### 1. 本質価値理解確認
 
 backlog.yamlから以下を確認してください：
@@ -257,6 +265,15 @@ fi
 - **優先度高**: 仮説検証・KPI達成・受け入れ条件に直接影響
 - **優先度中**: 品質・パフォーマンス・保守性に影響
 - **優先度低**: 将来の拡張性・最適化に影響
+
+## backlog.yaml の更新コミット
+
+開発完了時に、ステータス更新をコミットしてください：
+
+```bash
+git add docs/cc-xp/backlog.yaml
+git commit -m "status: ストーリー [ID] を testing に更新"
+```
 
 ## 完了サマリー
 
