@@ -1,7 +1,7 @@
 ---
 description: XP review – 価値×技術の二軸評価と判定（accept/reject/skipで指定）+ 価値体験確認
 argument-hint: '[accept|reject|skip] [理由（rejectの場合）] [--skip-demo] [--skip-e2e]'
-allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(python:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), Bash(npx:*), ReadFile, WriteFile, mcp__playwright__*
+allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), ReadFile, WriteFile(docs/cc-xp/stories/*-feedback.md), WriteFile(docs/cc-xp/tests/*.regression.js), WriteFile(docs/cc-xp/backlog.yaml), mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot
 ---
 
 # XP Review - 価値×技術 二軸評価
@@ -9,6 +9,61 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bas
 ## ゴール
 
 実際に価値を体験してユーザー視点で評価し、価値実現度と技術品質の二軸で承認/却下を判定する。**1回のコマンドで完結**。
+
+## ⛔ 絶対的禁止事項 - CRITICAL
+
+### review コマンドの責務境界
+
+**review コマンドは評価・判定のみを行います。修正作業は一切行いません。**
+
+#### 🚫 実装修正の絶対禁止
+
+1. **ソースコードの修正禁止**
+   - src/*.js, src/*.ts, src/*.py 等への一切の変更禁止
+   - HTMLファイルの修正禁止（index.html等）
+   - 実装ファイルへの編集は絶対禁止
+
+2. **開発作業の完全禁止**
+   - Red→Green→Refactor サイクル実行禁止
+   - 問題解決の実装禁止
+   - バグ修正作業禁止
+   - コード改善作業禁止
+
+#### 🚫 テスト実行の制限
+
+1. **修正を伴うテスト作業禁止**
+   - 回帰テスト実行禁止（生成のみ可）
+   - npm test での修正確認禁止
+   - テストが失敗しても修正作業はしない
+
+2. **ブラウザ操作の制限**
+   - 確認・評価目的のみ許可
+   - 実装修正は絶対禁止
+
+#### 🚫 ステータス変更の厳格化
+
+1. **不適切なステータス遷移禁止**
+   - reject: testing → in-progress のみ許可
+   - accept: testing → done のみ許可
+   - **testing への再変更は絶対禁止**
+
+### ⚠️ 責務の明確な境界
+
+```
+✅ review の責務:
+- 評価・判定
+- フィードバック記録
+- 回帰テスト生成
+- status 変更
+
+❌ develop の責務（review では禁止）:
+- 実装修正
+- テスト修正
+- コード改善
+- 問題解決
+```
+
+---
 
 ## XP原則
 
@@ -90,11 +145,14 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 - サーバー稼働確認: !test -f .server.pid
 - 現在のブランチ: !git branch --show-current
 
-## Phase 0: 自動品質ゲート（TDD必須）
+## Phase 0: 自動品質ゲート（読み取り専用）
 
-### テスト実行と品質確認
+### テスト結果の確認と評価
 
-**すべてのレビューで最初に実行する必須プロセス**
+**⚠️ 重要: review コマンドはテスト結果の確認のみ実行**
+- テストの実行と結果確認は可能
+- テストやコードの修正は絶対禁止
+- 問題があれば reject して develop コマンドへ案内
 
 #### 0.1 全テスト実行
 
@@ -111,7 +169,8 @@ bundle exec rspec
 
 **テスト結果の判定**:
 - **全テストPASS**: レビュー継続
-- **1つでも失敗**: 自動的にreject、develop戻し
+- **1つでも失敗**: 自動的に reject、develop コマンドでの修正を案内
+  （review コマンドでは修正作業は行わない）
 
 #### 0.2 テストカバレッジ確認
 
@@ -189,10 +248,11 @@ TDD完全性: ✅ Red→Green→Refactor確認
 - Red→Green→Refactorサイクルが不完全
 
 **自動reject時の処理**:
-1. ステータスを`testing → in-progress`に戻す
+1. ステータスを `testing → in-progress` に戻す
 2. フィードバックファイルに問題を記録
-3. reject理由を明確に表示
-4. `/cc-xp:develop` 再実行を案内
+3. reject 理由を明確に表示
+4. `/cc-xp:develop` での修正実行を案内
+5. **重要**: review コマンドでは修正作業を行わない
 
 ---
 
@@ -548,9 +608,7 @@ $ARGUMENTS の最初の単語を確認：
    
    ## 次のアクション
    1. このフィードバックを確認
-   2. テストを修正/追加
-   3. 実装を改善
-   4. `/cc-xp:develop` を実行して修正を実装
+   2. `/cc-xp:develop` を実行して修正を実装
    ```
    - @docs/cc-xp/backlog.yaml の status を `testing` → `in-progress` に戻す（**重要**: done にはしない）
 
@@ -620,15 +678,12 @@ $ARGUMENTS の最初の単語を確認：
    3. **期待値の定義** - 修正後の正しい振る舞いを定義
    4. **テストケース生成** - 失敗する回帰テストを作成
    5. **ファイル更新** - regression.jsファイルに追記
-   6. **実行確認** - 生成されたテストが実際に失敗することを確認
+   6. **ファイルコミット** - regression.jsファイルのコミット（実行はしない）
 
-#### テスト実行とコミット
+#### 回帰テストファイルのコミット
 
    ```bash
-   # 回帰テストが追加されていることを確認
-   npm test docs/cc-xp/tests/[story-id].regression.js
-   
-   # 回帰テストの変更をコミット
+   # 回帰テストファイルをコミット（実行はしない）
    git add docs/cc-xp/tests/[story-id].regression.js
    git commit -m "[Regression] Add test for: [却下理由の要約]
    
@@ -646,11 +701,11 @@ $ARGUMENTS の最初の単語を確認：
    ==================
    1. フィードバックを確認: docs/cc-xp/stories/[ID]-feedback.md
    2. 回帰テストを確認: docs/cc-xp/tests/[ID].regression.js
-   3. 回帰テストが失敗することを確認（Red状態）
-   4. 問題を修正してテストを通す（Green状態）
-   5. コードを改善する（Refactor状態）
+   3. `/cc-xp:develop` を実行して修正作業開始
    
-   回帰テスト実行: npm test docs/cc-xp/tests/[ID].regression.js
+   🚨 重要: review コマンドでは修正作業を行いません
+   修正は必ず develop コマンドで実施してください
+   
    サーバーは稼働中です: [URL]
    停止する場合: kill $(cat .server.pid)
    ```
@@ -662,21 +717,20 @@ $ARGUMENTS の最初の単語を確認：
    🔴 修正を実装する（回帰テスト対応）:
    → /cc-xp:develop
    
-   このコマンドで：
-   • 追加された回帰テストからRed状態開始
+   develop コマンドが実行する内容：
+   • 追加された回帰テストの確認とRed状態確認
    • 却下理由を解決する実装（Green状態）
    • コード品質の改善（Refactor状態）
    
    このストーリーを諦めて別のストーリーへ:
    → /cc-xp:story [別のID]
    
-   💡 修正のヒント（回帰テスト対応）
+   💡 修正時の重要ポイント
    ------------------------
-   • フィードバックをよく読んで原因を理解
-   • 回帰テストから修正を始める（TDD）
-   • 同様の問題が他の箇所にないか確認
-   • 小さな変更を積み重ねる
-   • 回帰テストがGreenになることを必ず確認
+   • フィードバックファイルで却下理由を理解
+   • 回帰テストを最初に確認（TDD開始点）
+   • 同様の問題が他箇所にないかチェック
+   • 小さな変更の積み重ねで確実に修正
    ```
 
 ### Skip を選択した場合
