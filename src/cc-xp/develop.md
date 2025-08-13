@@ -26,6 +26,19 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 
 ### 🚫 絶対禁止事項
 
+#### ⛔ CRITICAL: ステータス変更の厳格制限
+
+1. **status を done に変更することは絶対禁止**
+   - develop コマンドは testing までしか進めない
+   - done への変更は review accept のみが可能
+   - 「ストーリー完了」という判断は行わない
+
+2. **backlog.yaml の複数回更新禁止**
+   - STEP 0-3 以外での status 変更は絶対禁止
+   - 終了時の status 更新は絶対に行わない
+
+#### 🚫 TDD原則の絶対遵守
+
 1. **テストなしの実装** - 実装前に必ずテストを書く
 2. **手動テストへの依存** - 自動テストのみが真実
 3. **テストを通すためのテスト修正** - テストは仕様、変更不可
@@ -64,12 +77,17 @@ npm test || yarn test || pnpm test || python -m pytest || go test || cargo test
 → /cc-xp:plan  # プロジェクト設定とテスト環境構築
 ```
 
-### STEP 0-3: STATUS 原子的更新
+### STEP 0-3: STATUS 原子的更新（唯一の更新箇所）
 
-backlog.yamlのステータスを更新：
+⚠️ **このコマンドで backlog.yaml を更新するのはここだけです**
+
+backlog.yaml のステータスを更新：
 - `in-progress` → `testing` に変更
 - updated_at を現在時刻に設定
 - **done の場合は処理停止**
+
+⛔ **これ以降、このコマンド内では二度と status を変更しない**
+⛔ **done への変更は絶対に行わない（review accept のみ可能）**
 
 ---
 
@@ -286,7 +304,7 @@ it('should_[expected_behavior]_when_[condition]', () => {
 
 ---
 
-## 🔄 サイクル完了確認
+## 🔄 サイクル終了確認
 
 ### 最終チェック
 
@@ -299,11 +317,14 @@ it('should_[expected_behavior]_when_[condition]', () => {
 
 ```bash
 git add .
-git commit -m "[TDD] Complete Red-Green-Refactor cycle for [feature]
+git commit -m "[TDD] Red-Green-Refactor サイクル終了: [feature]
 
 - Red: Add failing test for [behavior]
 - Green: Implement minimal solution
 - Refactor: Improve code structure
+
+注意: ストーリーは未完了（status: testing）
+承認は /cc-xp:review で実施
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -312,12 +333,24 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ---
 
-## 🎯 完了サマリー
+## ⚠️ 終了前の最終 STATUS 確認
 
-TDD完了後、以下を表示：
+**必須チェック**: backlog.yaml の status が正しい状態であることを確認してください：
+
+- **testing の場合**: ✅ 正常（そのまま終了）
+- **done の場合**: ❌ **CRITICAL ERROR** - 不正な状態変更が検出されました
+- **その他の場合**: ❌ エラー処理
+
+⚠️ **done が検出された場合は、このコマンドの実装に重大なバグがあります**
+
+---
+
+## 🎯 TDDサイクル終了サマリー
+
+TDDサイクル終了後、以下を表示：
 
 ```
-🔴🟢🔵 Kent Beck式TDD完了
+🔴🟢🔵 Kent Beck式TDDサイクル終了
 ===========================
 ストーリー: [ストーリータイトル]
 ブランチ: story-[ID]
@@ -334,8 +367,9 @@ TDD完了後、以下を表示：
 ✅ AAA構造
 ✅ テストファースト実践
 
-🚨 重要確認事項
-✅ status = testing (done ではない)
+🚨 CRITICAL 確認事項
+⛔ status = testing （done は絶対に NG）
+⛔ ストーリーは未完了（review でのみ完了）
 ✅ テストが仕様書として機能
 ✅ 自動テストのみで品質保証
 ✅ デグレードなし（回帰テスト）
