@@ -1,16 +1,181 @@
 ---
-description: XP plan – ユーザー要求から価値あるストーリーを抽出
+description: XP plan – プロジェクト初期化とTDD環境構築 + 価値ストーリー抽出
 argument-hint: '"ウェブブラウザで遊べるテトリスが欲しい"'
-allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), Bash(cat), ReadFile, WriteFile
+allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), Bash(cat), Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(python:*), Bash(go:*), ReadFile, WriteFile
 ---
 
-# XP Plan - 価値中心ストーリー抽出
+# XP Plan - TDD環境構築と価値ストーリー抽出
 
-## ゴール
+## 🎯 ゴール
 
-ユーザー要求「$ARGUMENTS」の**本質価値**を抽出し、ユーザーが本当に欲しい体験を実現するストーリーセットを生成する。技術実装ではなく、**ユーザー価値の実現**を最優先とする。
+1. **TDD環境の構築** - プロジェクトでTDDを実践できる環境を整備
+2. **価値ストーリーの抽出** - ユーザー要求「$ARGUMENTS」の**本質価値**を抽出し、実現するストーリーセットを生成
 
-## 4段階価値抽出プロセス
+## 実行順序
+
+### STEP 0: TDD環境構築（最優先）
+
+### 0.1 CLAUDE.md生成/更新
+
+プロジェクトにTDD原則を適用するため、CLAUDE.mdを確認・生成します。
+
+**既存CLAUDE.mdの確認**:
+- CLAUDE.mdが存在する場合：TDDセクション追加/更新
+- CLAUDE.mdが存在しない場合：新規作成
+
+**生成するCLAUDE.md内容**:
+```markdown
+# CLAUDE.md
+
+<!-- 既存の内容がある場合はここに保持 -->
+
+# ===============================================
+# cc-xp-kit TDD Guidelines
+# ===============================================
+# このセクションは /cc-xp:plan により自動生成されました
+
+## 🔴🟢🔵 TDD原則 - このプロジェクトで厳守
+
+### Kent Beck's TDD Cycle
+このプロジェクトでは必ず以下のサイクルに従ってください：
+
+1. **Red**: 失敗するテストを1つ書く
+2. **Green**: テストを通す最小限のコードを書く  
+3. **Refactor**: 全テストが通る状態で構造を改善
+
+### テストファースト必須
+```bash
+# ❌ 禁止：実装してからテストを書く
+# ✅ 必須：テストを書いてから実装
+```
+
+### コミット規律
+
+```bash
+# すべてのコミットは以下のプレフィックスを使用
+[Red] テスト追加
+[Green] 実装
+[Refactor] リファクタリング
+[Structure] 構造的変更（振る舞い不変）
+```
+
+### /cc-xp コマンド使用時の注意
+
+#### develop実行時
+
+- 必ず `npm test` が存在することを確認
+- テストなしでの実装は自動的に拒否されます
+- 手動テストのみでの検証は禁止
+
+#### review実行時  
+
+- 全テストPASSが必須条件
+- カバレッジ85%未満は自動reject
+- 回帰テストの失敗は即座に修正
+
+### 🚨 アンチパターン自動検出
+
+以下が検出された場合、コマンドは自動停止します：
+- テストファイルが存在しない
+- テストを後から追加
+- テストを通すためにテストを修正
+- 構造と振る舞いの変更を混在
+
+## End of cc-xp-kit section
+
+```
+
+### 0.2 プロジェクトタイプ検出とテスト環境構築
+
+**言語・フレームワークの検出**:
+- package.json → JavaScript/TypeScript/Node.js
+- requirements.txt/pyproject.toml → Python
+- Cargo.toml → Rust
+- go.mod → Go
+- Gemfile → Ruby
+
+**テストランナーの確認・セットアップ**:
+
+**JavaScript/TypeScript**:
+```bash
+# package.jsonのtestスクリプト確認
+if package.json exists:
+  if "test" script not found:
+    add test script: "jest" or "vitest"
+  if jest not installed:
+    npm install --save-dev jest
+```
+
+**Python**:
+```bash
+# pytest確認・インストール
+if requirements.txt or pyproject.toml exists:
+  if pytest not found:
+    pip install pytest
+```
+
+**Go**:
+```bash
+# go test環境確認
+go mod tidy
+```
+
+### 0.3 テストディレクトリ構造生成
+
+**標準構造の作成**:
+```bash
+mkdir -p test/unit test/integration test/regression
+mkdir -p docs/cc-xp/tests
+```
+
+**初期テストファイル生成**:
+```javascript
+// test/setup.spec.js
+describe('Project Setup', () => {
+  it('should have test environment ready', () => {
+    expect(true).toBe(true);
+  });
+});
+```
+
+### 0.4 .gitignore更新
+
+テスト関連ファイルを.gitignoreに追加：
+```
+# Test coverage
+coverage/
+.nyc_output/
+*.log
+
+# Test artifacts  
+test-results/
+.pytest_cache/
+```
+
+### 0.5 CI/CD設定（基本）
+
+**GitHub Actions基本設定** (.github/workflows/test.yml):
+```yaml
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm test
+```
+
+---
+
+## STEP 1-4: 価値抽出プロセス
+
+### 4段階価値抽出プロセス
 
 ### Stage 0: 要求から本質価値を抽出（最重要）
 
@@ -121,20 +286,41 @@ Experience Criteria:
 - **Experience Enhancement**: 価値体験の向上
 - **Context Optimization**: 価値提供の文脈適応
 
-## 実行プロセス
+## 実行プロセス（改訂版）
 
-### 環境確認
+### フェーズ1: TDD環境構築
 
-docs/cc-xpディレクトリが存在しない場合は作成してください。
+1. **CLAUDE.md確認・生成**
+   - 既存ファイルの解析
+   - TDDセクションの追加/更新
+   - マーカーによる保護領域設定
 
-### 分析実行
+2. **プロジェクトタイプ検出**
+   - package.json, requirements.txt等の検出
+   - 適切なテストランナーの選定
+   - 自動セットアップ実行
 
-ユーザー要求「$ARGUMENTS」について、4 段階価値抽出する。
+3. **テスト環境構築**
+   - テストスクリプト追加（package.json等）
+   - 依存関係インストール（jest, pytest等）
+   - ディレクトリ構造生成
+   - 初期テストファイル生成
 
-0. **要求本質価値の抽出**: 本質価値、最小体験、目標体験
-1. **価値体験者の特定**: 誰がどんな価値を体験するのか
-2. **Value Storyの生成**: 価値体験を中心としたストーリー
-3. **価値優先度の決定**: Core Value → Experience Enhancement → Context Optimization
+4. **品質設定**
+   - .gitignore更新
+   - CI/CD基本設定
+   - 初回テスト実行確認
+
+### フェーズ2: 価値抽出実行
+
+**環境確認**: docs/cc-xpディレクトリが存在しない場合は作成
+
+**分析実行**: ユーザー要求「$ARGUMENTS」について、4段階価値抽出を実行
+
+1. **要求本質価値の抽出**: 本質価値、最小体験、目標体験
+2. **価値体験者の特定**: 誰がどんな価値を体験するのか  
+3. **Value Storyの生成**: 価値体験を中心としたストーリー
+4. **価値優先度の決定**: Core Value → Experience Enhancement → Context Optimization
 
 ### 価値実現Evidence生成（最重要）
 
@@ -230,6 +416,67 @@ stories:
 
 ### 完了確認
 
+**TDD環境構築完了**:
+```
+🔧 TDD環境構築完了
+====================
+言語: [検出された言語]
+テストランナー: [jest|pytest|go test|など]
+CLAUDE.md: [新規作成|TDDセクション追加]
+
+構築された環境:
+✅ テスト実行環境
+✅ ディレクトリ構造
+✅ 初期テストファイル
+✅ CI/CD基本設定
+✅ プロジェクト固有TDD原則
+
+確認コマンド:
+→ npm test (または該当言語のテストコマンド)
+```
+
+**価値ストーリー抽出完了**:
 分析完了後、生成されたストーリーの概要と次ステップを表示する。
 
-**次のコマンド**: `/cc-xp:story` でストーリー詳細化を開始。
+```
+🎯 価値ストーリー抽出完了
+========================
+核心価値: [本質価値]
+最小体験: [minimum_experience]
+総ストーリー数: [数]
+
+優先度別:
+- Core Value: [数]件
+- Experience Enhancement: [数]件  
+- Context Optimization: [数]件
+
+次のアクション:
+→ /cc-xp:story でストーリー詳細化を開始
+→ 自動生成されたテストは全て通ることを確認済み
+```
+
+## 重要な注意事項
+
+### CLAUDE.md更新の冪等性
+
+- 既存内容は保護され、上書きされません
+- TDDセクションのみが更新されます
+- マーカー（`# cc-xp-kit TDD Guidelines`）で保護領域を管理
+
+### エラーハンドリング
+
+```
+⛔ TDD環境構築失敗
+
+考えられる原因:
+1. package.json等の設定ファイル破損
+2. 依存関係のインストール権限不足
+3. 既存テスト設定との競合
+
+対処方法:
+1. プロジェクト設定ファイルの確認
+2. パッケージマネージャーの権限確認
+3. 手動での環境構築後、再実行
+```
+
+**この改修により、すべてのプロジェクトが自動的に正しいTDD環境でスタートします。**

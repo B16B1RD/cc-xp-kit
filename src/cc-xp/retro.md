@@ -50,6 +50,146 @@ Git設定（user.name, user.email）が未設定の場合も適切に設定し�
 - 変更サマリー: !git diff --stat main..HEAD
 - 頻繁に変更されたファイル: !git log --since="2 hours ago" --name-only --pretty=format:
 
+## 🔴🟢🔵 TDD品質メトリクス分析
+
+### TDDサイクル遵守状況
+
+以下のGitコミット分析により、真のTDD実践度を測定します：
+
+#### Red-Green-Refactorサイクル完全性
+
+```bash
+# Kent Beck TDDサイクルの確認
+git log --oneline --since="2 hours ago" --grep="\[Red\]" --format="%h %s"
+git log --oneline --since="2 hours ago" --grep="\[Green\]" --format="%h %s"
+git log --oneline --since="2 hours ago" --grep="\[Refactor\]" --format="%h %s"
+```
+
+**TDD完全性評価**:
+- **完全なサイクル数**: Red→Green→Refactorを順守したストーリー数
+- **不完全サイクル数**: サイクルの抜けがあるストーリー数
+- **TDD違反数**: 実装先行コミット（アンチパターン）の数
+
+#### テストファースト遵守率
+
+```bash
+# テストファイル vs 実装ファイルの時系列確認
+git log --name-only --pretty=format:"%h %ct" --since="2 hours ago" | grep -E "\.(spec|test|e2e)\.js$"
+git log --name-only --pretty=format:"%h %ct" --since="2 hours ago" | grep -E "^src/.*\.js$"
+```
+
+**テストファースト評価**:
+- **テストファースト率**: テストが実装より先に追加された割合
+- **実装先行数**: テストなしで実装が追加された件数（重大な問題）
+- **テストカバレッジ**: 全実装に対してテストが存在する割合
+
+#### 回帰テスト有効性
+
+```bash
+# 回帰テストの生成と活用状況
+ls docs/cc-xp/tests/*.regression.js 2>/dev/null | wc -l
+git log --oneline --since="2 hours ago" --grep="\[Regression\]"
+```
+
+**回帰防止評価**:
+- **回帰テスト総数**: 生成された回帰テスト数
+- **reject後の回帰テスト生成率**: reject発生時の回帰テスト自動生成率
+- **回帰防止成功数**: 過去のバグの再発防止成功件数
+
+### TDD技術負債分析
+
+#### コード品質指標
+
+```bash
+# テスト品質の確認
+find docs/cc-xp/tests -name "*.spec.js" -exec grep -l "expect.*toBe(false)" {} \; | wc -l  # Red状態テスト数
+find docs/cc-xp/tests -name "*.spec.js" -exec grep -l "TODO:" {} \; | wc -l                # 未完テスト数
+```
+
+**品質負債評価**:
+- **Red状態テスト数**: まだ実装されていない機能のテスト数
+- **TODO未解決数**: テスト内の未完了項目数
+- **テスト構造品質**: AAA構造（Arrange-Act-Assert）遵守率
+- **t-wada FIRST原則**: Fast, Independent, Repeatable, Self-Validating, Timely の遵守状況
+
+#### TDDアンチパターン検出
+
+```bash
+# アンチパターンの検出
+git log --oneline --since="2 hours ago" | grep -v -E "\[(Red|Green|Refactor|Structure)\]" | grep -E "(feat|fix):" | wc -l
+git log --oneline --since="2 hours ago" --grep="テストを.*修正" | wc -l
+```
+
+**アンチパターン評価**:
+- **TDD原則違反コミット**: 適切なプレフィックスなしの実装コミット
+- **テスト修正コミット**: テストを通すためにテストを修正（重大な問題）
+- **複数機能同時実装**: 1つのコミットで複数の振る舞いを実装
+- **Green飛ばし実装**: Redを経ずに直接実装を追加
+
+### TDD効果測定
+
+#### 品質向上効果
+
+```bash
+# 品質関連のメトリクス
+git log --oneline --since="2 hours ago" --grep="fix:" | wc -l  # バグ修正数
+git log --oneline --since="2 hours ago" --grep="reject" | wc -l # レビューreject数
+```
+
+**品質効果評価**:
+- **バグ密度**: 実装に対するバグ修正の比率
+- **レビューreject率**: 初回レビューでのreject発生率
+- **デグレード発生数**: 過去に動いていた機能の破壊数
+- **回帰テストによる予防成功数**: 回帰テストが実際にバグを検出した数
+
+#### 開発速度への影響
+
+```bash
+# 開発効率のメトリクス
+git log --oneline --since="2 hours ago" | wc -l  # 総コミット数
+find docs/cc-xp -name "*.md" -newer "2 hours ago" | wc -l  # 完了ストーリー数
+```
+
+**効率効果評価**:
+- **開発サイクルタイム**: ストーリー開始から完了までの時間
+- **TDDオーバーヘッド**: テスト記述にかかる追加時間
+- **リファクタリング効率**: Refactorフェーズでのコード改善効果
+- **設計改善効果**: TDDによるコード設計品質の向上度
+
+### TDD実践推奨事項生成
+
+TDD分析結果に基づいて、具体的な改善提案を生成：
+
+**高品質TDD実践の場合**:
+```
+✅ TDD Excellence Status
+======================
+Red-Green-Refactor完全遵守: 100%
+テストファースト率: 95%以上  
+回帰テスト生成: 適切
+アンチパターン: 0件
+
+🎯 Excellence継続のために:
+• 現在の高品質TDD習慣を維持
+• チーム内でのTDDベストプラクティス共有
+• 新しいリファクタリングパターンの探索
+```
+
+**改善が必要な場合**:
+```
+⚠️ TDD Quality Issues Detected
+==============================
+テストファースト率: 60%（要改善）
+アンチパターン検出: 5件（深刻）
+回帰テスト不足: 3ストーリー
+
+🔧 改善アクション:
+• 実装前の必須テスト作成の徹底
+• [Red]→[Green]→[Refactor]コミット規律の徹底
+• review reject時の回帰テスト生成確認
+• TDD原則違反の撲滅（テスト修正禁止など）
+```
+
 ## 戦略的メトリクス分析
 
 ### 拡張メトリクスファイルの確認
@@ -350,12 +490,22 @@ KPI目標達成率: [X%]（平均実績 vs 目標）
 
 ビジネス健全性: [優秀/要注意/要確認] [絵文字]
 
-【技術実装実績】
+【技術実装実績 & TDD品質】
 期間: [X]時間
 コミット数: [数]
 TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 完了ストーリー: [数]（[ポイント]ポイント）
+
+🔴🟢🔵 TDD品質指標:
+• テストファースト率: [X%]
+• Red-Green-Refactor完全遵守: [X/X]ストーリー
+• 回帰テスト生成数: [数]件
+• アンチパターン検出: [数]件
+• 品質効果: バグ密度[X%] / reject率[X%]
+• TDD技術負債: Red状態テスト[数]件 / TODO[数]件
+
 技術健全性: [健全/要注意/要確認] [絵文字]
+TDD実践度: [優秀/良好/要改善/深刻] [絵文字]
 
 総合健全性: [計算結果] [絵文字]
 
@@ -389,6 +539,12 @@ TDDサイクル: Red([数]) → Green([数]) → Refactor([数])
 🥉 中優先（技術観察）:
 • [技術観察1]
 • [技術観察2]
+
+🔴🟢🔵 TDD改善アクション（自動分析）:
+• [テストファースト率向上]: [具体的な改善策]
+• [アンチパターン削減]: [検出された問題の解決策]
+• [回帰テスト強化]: [reject対策の改善]
+• [リファクタリング推進]: [コード品質向上策]
 
 📊 学習ダッシュボード:
 観察事項: docs/cc-xp/observations-[日付].md

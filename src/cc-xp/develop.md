@@ -1,233 +1,344 @@
 ---
-description: XP develop – Value-Driven TDD（価値駆動）による本質価値実現
-argument-hint: '[id] ※省略時は in-progress ストーリーを使用'
-allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(bun:*), Bash(npm:*), Bash(pnpm:*), Bash(uv:*), Bash(python:*), Bash(pytest:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(npx:*), Bash(ls), WriteFile, ReadFile, mcp__playwright__*
+description: XP develop – Kent Beck式Test-Driven Development実践
+argument-hint: '[story-id] [--red|--green|--refactor] ※省略時は in-progress ストーリーを使用'
+allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), Bash(yarn:*), Bash(bun:*), Bash(python:*), Bash(pytest:*), Bash(cargo:*), Bash(go:*), Bash(bundle:*), Bash(dotnet:*), Bash(gradle:*), Bash(npx:*), Bash(ls), WriteFile, ReadFile, mcp__playwright__*
 ---
 
-# 🚨 絶対禁止事項 - 必読 🚨
+# XP Develop - Kent Beck式TDD
 
-## ⛔ STATUS = DONE への変更は絶対禁止 ⛔
+## 🎯 ゴール
 
-```
-🚨 CRITICAL WARNING 🚨
-❌ develop では status: done への変更は絶対に禁止
-❌ done に設定すると重大なワークフロー破壊が発生
-❌ 一度でも done にすると後続処理に深刻な影響
+**Test-Driven Development (Kent Beck)** により、設計品質の高いソフトウェアを実装する。
 
-✅ develop では必ず status: testing で停止
-✅ done への変更は /cc-xp:review accept でのみ許可
-✅ この禁止事項を違反した場合は即座にエラー停止
-```
-
-**🔒 三層防御システム 🔒**
-- **防御層1**: 開始時の強制確認
-- **防御層2**: 各フェーズでの status 確認  
-- **防御層3**: 完了前の最終確認
+**TDDの本質**: テストはドキュメントであり、仕様であり、設計手法である。
 
 ---
 
-# XP Develop - 価値駆動 TDD
+## 🚨 TDD原則 - 絶対厳守
 
-## ゴール
+### Kent Beck's Red-Green-Refactor Cycle
 
-**Value-Driven TDD** により、ユーザーが実際に価値を体験できるソフトウェアを実装する。
+```
+🔴 Red   → 失敗するテストを書く（設計を明確化）
+🟢 Green → テストを通す最小限のコード（機能を実装）
+🔵 Refactor → 構造を改善（品質を向上）
+```
 
-## 🛡️ 防御層1: 開始時の強制確認
+### 🚫 絶対禁止事項
 
-### STEP 0-1: Git リポジトリ確認（最優先）
+1. **テストなしの実装** - 実装前に必ずテストを書く
+2. **手動テストへの依存** - 自動テストのみが真実
+3. **テストを通すためのテスト修正** - テストは仕様、変更不可
+4. **複数機能の同時実装** - 一度に1つの振る舞いのみ
+5. **Greenを飛ばしてのRefactor** - 必ずGreen状態でリファクタリング
 
-**🚨 最初に必ず実行してください 🚨**
+---
 
-Gitリポジトリが初期化されているか確認してください。初期化されていない場合は以下を自動実行してください：
+## 🛡️ 開始前の確認
+
+### STEP 0-1: Git リポジトリ確認
+
+Gitリポジトリが初期化されているか確認してください。初期化されていない場合は以下を自動実行：
 
 1. `git init` でリポジトリを初期化
 2. `git branch -m main` でデフォルトブランチをmainに変更
 3. `git add .` で全ファイルをステージング
 4. `git commit -m "Initial commit"` で初期コミットを作成
 
-Git設定（user.name, user.email）が未設定の場合も適切に設定してください。設定が必要な場合はグローバル設定として自動設定してください。
+Git設定（user.name, user.email）が未設定の場合も適切に設定してください。
 
-### STEP 0-2: STATUS 原子的更新処理
+### STEP 0-2: テスト環境確認
 
-**🚨 この処理を次に必ず実行 🚨**
+プロジェクトにテスト実行環境があることを確認：
 
-backlog.yamlのステータスを原子的に更新してください。現在のステータスが `in-progress` の場合のみ `testing` に更新し、
-既に `done` の場合は処理を停止してください。更新後は status が testing であることと updated_at が現在時刻になっていることを確認してください。
-
-**✅ 更新完了の確認**: status=testing かつ updated_at=現在時刻
-
-### STEP 1: 価値理解確認
-
-backlog.yaml から確認。
-- `core_value`（本質価値）が明確。
-- `minimum_experience`（最小価値体験）が具体的。
-- `value_story`が価値体験中心。
-
-### STEP 1.5: 技術調査結果の確認（重要）
-
-**📚 調査結果の確認**
-
-`docs/cc-xp/research/[story-id]/` ディレクトリの存在を確認してください。
-
-**調査結果が存在する場合**:
-- `specifications.md` - 公式仕様を確認
-- `implementation.md` - 実装ガイドラインを参照
-- `decisions.md` - 技術的決定事項を確認
-- `references.md` - 参考資料を活用
-
-**調査結果が存在しない場合**:
-```
-⚠️ 技術調査が未実施です
-
-正確な実装のため、先に調査を実施することを強く推奨します：
-→ /cc-xp:research
-
-調査をスキップする場合のリスク：
-• 仕様の誤解による手戻り
-• アンチパターンの実装
-• 非効率な実装方法の選択
+```bash
+# いずれかのコマンドが実行可能であることを確認
+npm test || yarn test || pnpm test || python -m pytest || go test || cargo test
 ```
 
-調査をスキップして続行する場合も、開発中に不明点があれば適宜調査を実施してください。
+**テスト環境がない場合は処理を停止**し、以下を案内：
+```
+⛔ TDD実行不可: テスト環境が未構築です
 
-## 🛡️ 防御層2: Red-Green-Verify-Refactor フェーズ
+以下を先に実行してください：
+→ /cc-xp:plan  # プロジェクト設定とテスト環境構築
+```
 
-### Phase 1: Value-First Red（価値優先失敗テスト）
+### STEP 0-3: STATUS 原子的更新
 
-**🚨 STEP 0-2でstatus確認済み - 安全に開始 🚨**
+backlog.yamlのステータスを更新：
+- `in-progress` → `testing` に変更
+- updated_at を現在時刻に設定
+- **done の場合は処理停止**
 
-#### 1. 本質価値テスト作成
+---
 
-- `core_value`を検証するテスト
-- ユーザーが実際に体験できることをテスト
-- 技術的詳細ではなく、価値体験をテスト
+## 🔴🟢🔵 TDD実行フェーズ
 
-#### 2. Red状態確認
+### オプション引数による段階実行
 
-- 価値体験テストが失敗（Red 状態）
-- 失敗理由が「価値がまだ実現されていない」
-- **重要**: テスト結果よりも実際の価値体験を重視
+```bash
+/cc-xp:develop [story-id] --red     # Redフェーズのみ
+/cc-xp:develop [story-id] --green   # Greenフェーズのみ  
+/cc-xp:develop [story-id] --refactor # Refactorフェーズのみ
+/cc-xp:develop [story-id]           # 全フェーズを順次実行
+```
 
-### Phase 2: Value-Driven Green（価値実現実装）
+---
 
-**🚨 STEP 0-2でstatus確認済み - 安全に続行 🚨**
+## 🔴 Phase 1: Red（失敗するテストを書く）
 
-#### 1. 本質価値実装
+### 目的
 
-- `core_value`を実現する実装
-- ユーザーが実際に価値を体験できる実装
-- 「楽しい」「便利」と感じられる実装
+**振る舞いを定義**し、設計を明確化する
 
-#### 2. **価値体験確認（全プロジェクト必須）**
+### 実行手順
 
-**🎯 実際の価値実現を確認する**:
+#### 1. テストファイル確認
 
-**共通確認項目**:
-- ユーザーが実際に価値を体験できるか？
-- 期待通りに動作するか？
-- エラーなく完了するか？
+`docs/cc-xp/tests/[story-id].spec.js` の存在を確認
+- 存在しない場合: story未実行のためエラー停止
+- 存在する場合: テストファイルを開いて編集
 
-**プロジェクトタイプ別の動作確認**:
+#### 2. 最小の失敗テストを1つ書く
 
-**Webアプリケーション**:
-- 開発サーバーを起動（package.jsonの"dev"スクリプト）
-- ブラウザでアクセスして実際の動作を確認
-- ユーザー操作を実際に行い価値体験を検証
+```javascript
+// 良いテストの例（振る舞い駆動命名）
+describe('TetrisGame', () => {
+  it('should_spawn_new_piece_after_line_clear', () => {
+    // Arrange - 準備
+    const game = new TetrisGame();
+    game.fillBottomLine();
+    
+    // Act - 実行
+    game.clearLines();
+    
+    // Assert - 検証
+    expect(game.currentPiece).toBeDefined();
+  });
+});
+```
 
-**CLIツール**:
-- コマンドを実際に実行して動作確認
-- 期待する出力・結果が得られるかテスト
+#### 3. Red状態確認
 
-**ライブラリ・API**:
-- 簡単なテストスクリプトで実際に利用
-- 期待する機能が動作するか確認
+```bash
+npm test
+```
+- **テストが失敗することを確認**
+- 失敗しない場合：テストが不適切（実装が既に存在）
 
-**🚨 重要**: テストの成功より実際の動作を優先する
+#### 4. Redコミット
 
-### Phase 3: Value Verification（価値検証）
+```bash
+git add docs/cc-xp/tests/
+git commit -m "[Red] Add test: should_spawn_new_piece_after_line_clear"
+```
 
-**🚨 STEP 0-2でstatus確認済み - 安全に検証 🚨**
+---
 
-#### 1. **実装完了後の必須検証**
+## 🟢 Phase 2: Green（テストを通す）
 
-**🎯 動作する価値実現の確認**:
-- 実装したコードが実際に動作するか？
-- ユーザーが期待する価値体験ができるか？  
-- テスト結果に関わらず実際の動作を重視
+### 目的
 
-**検証方法**:
-- 手動テストによる動作確認
-- 実際のユーザー操作シミュレーション
-- 統合環境での動作テスト
+**テストを通す最小限のコード**を書く
 
-**🚨 重要な判断基準**:
-- **テスト成功 + 動作しない = 失敗**
-- **テスト失敗 + 動作する = 要調査**  
-- **テスト成功 + 動作する = 成功**
+### Kent Beck's 3つの戦略
 
-#### 2. 価値実現度の評価
+#### 1. 仮実装（Fake It）- 推奨
 
-以下の観点で価値実現を評価：
-- **機能性**: 期待通りに動作する
-- **使いやすさ**: ユーザーが容易に価値を得られる
-- **信頼性**: エラーなく安定動作する
+```javascript
+clearLines() {
+  // まずは仮実装でテストを通す
+  this.currentPiece = { x: 0, y: 0, shape: [[1]] };
+}
+```
 
-### Phase 4: Value-Maximizing Refactor（価値最大化の最適化）
+#### 2. 明白な実装（Obvious Implementation）
 
-**🚨 STEP 0-2でstatus確認済み - 安全に最適化 🚨**
+```javascript
+clearLines() {
+  // 実装が明白な場合のみ
+  this.detectCompletedLines();
+  this.removeLines();
+  this.spawnNewPiece();
+}
+```
 
-#### 1. 品質最適化
+#### 3. 三角測量（Triangulation）
 
-- コードの可読性・保守性向上
-- パフォーマンス最適化
-- エラーハンドリング強化
+```javascript
+// 2つ以上のテストケースから一般化
+it('should_spawn_I_piece_after_single_line_clear')
+it('should_spawn_O_piece_after_double_line_clear')
+// → 一般的なspawnPiece()実装を導き出す
+```
 
-## 🛡️ 防御層3: 完了前の最終確認
+### Green確認
 
-### STEP FINAL: 安全な最終確認
+```bash
+npm test
+```
+- **全テストがPASS**することを確認
+- 1つでも失敗する場合は修正を続行
 
-**🚨 この処理を完了前に必ず実行 🚨**
+### Greenコミット
 
-backlog.yamlの最終ステータスを確認してください。`status: testing` であることを確認し、testing 以外の場合（特に done の場合）は **CRITICAL ERROR** として処理を停止し、エラーメッセージを表示してください。
+```bash
+git add src/
+git commit -m "[Green] Implement piece spawning after line clear"
+```
 
-**✅ 最終確認**: status=testing のみで続行、それ以外は停止
+---
 
-### コミット処理
+## 🔵 Phase 3: Refactor（構造を改善）
 
-以下の手順でコミットを実行してください：
+### 目的
 
-1. **backlog.yamlのコミット**:
-   - ファイル: `docs/cc-xp/backlog.yaml`
-   - メッセージ: "develop: ストーリーを testing に更新 - done 禁止厳守"
+**コードの品質を向上**させる（振る舞いは不変）
 
-2. **実装ファイルのコミット**:
-   - ファイル: 全ての変更ファイル（`.`）
-   - メッセージ: "feat: 価値駆動TDD実装完了 - testing段階"
+### Tidy First原則
 
-各コミット前に、ステージング、変更確認、コミット実行の手順を実行してください。
+**構造的変更**のみ実施（振る舞いは変更しない）
 
-## 完了サマリー
+### リファクタリング手順
 
-開発完了後、以下を表示。
+#### 1. 事前テスト
+
+```bash
+npm test  # 必ずGreen状態であることを確認
+```
+
+#### 2. リファクタリング実施
+
+- **重複の除去** - DRY原則
+- **意図の明確化** - 命名改善
+- **メソッド抽出** - 単一責任原則
+- **条件記述の分解** - 複雑度削減
+
+```javascript
+// Before
+clearLines() {
+  let count = 0;
+  for (let y = 19; y >= 0; y--) {
+    let complete = true;
+    for (let x = 0; x < 10; x++) {
+      if (!this.field[y][x]) complete = false;
+    }
+    if (complete) {
+      this.field.splice(y, 1);
+      this.field.unshift(Array(10).fill(0));
+      count++;
+    }
+  }
+  if (count > 0) this.spawnPiece();
+}
+
+// After（メソッド抽出）
+clearLines() {
+  const completedLines = this.findCompletedLines();
+  this.removeLines(completedLines);
+  if (completedLines.length > 0) {
+    this.spawnPiece();
+  }
+}
+```
+
+#### 3. 事後テスト
+
+```bash
+npm test  # リファクタリング後も全テストPASS
+```
+
+#### 4. Refactorコミット
+
+```bash
+git add src/
+git commit -m "[Refactor] Extract line detection methods"
+```
+
+---
+
+## 📊 テスト品質確認
+
+### t-wada's FIRST原則
+
+- **F**ast - 高速実行
+- **I**ndependent - テスト間の独立性  
+- **R**epeatable - 再現可能性
+- **S**elf-Validating - 自己検証
+- **T**imely - 適時作成（実装前）
+
+### AAA構造チェック
+
+```javascript
+it('should_[expected_behavior]_when_[condition]', () => {
+  // Arrange（準備） - テストデータと条件設定
+  const game = new TetrisGame();
+  game.setupInitialState();
+  
+  // Act（実行） - テスト対象の実行
+  const result = game.performAction();
+  
+  // Assert（検証） - 期待結果の確認
+  expect(result).toEqual(expectedValue);
+});
+```
+
+---
+
+## 🔄 サイクル完了確認
+
+### 最終チェック
+
+1. **全テストがPASS** - `npm test`
+2. **カバレッジ確認** - 重要な経路がテスト済み
+3. **リンター確認** - コード品質基準達成
+4. **ステータス確認** - `status: testing` 維持
+
+### 最終コミット
+
+```bash
+git add .
+git commit -m "[TDD] Complete Red-Green-Refactor cycle for [feature]
+
+- Red: Add failing test for [behavior]
+- Green: Implement minimal solution
+- Refactor: Improve code structure
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+---
+
+## 🎯 完了サマリー
+
+TDD完了後、以下を表示：
 
 ```
-🎯 Value-Driven TDD 完了
-=========================
+🔴🟢🔵 Kent Beck式TDD完了
+===========================
 ストーリー: [ストーリータイトル]
 ブランチ: story-[ID]
 ステータス: testing ✅
 
-実施フェーズ:
-✅ Value-First Red - 価値テスト作成
-✅ Value-Driven Green - 価値実現実装
-✅ Value Verification - 価値検証（動作確認）
-✅ Value-Maximizing Refactor - 価値最大化
+実施サイクル:
+🔴 Red: 失敗テスト作成 → コミット
+🟢 Green: 最小実装 → コミット  
+🔵 Refactor: 構造改善 → コミット
 
-🚨 重要確認事項 🚨
+品質確認:
+✅ 全テスト PASS
+✅ FIRST原則遵守
+✅ AAA構造
+✅ テストファースト実践
+
+🚨 重要確認事項
 ✅ status = testing (done ではない)
-✅ **実際に動作する価値体験が実装済み**
-✅ 手動テストによる動作確認済み
-✅ ユーザーが期待する価値を実際に体験可能
+✅ テストが仕様書として機能
+✅ 自動テストのみで品質保証
+✅ デグレードなし（回帰テスト）
 ```
 
 ## 次のステップ
@@ -235,38 +346,51 @@ backlog.yamlの最終ステータスを確認してください。`status: testi
 ```
 🚀 次のステップ
 ================
-価値検証とレビューを実施:
+自動テスト実行とコードレビュー:
 → /cc-xp:review
 
-レビューオプション:
-• accept - すべて満足時のみ
-• reject "理由" - 修正要求
-• skip - 判定保留
-
-💡 重要
-- status は testing のまま
-- done への変更は review accept でのみ
+💡 TDD原則
+- テストは仕様書
+- テストは設計手法  
+- 実装よりテストが先
+- Greenになったらリファクタリング
 ```
+
+---
+
+## 🚫 アンチパターン自動検出
+
+以下が検出された場合、**処理を自動停止**：
+
+1. **テストファイルが存在しない**
+2. **テスト実行環境がない**
+3. **テストなしで実装を開始**
+4. **Redを飛ばしてGreenから開始**
+5. **Green状態でないままRefactor実行**
+6. **テストを通すためにテストを修正**
+
+---
 
 ## エラーハンドリング
 
-### status が done になった場合の安全対応
-
-backlog.yamlで`status: done`を検出した場合は、**CRITICAL ERROR** として処理を停止し、以下のエラーメッセージを表示してください：
+### テスト失敗時
 
 ```
-⛔ CRITICAL ERROR: developでstatus=doneへの不正変更を検出
-⚙️ 原因: 並列実行や競合状態による意図しない変更
-🔄 対応: review reject で in-progress に戻し、この問題を修正後に再実行
+⚠️ テスト失敗が検出されました
+
+Red フェーズ: 期待通り（継続）
+Green フェーズ: 実装を修正してください
+Refactor フェーズ: リファクタリングを取り消してください
 ```
 
-**重要**: 自動修正は行わず、ユーザーの手動対応を求める
+### テスト環境エラー
 
-## 重要な注意事項
+```
+⛔ テスト実行エラー
 
-- **🚨 絶対禁止**: develop で status を done にすることは絶対禁止
-- **✅ 必須**: 各フェーズで status 確認する
-- **🔒 防御**: 三層防御システムで完全ガード
-- **⚡ 緊急**: done 検出時は即座に停止・修正
+1. テストランナーの設定を確認
+2. 依存関係のインストール状況を確認  
+3. /cc-xp:plan でのセットアップ実行を推奨
+```
 
-この防御システムにより、status=done 問題を完全に解決します。
+**この厳格なTDDプロセスにより、高品質で保守しやすいコードを確実に生成します。**

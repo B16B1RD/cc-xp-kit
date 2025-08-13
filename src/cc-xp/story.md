@@ -107,6 +107,133 @@ AI分析レポート（docs/cc-xp/analysis_summary.md）が存在するか確認
 
 ブランチ作成に失敗した場合は、同名ブランチの存在や未コミット変更の有無を確認してください。
 
+## テストファースト準備（TDD）
+
+### テストファイル自動生成
+
+ストーリー詳細化と同時に、TDD実践のためのテストファイルを自動生成します。
+
+#### 生成されるテストファイル構造
+
+```
+docs/cc-xp/tests/
+├── [story-id].spec.js        # ユニットテスト（振る舞い検証）
+├── [story-id].e2e.js         # E2Eテスト（価値体験検証）  
+└── [story-id].regression.js  # 回帰テスト（review reject時に追加）
+```
+
+#### ユニットテストテンプレート生成
+
+**docs/cc-xp/tests/[story-id].spec.js**:
+```javascript
+/**
+ * [Story Title] - Unit Tests
+ * TDD: Red → Green → Refactor
+ * 
+ * Story: [story-id]
+ * Core Value: [core_value]
+ * Minimum Experience: [minimum_experience]
+ */
+
+describe('[ComponentName]', () => {
+  describe('[MethodName]', () => {
+    it('should_[expected_behavior]_when_[condition]', () => {
+      // Arrange - 準備
+      // TODO: テスト対象のセットアップ
+      
+      // Act - 実行
+      // TODO: テスト対象メソッドの実行
+      
+      // Assert - 検証
+      // TODO: 期待する結果の検証
+      expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+    });
+  });
+
+  // TODO: 追加のテストケース
+  // it('should_handle_edge_case_when_invalid_input', () => { ... });
+  // it('should_maintain_state_when_multiple_operations', () => { ... });
+});
+```
+
+#### E2Eテストテンプレート生成
+
+**docs/cc-xp/tests/[story-id].e2e.js**:
+```javascript
+/**
+ * [Story Title] - End-to-End Tests
+ * 価値体験の実際の検証
+ * 
+ * Story: [story-id]  
+ * Value Story: [value_story]
+ */
+
+describe('[Story Title] - E2E', () => {
+  it('should_provide_core_value_experience', async () => {
+    // Given - 価値体験が可能な状態
+    // TODO: アプリケーション起動・初期状態設定
+    
+    // When - ユーザーが実際に行う価値体験操作
+    // TODO: 実際のユーザー操作をシミュレート
+    
+    // Then - 価値が実現されていることの確認
+    // TODO: core_value が体験できることを確認
+    // TODO: minimum_experience が実現されることを確認
+    
+    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+  });
+
+  it('should_meet_acceptance_criteria', async () => {
+    // TODO: 受け入れ条件の自動検証
+    // シナリオ1: [acceptance_criteria_1]
+    // シナリオ2: [acceptance_criteria_2]  
+    // シナリオ3: [acceptance_criteria_3]
+    
+    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+  });
+});
+```
+
+#### 回帰テストテンプレート生成
+
+**docs/cc-xp/tests/[story-id].regression.js** (初期は空、reject時に自動追加):
+```javascript
+/**
+ * [Story Title] - Regression Tests
+ * review reject時に自動追加される回帰テスト
+ * 
+ * Story: [story-id]
+ */
+
+describe('[Story Title] - Regression', () => {
+  // review reject時に自動的にテストケースが追加されます
+  // reject理由に基づいた具体的な回帰テストが生成されます
+});
+```
+
+#### テストファイル生成の実行
+
+以下の手順でテストファイルを生成：
+
+1. **テストディレクトリの確認・作成**
+2. **ストーリー情報の取得**（backlog.yamlから）
+3. **テンプレートへの情報挿入**
+4. **ファイル生成・保存**
+5. **初回テスト実行**（全て失敗することを確認）
+
+#### Red状態の確認
+
+生成後、即座にテスト実行して Red 状態を確認：
+```bash
+npm test docs/cc-xp/tests/[story-id]*.js
+```
+
+**期待する結果**: 全テストが失敗（🔴 Red状態）
+- 失敗しない場合：既に実装が存在する可能性
+- テスト実行エラー：環境設定の問題
+
+---
+
 ## 戦略的ストーリー詳細化
 
 ### 1. 価値実現ストーリーの作成
@@ -390,10 +517,26 @@ Then [競合優位性を示す結果]
 
 以下の手順でコミットしてください：
 
-1. **対象ファイル**: `docs/cc-xp/stories/[ID].md` と `docs/cc-xp/backlog.yaml`
-2. **コミットメッセージ**: "docs: ストーリー詳細化 - [タイトル]"
+1. **対象ファイル**:
+   - `docs/cc-xp/stories/[ID].md`（ストーリー詳細）
+   - `docs/cc-xp/backlog.yaml`（ステータス更新）
+   - `docs/cc-xp/tests/[ID].spec.js`（ユニットテスト）
+   - `docs/cc-xp/tests/[ID].e2e.js`（E2Eテスト）
+   - `docs/cc-xp/tests/[ID].regression.js`（回帰テスト）
+
+2. **コミットメッセージ**:
+   ```
+   [Story] [ID]: 詳細化完了 + TDDテスト準備
+   
+   - ストーリー詳細化完了
+   - 受け入れ条件定義
+   - TDDテストファイル生成（Red状態）
+   
+   次のステップ: /cc-xp:develop で Red→Green→Refactor
+   ```
+
 3. **実行手順**:
-   - ファイルの存在を確認
+   - 生成されたファイルの存在を確認
    - git addでステージング
    - 変更があることを確認
    - 適切なコミットメッセージでコミット実行
@@ -405,8 +548,8 @@ Then [競合優位性を示す結果]
 **必ず以下の拡張サマリーを表示してください**：
 
 ```
-🎯 戦略的ストーリー詳細化完了
-============================
+🎯 戦略的ストーリー詳細化完了（TDD準備済み）
+===============================================
 
 ストーリー: [タイトル]
 ブランチ: story-[ID]
@@ -432,10 +575,17 @@ Then [競合優位性を示す結果]
 ✓ [シナリオ2: ユーザー体験検証要約]  
 ✓ [シナリオ3: 技術品質検証要約]（あれば）
 
+🔴🟢🔵 TDDテスト準備完了:
+✅ ユニットテスト: docs/cc-xp/tests/[ID].spec.js
+✅ E2Eテスト: docs/cc-xp/tests/[ID].e2e.js
+✅ 回帰テスト: docs/cc-xp/tests/[ID].regression.js
+✅ Red状態確認済み（全テスト失敗）
+
 🔬 テスト戦略:
-- 仮説検証: [KPI測定含む]
-- 自動テスト: [automated/manual/hybrid] 
-- E2E戦略: [e2e-required/e2e-optional/unit-only]
+- TDDサイクル: Red → Green → Refactor
+- テストファースト: 実装前にテスト作成済み
+- 仮説検証: KPI測定を含む自動テスト
+- 回帰防止: reject時に自動追加
 
 ⏱️ 推定: [X]分
 🚀 期待効果: [ビジネス成果予測]
@@ -446,7 +596,7 @@ Then [競合優位性を示す結果]
 ```
 🚀 次のステップ
 ================
-実装前の技術調査を実施:
+🔍 OPTION 1: 実装前の技術調査（推奨）
 → /cc-xp:research
 
 このコマンドで:
@@ -454,14 +604,25 @@ Then [競合優位性を示す結果]
 • ベストプラクティスの収集
 • 実装ガイドラインの作成
 
-その後、TDDサイクルを開始:
+🔴 OPTION 2: 即座にTDD開始
 → /cc-xp:develop
 
-💡 調査の重要性
------------
-• AIの知識だけに頼らず正確な仕様を確認
-• 公式ドキュメントに基づいた実装
-• アンチパターンを事前に回避
+このコマンドで:
+• Red: 準備済みテストで失敗確認
+• Green: 最小限の実装でテスト通過
+• Refactor: 品質向上
+
+💡 TDD重要原則
+--------------
+• テストファースト: 実装よりテストが先
+• 小さなサイクル: 一度に1つの機能のみ
+• テストは仕様: テストが設計書
+• Red→Green→Refactor: この順序は絶対
+
+⚠️ 注意事項
+• テストなしの実装は禁止
+• 手動テストのみでの検証は禁止
+• テストを通すためのテスト修正は禁止
 ```
 
 ## 注意事項

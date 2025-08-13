@@ -90,6 +90,112 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 - サーバー稼働確認: !test -f .server.pid
 - 現在のブランチ: !git branch --show-current
 
+## Phase 0: 自動品質ゲート（TDD必須）
+
+### テスト実行と品質確認
+
+**すべてのレビューで最初に実行する必須プロセス**
+
+#### 0.1 全テスト実行
+
+プロジェクトのテストスイートを実行して品質を確認：
+
+```bash
+# プロジェクトタイプに応じたテスト実行
+npm test || yarn test || pnpm test ||
+python -m pytest || python -m unittest ||
+go test ./... ||
+cargo test ||
+bundle exec rspec
+```
+
+**テスト結果の判定**:
+- **全テストPASS**: レビュー継続
+- **1つでも失敗**: 自動的にreject、develop戻し
+
+#### 0.2 テストカバレッジ確認
+
+```bash
+# カバレッジ付きテスト実行
+npm test -- --coverage ||
+pytest --cov ||
+go test -cover ./...
+```
+
+**カバレッジ基準**:
+- **85%以上**: ✅ 合格
+- **85%未満**: ⚠️ 警告（rejectするかユーザー判断）
+- **測定不可**: ℹ️ 情報表示のみ
+
+#### 0.3 Linter/Formatter確認
+
+```bash
+# コード品質チェック
+npm run lint ||
+flake8 . ||
+golangci-lint run ||
+cargo clippy
+```
+
+**品質基準**:
+- **警告なし**: ✅ 合格
+- **警告あり**: ⚠️ 修正推奨
+- **エラーあり**: ❌ reject推奨
+
+#### 0.4 TDD完全性チェック
+
+**TDDサイクルの確認**:
+1. **テストファイル存在確認**
+   - `docs/cc-xp/tests/[story-id].spec.js` 存在
+   - `docs/cc-xp/tests/[story-id].e2e.js` 存在
+
+2. **コミット履歴のTDD確認**
+   ```bash
+   git log --oneline --grep="\[Red\]"
+   git log --oneline --grep="\[Green\]" 
+   git log --oneline --grep="\[Refactor\]"
+   ```
+
+3. **TDDサイクル完全性判定**
+   - **Red→Green→Refactor完了**: ✅ 真のTDD実践
+   - **不完全なサイクル**: ⚠️ TDD原則違反の可能性
+   - **テストファイルなし**: ❌ TDD未実践（即座にreject）
+
+#### 0.5 回帰テスト自動実行
+
+既存の回帰テストがある場合は実行：
+```bash
+# 回帰テスト実行
+npm test docs/cc-xp/tests/*.regression.js
+```
+
+#### 品質ゲート判定
+
+```
+🔍 自動品質ゲート結果
+=====================
+テスト実行: ✅ 全てPASS (XX/XX)
+カバレッジ: ✅ 87% (基準85%以上)
+コード品質: ✅ 警告なし
+TDD完全性: ✅ Red→Green→Refactor確認
+回帰テスト: ✅ 全てPASS (XX/XX)
+
+総合判定: ✅ PASS - レビュー継続
+```
+
+**自動reject条件**:
+- テスト失敗が1つでもある
+- TDDテストファイルが存在しない  
+- Red→Green→Refactorサイクルが不完全
+
+**自動reject時の処理**:
+1. ステータスを`testing → in-progress`に戻す
+2. フィードバックファイルに問題を記録
+3. reject理由を明確に表示
+4. `/cc-xp:develop` 再実行を案内
+
+---
+
 ## Phase 1: デモ起動（--skip-demoがない場合）
 
 ### プロジェクトタイプの判定と起動
@@ -448,33 +554,129 @@ $ARGUMENTS の最初の単語を確認：
    ```
    - @docs/cc-xp/backlog.yaml の status を `testing` → `in-progress` に戻す（**重要**: done にはしない）
 
-3. **修正ガイドの表示**
+3. **回帰テスト自動生成（reject時の自動実行）**
+
+   却下理由に基づいて、**回帰テストケースを自動生成**し、将来的な同様のバグを予防します。
+
+#### 回帰テストケースの生成
+
+   `docs/cc-xp/tests/[ID].regression.js` に却下理由に対応するテストケースを追加：
+
+   ```javascript
+   // 既存のregressionファイルに追加
+   describe('[Story Title] - Regression Tests', () => {
+     // 既存のテストケース...
+     
+     it('should_prevent_regression_[describe_issue]', () => {
+       // Arrange - 却下された状況を再現
+       // TODO: [却下理由]が発生する条件を設定
+       
+       // Act - 問題のある操作を実行
+       // TODO: 却下の原因となった操作を実行
+       
+       // Assert - 問題が解決されていることを確認
+       // TODO: 期待する正しい結果を検証
+       expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+     });
+   });
+   ```
+
+#### 回帰テスト生成の例
+
+   **却下理由例**: "ボタンが小さすぎて押しにくい"
+   ```javascript
+   it('should_have_minimum_button_size_for_touch_interaction', () => {
+     // Arrange
+     const button = renderButton();
+     
+     // Act  
+     const buttonSize = getComputedStyle(button);
+     
+     // Assert - 44px以上のタッチターゲット確保
+     expect(parseInt(buttonSize.width)).toBeGreaterThanOrEqual(44);
+     expect(parseInt(buttonSize.height)).toBeGreaterThanOrEqual(44);
+   });
+   ```
+
+   **却下理由例**: "エラーハンドリングが不十分"
+   ```javascript
+   it('should_handle_network_error_gracefully', () => {
+     // Arrange
+     const mockAPI = jest.fn().mockRejectedValue(new Error('Network Error'));
+     
+     // Act
+     const result = handleAPICall(mockAPI);
+     
+     // Assert  
+     expect(result).toEqual({ success: false, error: 'Network Error' });
+     expect(console.error).not.toHaveBeenCalled(); // エラーログの適切な処理
+   });
+   ```
+
+#### 回帰テスト生成の実行手順
+
+   1. **却下理由の分析** - 具体的な問題パターンを特定
+   2. **テスト条件の抽出** - 問題が発生する条件を明確化
+   3. **期待値の定義** - 修正後の正しい振る舞いを定義
+   4. **テストケース生成** - 失敗する回帰テストを作成
+   5. **ファイル更新** - regression.jsファイルに追記
+   6. **実行確認** - 生成されたテストが実際に失敗することを確認
+
+#### テスト実行とコミット
+
+   ```bash
+   # 回帰テストが追加されていることを確認
+   npm test docs/cc-xp/tests/[story-id].regression.js
+   
+   # 回帰テストの変更をコミット
+   git add docs/cc-xp/tests/[story-id].regression.js
+   git commit -m "[Regression] Add test for: [却下理由の要約]
+   
+   問題: [却下理由]
+   対策: 回帰テスト追加により将来的な同様問題を予防
+   
+   🤖 Generated with [Claude Code](https://claude.ai/code)
+   
+   Co-Authored-By: Claude <noreply@anthropic.com>"
+   ```
+
+1. **修正ガイドの表示**
    ```
    📝 次のアクション
    ==================
    1. フィードバックを確認: docs/cc-xp/stories/[ID]-feedback.md
-   2. テストを修正/追加
-   3. 実装を改善
+   2. 回帰テストを確認: docs/cc-xp/tests/[ID].regression.js
+   3. 回帰テストが失敗することを確認（Red状態）
+   4. 問題を修正してテストを通す（Green状態）
+   5. コードを改善する（Refactor状態）
    
+   回帰テスト実行: npm test docs/cc-xp/tests/[ID].regression.js
    サーバーは稼働中です: [URL]
    停止する場合: kill $(cat .server.pid)
    ```
 
-4. **次のコマンド案内**（重要：必ず最後に明確に表示）
+2. **次のコマンド案内**（重要：必ず最後に明確に表示）
    ```
    🚀 次のステップ
    ================
-   修正を実装する:
+   🔴 修正を実装する（回帰テスト対応）:
    → /cc-xp:develop
+   
+   このコマンドで：
+   • 追加された回帰テストからRed状態開始
+   • 却下理由を解決する実装（Green状態）
+   • コード品質の改善（Refactor状態）
    
    このストーリーを諦めて別のストーリーへ:
    → /cc-xp:story [別のID]
    
-   💡 修正のヒント
-   ---------------
+   💡 修正のヒント（回帰テスト対応）
+   ------------------------
    • フィードバックをよく読んで原因を理解
-   • テストから修正を始める（TDD）
+   • 回帰テストから修正を始める（TDD）
+   • 同様の問題が他の箇所にないか確認
    • 小さな変更を積み重ねる
+   • 回帰テストがGreenになることを必ず確認
    ```
 
 ### Skip を選択した場合
@@ -573,6 +775,31 @@ $ARGUMENTS の最初の単語を確認：
 - レビュー実施時刻
 - 判定結果（accept/reject/exit）
 - レビュー所要時間（可能なら）
+
+**reject時の追加記録**：
+- 回帰テスト生成数
+- 却下理由の分類（UI/性能/セキュリティ/等）
+- 前回reject以降の経過日数
+- 累積reject回数（品質改善分析用）
+
+```json
+{
+  "regressionTests": {
+    "totalGenerated": 23,
+    "byCategory": {
+      "ui_usability": 8,
+      "performance": 4, 
+      "error_handling": 6,
+      "security": 3,
+      "compatibility": 2
+    },
+    "preventedRegressions": 15
+  },
+  "rejectAnalysis": {
+    "avgCyclesPerStory": 2.1,
+    "topRejectReasons": ["UI usability", "Error handling", "Performance"]
+  }
+}
 
 ## サマリー表示
 

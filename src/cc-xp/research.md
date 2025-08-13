@@ -311,6 +311,288 @@ specifications_url: [主要な公式ドキュメントURL]
 - 基本仕様のみ確認
 - 最低限の実装知識を獲得
 
+## Phase 4: 🔵 リファクタリングカタログ作成
+
+### TDD Refactorフェーズ支援のためのリファクタリング指針
+
+`/cc-xp:develop` のRefactorフェーズで使用するため、**段階的なリファクタリング計画**を作成します。
+
+#### リファクタリングディレクトリの作成
+
+`docs/cc-xp/research/[story-id]/refactoring/` ディレクトリを作成してください。
+
+### 1. refactoring-catalog.md の作成
+
+**Kent Beck's Tidy First** アプローチに基づく段階的リファクタリング計画：
+
+```markdown
+# Refactoring Catalog - [ストーリータイトル]
+
+## 🔵 Refactoring Strategy
+
+### Phase 1: 構造的変更（振る舞い不変）
+
+#### 1.1 Dead Code Elimination
+- **対象**: [未使用の変数・関数]
+- **手順**: 
+  1. 静的解析で未使用要素を特定
+  2. テスト実行で破損確認
+  3. 安全に削除
+- **検証**: 全テストがPASS状態維持
+
+#### 1.2 Normalize Symmetries
+- **対象**: [非対称な構造]
+- **手順**:
+  1. 類似パターンの統一
+  2. 命名規則の一貫性
+  3. パラメータ順序の統一
+- **検証**: 動作が完全に同一
+
+#### 1.3 New Interface, Old Implementation  
+- **対象**: [改善すべきインターフェース]
+- **手順**:
+  1. 新しいインターフェースを設計
+  2. 既存実装をそのまま使用
+  3. 段階的に移行
+- **検証**: 新旧インターフェース両方が動作
+
+### Phase 2: 読みやすさ改善
+
+#### 2.1 Explaining Variables
+- **対象**: [複雑な式・条件]
+- **手順**:
+  1. 意味のある変数名で抽出
+  2. コメントの代わりに変数で説明
+  3. ネストした条件の分割
+- **検証**: ロジックが同一
+
+#### 2.2 Explaining Constants  
+- **対象**: [マジックナンバー・ハードコーディング]
+- **手順**:
+  1. 意味を表す定数名を定義
+  2. 値の由来を記録
+  3. 関連する定数をグループ化
+- **検証**: 値と動作が完全に同一
+
+#### 2.3 Explicit Parameters
+- **対象**: [暗黙的な依存関係]
+- **手順**:
+  1. グローバル変数を明示的パラメータに
+  2. 隠れた前提条件を表面化
+  3. 依存関係の注入
+- **検証**: 外部依存が明確化されても動作同一
+
+### Phase 3: 責任の分離
+
+#### 3.1 Extract Method
+- **対象**: [長い関数・複雑な処理]
+- **手順**:
+  1. 単一責任の処理単位で分割
+  2. 意味のある関数名を付与
+  3. 引数・戻り値を最小化
+- **検証**: 分割前後で完全に同じ結果
+
+#### 3.2 Extract Variable
+- **対象**: [複雑な計算・繰り返し処理]
+- **手順**:
+  1. 計算結果を変数に保存
+  2. 処理の意図を変数名で表現
+  3. パフォーマンス向上効果を測定
+- **検証**: 最終結果が同一
+
+#### 3.3 Change Function Declaration  
+- **対象**: [不適切な関数シグネチャ]
+- **手順**:
+  1. パラメータの追加・削除・並び替え
+  2. 関数名の改善
+  3. 戻り値の型・構造の改善
+- **検証**: 呼び出し元が正しく更新
+
+### Phase 4: データ構造の改善
+
+#### 4.1 Encapsulate Variable
+- **対象**: [公開されている変数]
+- **手順**:
+  1. getter/setterメソッドを作成
+  2. 直接アクセスを削除
+  3. 必要に応じてvalidationを追加
+- **検証**: データアクセスパターンが保持
+
+#### 4.2 Combine Functions into Class
+- **対象**: [関連する関数群]
+- **手順**:
+  1. 共通データを持つ関数をクラス化
+  2. データを private フィールドに
+  3. 関数をメソッドに変換
+- **検証**: 機能が完全に保持
+
+#### 4.3 Split Phase
+- **対象**: [複数の責任を持つ処理]
+- **手順**:
+  1. 処理の段階を明確に分離
+  2. 段階間のデータ構造を定義
+  3. 各段階の独立性を確保
+- **検証**: 全体の処理結果が同一
+
+### Phase 5: 条件ロジックの改善
+
+#### 5.1 Replace Nested Conditional with Guard Clauses
+- **対象**: [深いネストの条件文]
+- **手順**:
+  1. 異常系を早期returnで処理
+  2. 正常系のネストを削減
+  3. 可読性の向上を確認
+- **検証**: 全条件パターンで同じ結果
+
+#### 5.2 Replace Conditional with Polymorphism
+- **対象**: [型による条件分岐]
+- **手順**:
+  1. 型ごとにクラスを作成
+  2. 共通インターフェースを定義
+  3. 条件分岐をメソッド呼び出しに
+- **検証**: 動的分岐が正しく動作
+
+### リファクタリング実行の注意事項
+
+#### TDD統合の原則
+1. **必ずGreen状態でRefactor開始**
+2. **1つのリファクタリング = 1つのコミット**  
+3. **各ステップでテスト実行を確認**
+4. **Red状態になったら即座に復元**
+5. **リファクタリング中は機能追加禁止**
+
+#### Martin Fowler's Refactoring Checklist
+- [ ] **Small steps**: 小さなステップで実行
+- [ ] **Test frequently**: 各ステップでテスト実行
+- [ ] **Revert on red**: 失敗したら即座に復元
+- [ ] **Commit on green**: 成功したらコミット
+- [ ] **Improve design**: 設計品質の向上を確認
+
+#### リファクタリング順序の最適化
+```
+1. 最も安全で効果の高いもの（Dead Code等）
+2. 読みやすさの改善（命名・構造）
+3. 責任分離（メソッド抽出等）
+4. データ構造の改善
+5. 条件ロジックの改善（最もリスクが高い）
+```
+```
+
+### 2. refactoring-checklist.md の作成
+
+実際のリファクタリング作業で使用するチェックリスト：
+
+```markdown  
+# Refactoring Execution Checklist - [ストーリータイトル]
+
+## 🔵 Refactor実行前チェック
+- [ ] 全テストがGreen状態
+- [ ] 現在のコードをcommit済み  
+- [ ] リファクタリング対象を1つに絞る
+- [ ] 期待する改善効果を明確化
+
+## Phase 1: 構造的変更
+- [ ] Dead Code Elimination実行
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Normalize Symmetries実行  
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] New Interface作成
+- [ ] テスト実行 → Green確認 → Commit
+
+## Phase 2: 読みやすさ改善
+- [ ] Explaining Variables適用
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Explaining Constants適用
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Explicit Parameters適用
+- [ ] テスト実行 → Green確認 → Commit
+
+## Phase 3: 責任分離
+- [ ] Extract Method実行
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Extract Variable実行
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Function Declaration改善
+- [ ] テスト実行 → Green確認 → Commit
+
+## Phase 4: データ構造改善
+- [ ] Encapsulate Variable適用
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Combine Functions into Class
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Split Phase適用
+- [ ] テスト実行 → Green確認 → Commit
+
+## Phase 5: 条件ロジック改善
+- [ ] Guard Clauses適用
+- [ ] テスト実行 → Green確認 → Commit
+- [ ] Polymorphism導入
+- [ ] テスト実行 → Green確認 → Commit
+
+## 🔵 Refactor完了後確認
+- [ ] 全テストPASS
+- [ ] コード品質改善を確認
+- [ ] パフォーマンス改善/劣化なしを確認
+- [ ] すべての変更がCommit済み
+- [ ] 最終コミットメッセージ: "[Refactor] 改善内容の要約"
+
+## Red状態になった場合
+- [ ] 即座に `git restore .` で復元
+- [ ] より小さなステップに分割
+- [ ] リファクタリング戦略を見直し
+- [ ] 必要に応じてrefactoring-catalog.mdを更新
+```
+
+### 3. code-smells.md の作成
+
+Martin Fowlerのコード臭い検出と対処法：
+
+```markdown
+# Code Smells Detection - [ストーリータイトル]
+
+## 検出されたCode Smells
+
+### 🏭 Bloaters（巨大化）
+- [ ] **Large Class**: [クラス名] - 責任が多すぎる
+  - 対処: Extract Class, Extract Subclass
+- [ ] **Long Method**: [メソッド名] - 処理が長すぎる  
+  - 対処: Extract Method, Decompose Conditional
+- [ ] **Long Parameter List**: [メソッド名] - パラメータが多すぎる
+  - 対処: Parameter Object, Preserve Whole Object
+
+### 🗃️ Object-Orientation Abusers（オブジェクト指向の悪用）
+- [ ] **Switch Statements**: [場所] - 型による条件分岐
+  - 対処: Replace Conditional with Polymorphism
+- [ ] **Temporary Field**: [フィールド名] - 一時的にしか使わないフィールド
+  - 対処: Extract Class, Replace Method with Method Object
+- [ ] **Refused Bequest**: [クラス名] - 親クラスの機能を使わない
+  - 対処: Replace Inheritance with Delegation
+
+### 🔗 Change Preventers（変更の妨げ）
+- [ ] **Divergent Change**: [クラス名] - 1つのクラスが複数の理由で変更
+  - 対処: Extract Class
+- [ ] **Shotgun Surgery**: [機能] - 1つの変更で複数箇所を修正
+  - 対処: Move Method, Move Field, Inline Class
+
+### 🎈 Dispensables（無駄）
+- [ ] **Comments**: [場所] - 不要なコメント
+  - 対処: Extract Variable, Extract Method, Rename Method
+- [ ] **Duplicate Code**: [場所1, 場所2] - 重複コード  
+  - 対処: Extract Method, Pull Up Method
+- [ ] **Dead Code**: [場所] - 使われないコード
+  - 対処: 削除
+- [ ] **Speculative Generality**: [場所] - 不要な汎用化
+  - 対処: Inline Class, Remove Parameter
+
+### 🔌 Couplers（密結合）
+- [ ] **Feature Envy**: [メソッド] - 他クラスのデータを頻繁に使用
+  - 対処: Move Method, Extract Method
+- [ ] **Inappropriate Intimacy**: [クラス1, クラス2] - 過度な相互依存
+  - 対処: Move Method, Extract Class, Change Bidirectional Association to Unidirectional
+- [ ] **Message Chains**: [チェーン] - 長いメソッドチェーン
+  - 対処: Hide Delegate, Extract Method
+```
+
 ## 変更のコミット
 
 以下の手順でコミットしてください：
@@ -334,6 +616,12 @@ specifications_url: [主要な公式ドキュメントURL]
 - 実装ガイド: ✅ 作成済み
 - 参考資料: [X]件収集
 - 技術決定: [Y]件記録
+
+🔵 リファクタリング準備:
+- リファクタリングカタログ: ✅ 作成済み
+- 実行チェックリスト: ✅ 準備完了
+- Code Smells検出: [Z]件特定
+- TDD統合戦略: ✅ 策定済み
 
 🔍 重要な発見:
 • [発見1]
@@ -366,6 +654,14 @@ docs/cc-xp/research/[story-id]/
 • specifications.md の仕様を厳守
 • implementation.md のガイドに従う
 • decisions.md の決定事項を反映
+
+🔵 リファクタリングのポイント
+---------------------------
+• refactoring-catalog.md の段階的計画に従う
+• 必ずGreen状態でRefactor開始
+• 1つのリファクタリング = 1つのコミット
+• refactoring-checklist.md でステップ確認
+• Code Smells検出結果を参考に改善
 ```
 
 ## エラーハンドリング

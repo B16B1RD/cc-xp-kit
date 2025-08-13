@@ -116,6 +116,111 @@ backlog.yaml の内容は以下のルールで日本語化。
 - **hypothesis**: 価値体験を中心とした検証可能な仮説（日本語）。
 - **success_metrics**: 価値体験の測定方法（日本語）。
 
+## 🔴🟢🔵 Kent Beck式TDD厳格遵守
+
+### cc-xp-kitの開発で絶対厳守すべきTDD原則
+
+このプロジェクト自体の開発において、Kent Beck の TDD 原則を厳格に遵守してください。
+
+#### 1. Red-Green-Refactor Cycle の厳守
+
+```
+🔴 Red   → 失敗するテストを1つだけ書く
+🟢 Green → テストを通す最小限のコード
+🔵 Refactor → 全テストが通る状態で構造を改善
+```
+
+**絶対禁止**:
+- テストなしでの実装（アンチパターン）
+- 複数機能の同時実装
+- Green を飛ばしての Refactor
+- テストを通すためのテスト修正
+
+#### 2. テストファーストの絶対厳守
+
+```bash
+# cc-xp-kitの全機能について
+# 1. 必ずテストを先に書く
+# 2. そのテストが失敗することを確認する
+# 3. 最小限の実装でテストを通す
+# 4. 構造を改善する
+```
+
+#### 3. コミット規律の厳守
+
+**すべてのコミットは以下の形式を使用**:
+```bash
+[Red] テスト: should_extract_value_from_requirements
+[Green] 実装: plan.mdで価値抽出機能を実装  
+[Refactor] 改善: 価値抽出処理の可読性向上
+[Structure] 構造: ファイル構造の整理（振る舞い不変）
+```
+
+#### 4. cc-xp-kitのテスト戦略
+
+**テストファイル構造**:
+```
+test/unit/                    # ユニットテスト
+  plan.spec.js               # plan.md機能テスト
+  story.spec.js              # story.md機能テスト
+  develop.spec.js            # develop.md機能テスト
+  review.spec.js             # review.md機能テスト
+  retro.spec.js              # retro.md機能テスト
+
+test/integration/             # 統合テスト
+  workflow.e2e.js            # 全ワークフロー統合テスト
+  backlog.generation.spec.js # backlog.yaml生成テスト
+
+test/regression/              # 回帰テスト
+  value-extraction.regression.js  # 価値抽出回帰テスト
+  tdd-enforcement.regression.js   # TDD強制回帰テスト
+```
+
+#### 5. 品質ゲートの厳守
+
+**cc-xp-kitの品質基準**:
+- **テストカバレッジ**: 85%以上必須
+- **TDDサイクル完全性**: Red→Green→Refactor の完全実施
+- **アンチパターン**: 0 件必須
+- **回帰テスト**: 全バグに対して自動生成
+
+#### 6. TDD実装例（cc-xp-kit）
+
+**価値抽出機能のTDD例**:
+```javascript
+// test/unit/plan.spec.js
+describe('ValueExtractor', () => {
+  it('should_extract_core_value_from_user_requirements', () => {
+    // Arrange
+    const requirements = "ウェブブラウザで遊べるテトリスが欲しい";
+    const extractor = new ValueExtractor();
+    
+    // Act  
+    const result = extractor.extractCoreValue(requirements);
+    
+    // Assert
+    expect(result).toContain("ゲーム体験");
+    expect(result).toContain("達成感");
+    expect(result).not.toContain("技術実装"); // 技術中心でない
+  });
+});
+```
+
+#### 7. アンチパターン自動検出
+
+**cc-xp-kitの開発で以下を検出した場合は即座に修正**:
+- テストファイルが存在しない機能実装
+- 実装先行コミット（Red なしの実装）  
+- テスト修正コミット（テストを通すためのテスト変更）
+- 価値実現なき技術実装
+
+### cc-xp-kit開発の哲学
+
+**技術よりも価値実現を重視**:
+- cc-xp-kit 自体も「ユーザー（開発者）の価値体験」を最優先
+- 技術的完全性よりも、実際に開発者が価値を感じる体験
+- TDD による設計品質向上と価値実現の両立
+
 ### Git操作の権限
 
 .claude/settings.local.json で設定済み。
