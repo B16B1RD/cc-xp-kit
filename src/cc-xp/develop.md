@@ -45,6 +45,49 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 4. **複数機能の同時実装** - 一度に1つの振る舞いのみ
 5. **Greenを飛ばしてのRefactor** - 必ずGreen状態でリファクタリング
 
+### 🚫 テスト修正の絶対禁止（Kent Beck原則）
+
+**テストは仕様書です。テストを修正することは仕様を歪めることです。**
+
+#### ⛔ 絶対禁止事項
+
+1. **テストを通すためのテスト修正**
+   - アサーションの期待値変更
+   - テストの削除・コメントアウト
+   - テストのスキップ（.skip(), @Ignore等）
+   - 期待値の緩和・変更
+
+2. **Greenフェーズでのテスト変更**
+   - テストファイルの編集
+   - 新規テストの追加
+   - テストの構造変更
+
+#### ✅ 正しい対応方法
+
+**テストが失敗した場合**:
+1. **実装コードを修正する**（テストは触らない）
+2. テストが本当に間違っている場合：
+   - 新しい正しいテストを書く
+   - 古いテストは残す（削除しない）
+   - 両方のテストが通るよう実装を調整
+
+**テスト設計を見直したい場合**:
+1. 現在のTDDサイクルを完了させる
+2. 新しいRedフェーズで新しいテストを書く
+3. 古いテストとの整合性を保つ
+
+#### 📋 テスト不変性の原則
+
+```javascript
+// ❌ 禁止：テストを通すためのテスト修正
+expect(result).toBe(true);  // 失敗
+expect(result).toBe(false); // ← これは仕様を歪める
+
+// ✅ 正しい：実装を修正してテストを通す
+expect(result).toBe(true);  // テストは変更しない
+// → 実装を修正してtrueを返すようにする
+```
+
 ---
 
 ## 🛡️ 開始前の確認
@@ -77,21 +120,54 @@ npm test || yarn test || pnpm test || python -m pytest || go test || cargo test
 → /cc-xp:plan  # プロジェクト設定とテスト環境構築
 ```
 
-### STEP 0-3: STATUS 原子的更新（唯一の更新箇所）
+### STEP 0-3: STATUS 確認（変更なし）
 
-⚠️ **このコマンドで backlog.yaml を更新するのはここだけです**
+⚠️ **このコマンドではステータス確認のみ行います**
 
-backlog.yaml のステータスを更新：
-- `"in-progress"` → `"testing"` に変更
-- updated_at を現在時刻に設定
-- **"done" の場合は処理停止**
+backlog.yaml のステータスを確認：
+- `"in-progress"` であることを確認
+- **"done" の場合は処理停止**（review完了済み）
+- **"testing" の場合は処理停止**（既にdevelop実行済み）
 
-⛔ **これ以降、このコマンド内では二度と status を変更しない**
+⛔ **TDDサイクル完了まではステータスを変更しない**
 ⛔ **done への変更は絶対に行わない（review accept のみ可能）**
 
 ---
 
 ## 🔴🟢🔵 TDD実行フェーズ
+
+### Kent Beck式「小さなステップ」原則
+
+**"Always write one test at a time, make it run, then improve structure."**
+
+#### 🎯 一度に1つのテストだけ
+
+**厳格なルール**:
+1. **1つのテストを書く** → **そのテストを通す** → **構造を改善する**
+2. **複数機能の同時実装は禁止**
+3. **一度に1つの振る舞いのみ**
+4. **最小限の進歩を積み重ねる**
+
+#### 📏 小さなステップの利点
+
+- **設計の明確化**: 1つずつ要求を明確にする
+- **リスクの最小化**: 失敗時の影響範囲を限定
+- **継続的なフィードバック**: 各ステップで品質確認
+- **デバッグの簡素化**: 問題の特定が容易
+
+#### 🚫 「大きなステップ」の禁止
+
+```javascript
+// ❌ 禁止：複数テストの同時追加
+it('should_spawn_tetromino')
+it('should_move_tetromino')  
+it('should_rotate_tetromino')
+
+// ✅ 正しい：1つずつ順次追加
+it('should_spawn_tetromino')
+// ↓ Red→Green→Refactor完了後に次へ
+it('should_move_tetromino')
+```
 
 ### オプション引数による段階実行
 
@@ -191,20 +267,50 @@ it('should_spawn_O_piece_after_double_line_clear')
 // → 一般的なspawnPiece()実装を導き出す
 ```
 
-### Green確認
+### Green確認（テスト修正禁止厳守）
 
 ```bash
 npm test
 ```
-- **全テストがPASS**することを確認
-- 1つでも失敗する場合は修正を続行
 
-### Greenコミット
+#### 🚫 テスト失敗時の厳格な対応
+
+**テストが失敗した場合**:
+
+⛔ **絶対禁止**:
+- テストファイルの編集・修正
+- 期待値の変更
+- テストのスキップ・削除
+- 新規テストの追加
+
+✅ **唯一の正しい対応**:
+1. **実装コードのみを修正**
+2. `npm test` で再確認
+3. 失敗が続く場合は実装を繰り返し修正
+4. **全テストがPASSするまで次に進まない**
+
+#### 🔄 強制ループ実装
+
+```
+テスト失敗検出
+    ↓
+実装コードを修正
+    ↓
+テスト再実行
+    ↓
+失敗なら繰り返し（テストは触らない）
+    ↓
+全テストPASS → Greenコミット
+```
+
+### Greenコミット（全テストPASS後のみ）
 
 ```bash
-git add src/
+git add src/    # 実装ファイルのみ
 git commit -m "[Green] Implement piece spawning after line clear"
 ```
+
+⚠️ **テストファイルは絶対にaddしない**（変更していないため）
 
 ---
 
@@ -304,31 +410,85 @@ it('should_[expected_behavior]_when_[condition]', () => {
 
 ---
 
-## 🔄 サイクル終了確認
+## 🔄 TDDサイクル完了条件（厳格チェック）
 
-### 最終チェック
+### Kent Beck式完了条件（全て必須）
 
-1. **全テストがPASS** - `npm test`
-2. **カバレッジ確認** - 重要な経路がテスト済み
-3. **リンター確認** - コード品質基準達成
-4. **ステータス確認** - `status: "testing"` 維持
+#### 1. TDDコミット履歴の確認
 
-### 最終コミット
+**必須コミット**:
+```bash
+git log --oneline --grep="\[Red\]" | head -1    # 🔴 Redコミット存在
+git log --oneline --grep="\[Green\]" | head -1  # 🟢 Greenコミット存在  
+git log --oneline --grep="\[Refactor\]" | head -1  # 🔵 Refactorコミット存在
+```
+
+⛔ **いずれかが欠けている場合はTDDサイクル未完了**
+
+#### 2. テスト品質確認
 
 ```bash
+npm test  # 全テストPASS必須
+```
+
+#### 3. テスト修正禁止確認
+
+**Git履歴チェック**:
+- Redフェーズ後にテストファイルが修正されていないこと
+- Greenフェーズでテストファイルの変更がないこと
+- テストを通すためのテスト修正がないこと
+
+#### 4. アンチパターン検出
+
+**以下が検出された場合は即座に停止**:
+- テストファイルの後付け修正
+- テストのスキップ・削除
+- 複数テストの同時追加
+- 期待値の変更履歴
+
+### TDDサイクル完了後の処理
+
+**全条件を満たした場合のみ実行**:
+
+```bash
+# 1. ステータス更新
+# backlog.yamlの status: "in-progress" → "testing" に変更
+# updated_at を現在時刻に設定
+
+# 2. 最終コミット
 git add .
-git commit -m "[TDD] Red-Green-Refactor サイクル終了: [feature]
+git commit -m "[TDD] Red-Green-Refactor サイクル完了: [feature]
 
-- Red: Add failing test for [behavior]
-- Green: Implement minimal solution
-- Refactor: Improve code structure
+🔴 Red: Add failing test for [behavior]  
+🟢 Green: Implement minimal solution
+🔵 Refactor: Improve code structure
 
-注意: ストーリーは未完了（status: "testing"）
-承認は /cc-xp:review で実施
+✅ TDD完了条件:
+- 全テストPASS
+- Red→Green→Refactorコミット確認
+- テスト修正なし
+- アンチパターン0件
+
+status: "testing" (review待ち)
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+### 条件未達成時の処理
+
+**TDDサイクルが不完全な場合**:
+```
+⚠️ TDDサイクル未完了
+==================
+未達成条件: [具体的な未達成項目]
+現在ステータス: "in-progress" (変更なし)
+
+完了に向けて:
+→ /cc-xp:develop --[red|green|refactor]
+
+全条件を満たすまでdevelopコマンドは完了しません。
 ```
 
 ---
@@ -383,16 +543,72 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ---
 
-## 🚫 アンチパターン自動検出
+## 🚫 Kent Beck式アンチパターン自動検出
 
-以下が検出された場合、**処理を自動停止**：
+以下が検出された場合、**処理を自動停止し、修正方法を案内**：
+
+### 🔴 Redフェーズのアンチパターン
 
 1. **テストファイルが存在しない**
-2. **テスト実行環境がない**
-3. **テストなしで実装を開始**
-4. **Redを飛ばしてGreenから開始**
-5. **Green状態でないままRefactor実行**
-6. **テストを通すためにテストを修正**
+   → `docs/cc-xp/tests/[story-id].spec.js` が未作成
+
+2. **複数テストの同時追加**
+   → 1つのコミットで複数の `it()` を追加
+
+3. **実装先行**
+   → テストより先に実装ファイルを作成・変更
+
+### 🟢 Greenフェーズのアンチパターン
+
+1. **テストを通すためのテスト修正**
+   → テストファイルの変更（期待値変更、削除等）
+
+2. **テストスキップ**
+   → `.skip()`, `@Ignore`, `xit()` の使用
+
+3. **新規テストの追加**
+   → Greenフェーズでの `it()` 追加
+
+4. **テスト実装の混在**
+   → 1コミットでテストと実装を同時変更
+
+### 🔵 Refactorフェーズのアンチパターン
+
+1. **振る舞い変更の混在**
+   → リファクタリングと機能追加の同時実行
+
+2. **テスト破綻の放置**
+   → リファクタリング後のテスト失敗を放置
+
+### 🔄 TDDサイクル全般のアンチパターン
+
+1. **フェーズ飛ばし**
+   → Red→Refactor、Green→Red等の順序違反
+
+2. **TDDサイクル未完了でのステータス変更**
+   → Red-Green-Refactorコミットが揃う前の完了
+
+3. **手動テストへの依存**
+   → 自動テスト以外での動作確認に依存
+
+### 検出時の自動対応
+
+**アンチパターン検出時**:
+```
+🚨 TDDアンチパターン検出
+======================
+検出項目: [具体的なアンチパターン]
+対象ファイル: [問題のあるファイル]
+
+🔧 修正方法:
+[具体的な修正手順]
+
+⛔ コマンドを停止します
+ステータス: "in-progress" (変更なし)
+
+正しいTDDサイクルで再実行してください:
+→ /cc-xp:develop --red
+```
 
 ---
 
