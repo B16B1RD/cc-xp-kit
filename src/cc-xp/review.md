@@ -845,6 +845,7 @@ $ARGUMENTS の最初の単語を確認：
     "topRejectReasons": ["UI usability", "Error handling", "Performance"]
   }
 }
+```
 
 ## サマリー表示
 
