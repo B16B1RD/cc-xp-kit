@@ -1,7 +1,7 @@
 ---
 description: XP review – 価値×技術の二軸評価と判定（accept/reject/skipで指定）+ 価値体験確認
 argument-hint: '[accept|reject|skip] [理由（rejectの場合）] [--skip-demo] [--skip-e2e]'
-allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), ReadFile, WriteFile(docs/cc-xp/stories/*-feedback.md), WriteFile(docs/cc-xp/tests/*.regression.js), WriteFile(docs/cc-xp/backlog.yaml), mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot
+allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bash(http-server:*), Bash(lsof:*), Bash(netstat:*), ReadFile, WriteFile(docs/cc-xp/stories/*-feedback.md), WriteFile(docs/cc-xp/backlog.yaml), mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot
 ---
 
 # XP Review - 価値×技術 二軸評価
@@ -32,7 +32,6 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bas
 #### 🚫 テスト実行の制限
 
 1. **修正を伴うテスト作業禁止**
-   - 回帰テスト実行禁止（生成のみ可）
    - npm test での修正確認禁止
    - テストが失敗しても修正作業はしない
 
@@ -53,7 +52,6 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bas
 ✅ review の責務:
 - 評価・判定
 - フィードバック記録
-- 回帰テスト生成
 - status 変更
 
 ❌ develop の責務（review では禁止）:
@@ -220,14 +218,6 @@ cargo clippy
    - **不完全なサイクル**: ⚠️ TDD原則違反の可能性
    - **テストファイルなし**: ❌ TDD未実践（即座にreject）
 
-#### 0.5 回帰テスト自動実行
-
-既存の回帰テストがある場合は実行：
-```bash
-# 回帰テスト実行
-npm test docs/cc-xp/tests/*.regression.js
-```
-
 #### 品質ゲート判定
 
 ```
@@ -237,7 +227,6 @@ npm test docs/cc-xp/tests/*.regression.js
 カバレッジ: ✅ 87% (基準85%以上)
 コード品質: ✅ 警告なし
 TDD完全性: ✅ Red→Green→Refactor確認
-回帰テスト: ✅ 全てPASS (XX/XX)
 
 総合判定: ✅ PASS - レビュー継続
 ```
@@ -591,96 +580,12 @@ $ARGUMENTS の最初の単語を確認：
    ```
    - @docs/cc-xp/backlog.yaml の status を `"testing"` → `"in-progress"` に戻す（**重要**: "done" にはしない）
 
-3. **回帰テスト自動生成（reject時の自動実行）**
-
-   却下理由に基づいて、**回帰テストケースを自動生成**し、将来的な同様のバグを予防します。
-
-#### 回帰テストケースの生成
-
-   `docs/cc-xp/tests/[ID].regression.js` に却下理由に対応するテストケースを追加：
-
-   ```javascript
-   // 既存のregressionファイルに追加
-   describe('[Story Title] - Regression Tests', () => {
-     // 既存のテストケース...
-     
-     it('should_prevent_regression_[describe_issue]', () => {
-       // Arrange - 却下された状況を再現
-       // TODO: [却下理由]が発生する条件を設定
-       
-       // Act - 問題のある操作を実行
-       // TODO: 却下の原因となった操作を実行
-       
-       // Assert - 問題が解決されていることを確認
-       // TODO: 期待する正しい結果を検証
-       expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
-     });
-   });
-   ```
-
-#### 回帰テスト生成の例
-
-   **却下理由例**: "ボタンが小さすぎて押しにくい"
-   ```javascript
-   it('should_have_minimum_button_size_for_touch_interaction', () => {
-     // Arrange
-     const button = renderButton();
-     
-     // Act  
-     const buttonSize = getComputedStyle(button);
-     
-     // Assert - 44px以上のタッチターゲット確保
-     expect(parseInt(buttonSize.width)).toBeGreaterThanOrEqual(44);
-     expect(parseInt(buttonSize.height)).toBeGreaterThanOrEqual(44);
-   });
-   ```
-
-   **却下理由例**: "エラーハンドリングが不十分"
-   ```javascript
-   it('should_handle_network_error_gracefully', () => {
-     // Arrange
-     const mockAPI = jest.fn().mockRejectedValue(new Error('Network Error'));
-     
-     // Act
-     const result = handleAPICall(mockAPI);
-     
-     // Assert  
-     expect(result).toEqual({ success: false, error: 'Network Error' });
-     expect(console.error).not.toHaveBeenCalled(); // エラーログの適切な処理
-   });
-   ```
-
-#### 回帰テスト生成の実行手順
-
-   1. **却下理由の分析** - 具体的な問題パターンを特定
-   2. **テスト条件の抽出** - 問題が発生する条件を明確化
-   3. **期待値の定義** - 修正後の正しい振る舞いを定義
-   4. **テストケース生成** - 失敗する回帰テストを作成
-   5. **ファイル更新** - regression.jsファイルに追記
-   6. **ファイルコミット** - regression.jsファイルのコミット（実行はしない）
-
-#### 回帰テストファイルのコミット
-
-   ```bash
-   # 回帰テストファイルをコミット（実行はしない）
-   git add docs/cc-xp/tests/[story-id].regression.js
-   git commit -m "[Regression] Add test for: [却下理由の要約]
-   
-   問題: [却下理由]
-   対策: 回帰テスト追加により将来的な同様問題を予防
-   
-   🤖 Generated with [Claude Code](https://claude.ai/code)
-   
-   Co-Authored-By: Claude <noreply@anthropic.com>"
-   ```
-
-1. **修正ガイドの表示**
+3. **修正ガイドの表示**
    ```
    📝 次のアクション
    ==================
    1. フィードバックを確認: docs/cc-xp/stories/[ID]-feedback.md
-   2. 回帰テストを確認: docs/cc-xp/tests/[ID].regression.js
-   3. `/cc-xp:develop` を実行して修正作業開始
+   2. `/cc-xp:develop` を実行して修正作業開始
    
    🚨 重要: review コマンドでは修正作業を行いません
    修正は必ず develop コマンドで実施してください
@@ -689,7 +594,7 @@ $ARGUMENTS の最初の単語を確認：
    停止する場合: kill $(cat .server.pid)
    ```
 
-2. **次のコマンド案内**
+4. **次のコマンド案内**
    コマンド終了時の次のステップ案内はCLAUDE.mdの定義に従って自動表示されます。
 
 ### Skip を選択した場合
@@ -780,24 +685,12 @@ $ARGUMENTS の最初の単語を確認：
 - レビュー所要時間（可能なら）
 
 **reject時の追加記録**：
-- 回帰テスト生成数
 - 却下理由の分類（UI/性能/セキュリティ/等）
 - 前回reject以降の経過日数
 - 累積reject回数（品質改善分析用）
 
 ```json
 {
-  "regressionTests": {
-    "totalGenerated": 23,
-    "byCategory": {
-      "ui_usability": 8,
-      "performance": 4, 
-      "error_handling": 6,
-      "security": 3,
-      "compatibility": 2
-    },
-    "preventedRegressions": 15
-  },
   "rejectAnalysis": {
     "avgCyclesPerStory": 2.1,
     "topRejectReasons": ["UI usability", "Error handling", "Performance"]

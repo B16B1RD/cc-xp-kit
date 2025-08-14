@@ -149,36 +149,30 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 **テストランナーの確認・セットアップ**:
 
 **JavaScript/TypeScript**:
-```bash
-# package.jsonのtestスクリプト確認
-if package.json exists:
-  if "test" script not found:
-    add test script: "jest" or "vitest"
-  if jest not installed:
-    npm install --save-dev jest
-```
+
+package.jsonが存在する場合は以下を確認・実行してください：
+- testスクリプトが存在しない場合は、"jest"または"vitest"を追加してください
+- jestがインストールされていない場合は、`npm install --save-dev jest jest-environment-jsdom`を実行してください  
+- `npm install`を実行して全依存関係をインストールしてください
 
 **Python**:
-```bash
-# pytest確認・インストール
-if requirements.txt or pyproject.toml exists:
-  if pytest not found:
-    pip install pytest
-```
+
+requirements.txtまたはpyproject.tomlが存在する場合：
+- pytestが見つからない場合は、`pip install pytest`を実行してください
 
 **Go**:
-```bash
-# go test環境確認
-go mod tidy
-```
+
+`go mod tidy`を実行してモジュール依存関係を整理してください
 
 ### 0.3 テストディレクトリ構造生成
 
 **標準構造の作成**:
-```bash
-mkdir -p test/unit test/integration test/regression
-mkdir -p docs/cc-xp/tests
-```
+
+以下のテストディレクトリ構造を作成してください：
+- `test/unit` - ユニットテスト用
+- `test/integration` - 統合テスト用  
+- `test/regression` - 回帰テスト用
+- `docs/cc-xp` - cc-xp-kit作業ファイル用
 
 **初期テストファイル生成**:
 ```javascript

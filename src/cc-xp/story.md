@@ -114,7 +114,7 @@ AI分析レポート（docs/cc-xp/analysis_summary.md）が存在するか確認
 #### 生成されるテストファイル構造
 
 ```
-docs/cc-xp/tests/
+test/
 ├── [story-id].spec.js        # ユニットテスト（振る舞い検証）
 ├── [story-id].e2e.js         # E2Eテスト（価値体験検証）  
 └── [story-id].regression.js  # 回帰テスト（review reject時に追加）
@@ -122,7 +122,7 @@ docs/cc-xp/tests/
 
 #### ユニットテストテンプレート生成
 
-**docs/cc-xp/tests/[story-id].spec.js**:
+**test/[story-id].spec.js**:
 ```javascript
 /**
  * [Story Title] - Unit Tests
@@ -156,7 +156,7 @@ describe('[ComponentName]', () => {
 
 #### E2Eテストテンプレート生成
 
-**docs/cc-xp/tests/[story-id].e2e.js**:
+**test/[story-id].e2e.js**:
 ```javascript
 /**
  * [Story Title] - End-to-End Tests
@@ -194,7 +194,7 @@ describe('[Story Title] - E2E', () => {
 
 #### 回帰テストテンプレート生成
 
-**docs/cc-xp/tests/[story-id].regression.js** (初期は空、reject時に自動追加):
+**test/[story-id].regression.js** (初期は空、reject時に自動追加):
 ```javascript
 /**
  * [Story Title] - Regression Tests
@@ -223,7 +223,7 @@ describe('[Story Title] - Regression', () => {
 
 生成後、即座にテスト実行して Red 状態を確認：
 ```bash
-npm test docs/cc-xp/tests/[story-id]*.js
+npm test test/[story-id]*.js
 ```
 
 **期待する結果**: 全テストが失敗（🔴 Red状態）
@@ -518,9 +518,9 @@ Then [競合優位性を示す結果]
 1. **対象ファイル**:
    - `docs/cc-xp/stories/[ID].md`（ストーリー詳細）
    - `docs/cc-xp/backlog.yaml`（ステータス更新）
-   - `docs/cc-xp/tests/[ID].spec.js`（ユニットテスト）
-   - `docs/cc-xp/tests/[ID].e2e.js`（E2Eテスト）
-   - `docs/cc-xp/tests/[ID].regression.js`（回帰テスト）
+   - `test/[ID].spec.js`（ユニットテスト）
+   - `test/[ID].e2e.js`（E2Eテスト）
+   - `test/[ID].regression.js`（回帰テスト）
 
 2. **コミットメッセージ**:
    ```
@@ -574,9 +574,9 @@ Then [競合優位性を示す結果]
 ✓ [シナリオ3: 技術品質検証要約]（あれば）
 
 🔴🟢🔵 TDDテスト準備完了:
-✅ ユニットテスト: docs/cc-xp/tests/[ID].spec.js
-✅ E2Eテスト: docs/cc-xp/tests/[ID].e2e.js
-✅ 回帰テスト: docs/cc-xp/tests/[ID].regression.js
+✅ ユニットテスト: test/[ID].spec.js
+✅ E2Eテスト: test/[ID].e2e.js
+✅ 回帰テスト: test/[ID].regression.js
 ✅ Red状態確認済み（全テスト失敗）
 
 🔬 テスト戦略:
