@@ -505,7 +505,7 @@ Then [競合優位性を示す結果]
 ## backlog.yamlの更新
 
 @docs/cc-xp/backlog.yaml の該当ストーリーを更新：
-- status: `selected` → `in-progress`（**重要**: done にはしない）
+- status: `"selected"` → `"in-progress"`（**重要**: "done" にはしない）
 - updated_at: 現在時刻
 
 **ステータスの流れ**：

@@ -227,9 +227,9 @@ Red-Green-Refactor完全遵守: 100%
 
 #### 基本カウント
 
-- 完了ストーリー数（status: done）
-- 進行中ストーリー数（status: in-progress/testing）
-- 残りストーリー数（status: todo/selected）
+- 完了ストーリー数（status: "done"）
+- 進行中ストーリー数（status: "in-progress"/"testing"）
+- 残りストーリー数（status: "todo"/"selected"）
 
 #### 価値実現・成功率分析（拡張形式の場合）
 

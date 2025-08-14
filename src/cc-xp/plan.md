@@ -100,17 +100,17 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
    - 即座に開発する場合:
      → /cc-xp:develop
 
-3. **develop 完了時（status: testing）**
+3. **develop 完了時（status: "testing"）**
    → /cc-xp:review
    （自動テスト実行とコードレビュー）
 
-4. **review accept時（status: done）**
+4. **review accept時（status: "done"）**
    - 他のストーリーがある場合:
      → /cc-xp:story [next-story-id]
    - 振り返りを実施する場合:
      → /cc-xp:retro
 
-5. **review reject時（status: testing）**
+5. **review reject時（status: "testing"）**
    → /cc-xp:develop
    （修正を実施）
 

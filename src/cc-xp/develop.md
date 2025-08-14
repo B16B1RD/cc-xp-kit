@@ -82,9 +82,9 @@ npm test || yarn test || pnpm test || python -m pytest || go test || cargo test
 ⚠️ **このコマンドで backlog.yaml を更新するのはここだけです**
 
 backlog.yaml のステータスを更新：
-- `in-progress` → `testing` に変更
+- `"in-progress"` → `"testing"` に変更
 - updated_at を現在時刻に設定
-- **done の場合は処理停止**
+- **"done" の場合は処理停止**
 
 ⛔ **これ以降、このコマンド内では二度と status を変更しない**
 ⛔ **done への変更は絶対に行わない（review accept のみ可能）**
@@ -311,7 +311,7 @@ it('should_[expected_behavior]_when_[condition]', () => {
 1. **全テストがPASS** - `npm test`
 2. **カバレッジ確認** - 重要な経路がテスト済み
 3. **リンター確認** - コード品質基準達成
-4. **ステータス確認** - `status: testing` 維持
+4. **ステータス確認** - `status: "testing"` 維持
 
 ### 最終コミット
 
@@ -323,7 +323,7 @@ git commit -m "[TDD] Red-Green-Refactor サイクル終了: [feature]
 - Green: Implement minimal solution
 - Refactor: Improve code structure
 
-注意: ストーリーは未完了（status: testing）
+注意: ストーリーは未完了（status: "testing"）
 承認は /cc-xp:review で実施
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
@@ -337,8 +337,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 **必須チェック**: backlog.yaml の status が正しい状態であることを確認してください：
 
-- **testing の場合**: ✅ 正常（そのまま終了）
-- **done の場合**: ❌ **CRITICAL ERROR** - 不正な状態変更が検出されました
+- **"testing" の場合**: ✅ 正常（そのまま終了）
+- **"done" の場合**: ❌ **CRITICAL ERROR** - 不正な状態変更が検出されました
 - **その他の場合**: ❌ エラー処理
 
 ⚠️ **done が検出された場合は、このコマンドの実装に重大なバグがあります**
@@ -358,7 +358,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ===========================
 ストーリー: [ストーリータイトル]
 ブランチ: story-[ID]
-ステータス: testing ✅
+ステータス: "testing" ✅
 
 実施サイクル:
 🔴 Red: 失敗テスト作成 → コミット
@@ -372,7 +372,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ✅ テストファースト実践
 
 🚨 CRITICAL 確認事項
-⛔ status = testing （done は絶対に NG）
+⛔ status = "testing" （"done" は絶対に NG）
 ⛔ ストーリーは未完了（review でのみ完了）
 ✅ テストが仕様書として機能
 ✅ 自動テストのみで品質保証

@@ -103,7 +103,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 
 ### 価値実現中心のストーリー情報取得
 
-@docs/cc-xp/backlog.yaml から `testing` ステータスのストーリーを確認し、**価値実現に必要な全情報**を取得してください。
+@docs/cc-xp/backlog.yaml から `"testing"` ステータスのストーリーを確認し、**価値実現に必要な全情報**を取得してください。
 
 #### 基本情報
 
@@ -130,8 +130,8 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 - フィードバック履歴（@docs/cc-xp/stories/[ID]-feedback.md）
 
 **重要なバリデーション**：
-- `testing` ステータスのストーリーがない場合は、「先に `/cc-xp:develop` を実行してください」と案内
-- すでに `done` のストーリーは対象外（再レビュー不可）
+- `"testing"` ステータスのストーリーがない場合は、「先に `/cc-xp:develop` を実行してください」と案内
+- すでに `"done"` のストーリーは対象外（再レビュー不可）
 
 **仮説検証レビューサイクルの確認**：
 - フィードバックファイルから何回目のレビューかをカウント
@@ -494,7 +494,7 @@ $ARGUMENTS の最初の単語を確認：
 
 ### Accept を選択した場合
 
-**重要**: この処理でのみステータスを `done` に変更し、**仮説検証結果を永続記録**します。
+**重要**: この処理でのみステータスを `"done"` に変更し、**仮説検証結果を永続記録**します。
 
 1. **仮説検証成功の記録**
 
@@ -589,7 +589,7 @@ $ARGUMENTS の最初の単語を確認：
    1. このフィードバックを確認
    2. `/cc-xp:develop` を実行して修正を実装
    ```
-   - @docs/cc-xp/backlog.yaml の status を `testing` → `in-progress` に戻す（**重要**: done にはしない）
+   - @docs/cc-xp/backlog.yaml の status を `"testing"` → `"in-progress"` に戻す（**重要**: "done" にはしない）
 
 3. **回帰テスト自動生成（reject時の自動実行）**
 
