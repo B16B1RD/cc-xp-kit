@@ -136,11 +136,41 @@ backlog.yaml のステータスを確認：
 
 ## 🔴🟢🔵 TDD実行フェーズ
 
+### 🔍 実装前チェック: TODOテスト検出
+
+#### STEP 0-4: TODOテスト検出と進捗確認
+
+テストファイル内のTODOテストを検出し、反復的TDDサイクルの準備を行います。
+
+**TODOテストの判定条件**：
+```javascript
+// パターン1: TODOコメント付きテスト
+it('should_move_tetromino_down_when_time_passes', () => {
+  // TODO: 落下中のテトロミノをセットアップ
+  expect(true).toBe(false); // 🔴 未実装テスト
+});
+
+// パターン2: スケルトンテスト
+it('should_handle_collision', () => {
+  expect(true).toBe(false); // 🔴 仮の失敗テスト
+});
+```
+
+**検出処理**：
+1. テストファイル内の全 `it()` を走査
+2. `// TODO:` コメントまたは `expect(true).toBe(false)` を含むテストをTODOと判定
+3. TODOテスト数と実装済みテスト数をカウント
+4. 進捗状況を表示（例：「テスト進捗: 3/7 実装済み, 4件のTODOテスト検出」）
+
+**TODOテスト検出時の処理**：
+- **TODOテストが存在する場合**: 反復的TDDサイクルを開始
+- **TODOテストが0件の場合**: 通常のTDD完了条件チェックへ進行
+
 ### Kent Beck式「小さなステップ」原則
 
 **"Always write one test at a time, make it run, then improve structure."**
 
-#### 🎯 一度に1つのテストだけ
+#### 🎯 一度に1つのテストだけ（TODOテスト順次実装）
 
 **厳格なルール**:
 1. **1つのテストを書く** → **そのテストを通す** → **構造を改善する**
@@ -194,7 +224,45 @@ it('should_move_tetromino')
 - 存在しない場合: story未実行のためエラー停止
 - 存在する場合: テストファイルを開いて編集
 
-#### 2. 最小の失敗テストを1つ書く
+#### 🔍 2. TODOテスト自動変換（新機能）
+
+**TODOテストが存在する場合の自動処理**：
+
+1. **最初のTODOテストを特定**
+2. **TODOを実際の失敗テストに変換**
+
+```javascript
+// 変換前（TODOテスト）
+it('should_position_tetromino_at_top_center_when_generated', () => {
+  // TODO: テトロミノ生成の準備
+  // TODO: テトロミノの初期位置設定
+  // TODO: 画面上部中央に配置されることを検証
+  expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+});
+
+// 変換後（実際の失敗テスト）
+it('should_position_tetromino_at_top_center_when_generated', () => {
+  // Arrange - 準備
+  const TetrisGame = require('../src/tetris-game');
+  const game = new TetrisGame();
+  
+  // Act - 実行
+  game.start();
+  
+  // Assert - 検証
+  expect(game.currentPiece.x).toBe(4); // 中央位置 (10/2 - 1)
+  expect(game.currentPiece.y).toBe(0); // 上部位置
+});
+```
+
+**変換ルール**：
+- TODOコメントを適切なAAA構造（Arrange-Act-Assert）に展開
+- ストーリーの要求に基づいた具体的なテストケースを生成
+- `expect(true).toBe(false)` を実際の期待値検証に置換
+
+#### 3. TODOテストがない場合の通常処理
+
+**新規テストを1つ書く**（従来の方法）
 
 ```javascript
 // 良いテストの例（振る舞い駆動命名）
@@ -410,7 +478,51 @@ it('should_[expected_behavior]_when_[condition]', () => {
 
 ---
 
-## 🔄 TDDサイクル完了条件（厳格チェック）
+## 🔄 反復的TDDサイクル制御（新実装）
+
+### 🎯 TODOテスト完全解消まで反復実行
+
+**重要な変更**: 単一サイクル実行から反復実行への移行
+
+#### ループ制御フロー
+
+```
+1. TODOテスト検出 → あり？
+   ↓ YES
+2. 最初のTODOテストを選択
+   ↓
+3. Red-Green-Refactor実行
+   ↓
+4. 進捗更新（例: "2/7 完了"）
+   ↓
+5. TODOテスト検出 → あり？
+   ↓ YES（戻る） / NO（終了）
+6. 全テスト完了確認
+```
+
+#### サイクル進行管理
+
+**各サイクル終了時の処理**:
+1. **進捗カウント更新**: 完了テスト数 / 総テスト数
+2. **TODOテスト再検出**: 残りのTODOテストを確認
+3. **継続判定**:
+   - TODOテストあり → 次のサイクルへ
+   - TODOテストなし → 最終完了チェックへ
+
+#### 中断可能設計
+
+**途中終了オプション**:
+```bash
+# 1サイクルだけ実行したい場合
+/cc-xp:develop --single-cycle
+
+# 特定テスト数まで実行したい場合  
+/cc-xp:develop --limit=3
+```
+
+---
+
+## 🔄 TDDサイクル最終完了条件（厳格チェック）
 
 ### Kent Beck式完了条件（全て必須）
 
@@ -425,10 +537,37 @@ git log --oneline --grep="\[Refactor\]" | head -1  # 🔵 Refactorコミット�
 
 ⛔ **いずれかが欠けている場合はTDDサイクル未完了**
 
-#### 2. テスト品質確認
+#### 2. テスト完全実装確認（新チェック項目）
+
+**🔍 TODOテスト0件チェック**:
+```bash
+# テストファイル内のTODOテスト検出
+grep -n "// TODO:" docs/cc-xp/tests/[story-id].spec.js
+grep -n "expect(true).toBe(false)" docs/cc-xp/tests/[story-id].spec.js
+```
+
+**完全実装の条件**:
+- ✅ TODOコメントが0件
+- ✅ `expect(true).toBe(false)` スケルトンテストが0件  
+- ✅ 全テストに具体的なAssertionが存在
+- ✅ AAA構造（Arrange-Act-Assert）が完備
+
+⛔ **TODOテストが検出された場合は即座に停止**
+```
+❌ TDDサイクル未完了: TODOテストが残存
+====================================
+検出箇所:
+- should_move_tetromino_down_when_time_passes: Line 78
+- should_stop_tetromino_when_reaches_bottom: Line 91
+
+→ 反復的TDDサイクルを継続してください
+→ /cc-xp:develop (自動で残りのTODOテストを実装)
+```
+
+#### 3. テスト品質確認
 
 ```bash
-npm test  # 全テストPASS必須
+npm test  # 全テストPASS必須（TODOテスト0件確認後）
 ```
 
 #### 3. テスト修正禁止確認
@@ -451,24 +590,33 @@ npm test  # 全テストPASS必須
 **全条件を満たした場合のみ実行**:
 
 ```bash
-# 1. ステータス更新
+# 1. 最終進捗確認表示
+echo "🎯 TDD完了確認"
+echo "実装済みテスト: [N]/[N] (100%)"
+echo "TODOテスト: 0件"
+echo "全テスト: PASS"
+
+# 2. ステータス更新
 # backlog.yamlの status: "in-progress" → "testing" に変更
 # updated_at を現在時刻に設定
 
-# 2. 最終コミット
+# 3. 最終コミット（改善版）
 git add .
-git commit -m "[TDD] Red-Green-Refactor サイクル完了: [feature]
+git commit -m "[TDD] Complete iterative Red-Green-Refactor cycles: [story-title]
 
-🔴 Red: Add failing test for [behavior]  
-🟢 Green: Implement minimal solution
-🔵 Refactor: Improve code structure
+🔄 反復TDDサイクル完了:
+- TODOテスト検出・変換: [N]件
+- Red-Green-Refactorサイクル: [N]回実行
+- 全テスト実装完了: [N]/[N] (100%)
 
 ✅ TDD完了条件:
-- 全テストPASS
+- TODOテスト0件確認
+- 全テストPASS ([N]件)
 - Red→Green→Refactorコミット確認
 - テスト修正なし
 - アンチパターン0件
 
+🎯 価値実現準備完了
 status: "testing" (review待ち)
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
@@ -482,11 +630,21 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 ⚠️ TDDサイクル未完了
 ==================
-未達成条件: [具体的な未達成項目]
+進捗状況: [実装済み数]/[総数] ([%]%)
+TODOテスト: [N]件残存
+全テストPASS: [YES/NO]
+
+未達成条件: 
+- [ ] TODOテスト完全解消
+- [ ] 全テストPASS
+- [ ] [その他の具体的な未達成項目]
+
 現在ステータス: "in-progress" (変更なし)
 
 完了に向けて:
-→ /cc-xp:develop --[red|green|refactor]
+→ /cc-xp:develop (残りのTODOテストを自動実装)
+または
+→ /cc-xp:develop --[red|green|refactor] (個別フェーズ実行)
 
 全条件を満たすまでdevelopコマンドは完了しません。
 ```
@@ -514,29 +672,33 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 **必ず以下を表示してください**：
 
 ```
-🔴🟢🔵 Kent Beck式TDDサイクル終了
-===========================
+🔄 反復的TDD完全実装終了
+=========================
 ストーリー: [ストーリータイトル]
 ブランチ: story-[ID]
 ステータス: "testing" ✅
 
-実施サイクル:
-🔴 Red: 失敗テスト作成 → コミット
-🟢 Green: 最小実装 → コミット  
-🔵 Refactor: 構造改善 → コミット
+反復TDDサイクル実行結果:
+📊 テスト実装進捗: [N]/[N] (100% 完了)
+🔄 実行サイクル数: [N]回
+🔴 Red: TODOテスト変換・新規テスト作成
+🟢 Green: 最小実装でテスト通過
+🔵 Refactor: 構造改善・品質向上
 
-品質確認:
-✅ 全テスト PASS
+完全実装確認:
+✅ TODOテスト 0件 (完全解消)
+✅ 全テスト PASS ([N]件すべて)
 ✅ FIRST原則遵守
-✅ AAA構造
+✅ AAA構造完備
 ✅ テストファースト実践
 
 🚨 CRITICAL 確認事項
 ⛔ status = "testing" （"done" は絶対に NG）
 ⛔ ストーリーは未完了（review でのみ完了）
-✅ テストが仕様書として機能
+✅ テストが完全な仕様書として機能
 ✅ 自動テストのみで品質保証
 ✅ デグレードなし（回帰テスト）
+✅ 価値実現準備完了
 ```
 
 ### 次のステップ案内
