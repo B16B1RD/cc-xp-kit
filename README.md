@@ -45,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 ```bash
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --user
 
-## 🔄 6 つの XP ワークフロー + E2Eテスト統合
+## 🔄 6 つの XP ワークフロー（research 必須）+ E2Eテスト統合
 
 ### ワークフロー全体図
 
@@ -190,7 +190,7 @@ sequenceDiagram
 # 2. ユーザーストーリー詳細化
 /cc-xp:story
 
-# 3. 技術調査・仕様確認
+# 3. 技術調査・仕様確認（必須）
 /cc-xp:research
 
 # 4. TDD+E2E 実装（Red→Green→Refactor→E2E）
@@ -212,7 +212,7 @@ sequenceDiagram
 # ストーリー詳細化
 /cc-xp:story
 
-# 技術調査（仕様・ベストプラクティス確認）
+# 技術調査（仕様・ベストプラクティス確認）- 必須ステップ
 /cc-xp:research
 
 # TDD 実装
@@ -317,7 +317,7 @@ Playwright 非対応環境では手動テスト手順を自動生成。
 
 ### cc-xp-kit の解決策
 
-- **明確な 5 ステップ** - 迷わない開発フロー
+- **明確な 6 ステップ** - research 必須化で品質向上した開発フロー
 - **フィーチャーブランチ統合** - Git ワークフローと完全連携
 - **実用的 TDD+E2E** - Red→Green→Refactor→E2E の完全サイクル
 - **MCP Playwright統合** - Claude Code 環境での自動 E2E テスト
