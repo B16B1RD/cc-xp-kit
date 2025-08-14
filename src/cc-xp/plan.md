@@ -82,6 +82,59 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 - テストを通すためにテストを修正
 - 構造と振る舞いの変更を混在
 
+## 🚀 コマンド終了時の次のステップ案内（必須）
+
+**重要**: すべてのcc-xp:*コマンド終了時に、必ず「🚀 次のステップ」セクションを表示してください。
+
+### ワークフロー進行ルール
+
+コマンド終了時、backlog.yamlのステータスに基づいて適切な次のコマンドを案内：
+
+1. **plan 完了時**
+   → /cc-xp:story [selected-story-id]
+   （最初のストーリーを詳細化）
+
+2. **story 完了時**
+   - 技術調査が必要な場合:
+     → /cc-xp:research （推奨）
+   - 即座に開発する場合:
+     → /cc-xp:develop
+
+3. **develop 完了時（status: testing）**
+   → /cc-xp:review
+   （自動テスト実行とコードレビュー）
+
+4. **review accept時（status: done）**
+   - 他のストーリーがある場合:
+     → /cc-xp:story [next-story-id]
+   - 振り返りを実施する場合:
+     → /cc-xp:retro
+
+5. **review reject時（status: testing）**
+   → /cc-xp:develop
+   （修正を実施）
+
+6. **retro 完了時**
+   - selectedストーリーがある:
+     → /cc-xp:story
+   - in-progressストーリーがある:
+     → /cc-xp:develop
+   - すべて完了:
+     → /cc-xp:plan "次の要求"
+
+### 表示フォーマット
+
+必ず以下の形式で表示：
+
+```
+🚀 次のステップ
+================
+[状況に応じた案内文]:
+→ /cc-xp:[次のコマンド]
+
+[補足説明があれば記載]
+```
+
 <!-- cc-xp-kit:end -->
 
 ```
