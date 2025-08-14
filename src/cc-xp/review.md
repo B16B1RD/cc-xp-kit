@@ -18,10 +18,11 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bas
 
 #### 🚫 実装修正の絶対禁止
 
-1. **ソースコードの修正禁止**
+1. **ソースコードの修正・作成の絶対禁止**
    - src/*.js, src/*.ts, src/*.py 等への一切の変更禁止
-   - HTMLファイルの修正禁止（index.html等）
-   - 実装ファイルへの編集は絶対禁止
+   - HTMLファイルの修正・新規作成禁止（index.html, test-*.html等）
+   - 実装ファイルへの編集・作成は絶対禁止
+   - **⛔ CRITICAL**: 不完全な実装を補うためのファイル作成は絶対禁止
 
 2. **開発作業の完全禁止**
    - Red→Green→Refactor サイクル実行禁止
@@ -235,6 +236,10 @@ TDD完全性: ✅ Red→Green→Refactor確認
 - テスト失敗が1つでもある
 - TDDテストファイルが存在しない  
 - Red→Green→Refactorサイクルが不完全
+- **価値体験不可能**: ユーザーが実際に価値体験できない状態
+  - Web アプリ: index.html が存在しない、ブラウザで開けない
+  - ゲーム: プレイできる状態になっていない
+  - CLI: 実行可能な形になっていない
 
 **自動reject時の処理**:
 1. ステータスを `testing → in-progress` に戻す

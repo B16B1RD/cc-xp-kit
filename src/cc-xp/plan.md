@@ -164,6 +164,191 @@ requirements.txtまたはpyproject.tomlが存在する場合：
 
 `go mod tidy`を実行してモジュール依存関係を整理してください
 
+### 0.25 プロジェクトタイプ別必須ファイル生成
+
+**🎯 価値体験を可能にする基本ファイルの自動生成**
+
+プロジェクトタイプに応じて、ユーザーが実際に価値体験できる基本ファイルを生成してください。
+
+#### Web アプリケーション・ゲーム（package.json 存在時）
+
+**必須ファイルの生成**:
+
+1. **index.html** - ブラウザで開けるメインファイル
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[プロジェクト名]</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>[プロジェクト名]</h1>
+        <div id="app">読み込み中...</div>
+    </div>
+    
+    <script src="src/[main-file].js"></script>
+    <script>
+        // アプリ初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[プロジェクト名] 開始');
+        });
+    </script>
+</body>
+</html>
+```
+
+1. **server.js** - 開発サーバー（npm run dev 対応）
+```javascript
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+const PORT = process.env.PORT || 3000;
+
+const server = http.createServer((req, res) => {
+    let filePath = req.url === '/' ? '/index.html' : req.url;
+    filePath = path.join(__dirname, filePath);
+    
+    const extname = path.extname(filePath);
+    const mimeTypes = {
+        '.html': 'text/html',
+        '.js': 'text/javascript',
+        '.css': 'text/css',
+        '.json': 'application/json'
+    };
+    
+    const contentType = mimeTypes[extname] || 'text/plain';
+    
+    fs.readFile(filePath, (err, content) => {
+        if (err) {
+            res.writeHead(404);
+            res.end('File not found');
+        } else {
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content);
+        }
+    });
+});
+
+server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
+```
+
+1. **src/[main-file].js** - メイン実装ファイル（存在しない場合のみ）
+```javascript
+/**
+ * [プロジェクト名] - メイン実装ファイル
+ * TDD で開発する予定のメインクラス・機能
+ */
+
+class [MainClass] {
+    constructor() {
+        console.log('[プロジェクト名] 初期化');
+    }
+    
+    // TDD で実装される機能がここに追加されます
+}
+
+// Node.js環境での利用（テスト用）
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = [MainClass];
+}
+```
+
+#### CLI ツール・ライブラリ（package.json 存在時）
+
+**package.json への bin 設定追加**:
+```json
+{
+  "bin": {
+    "[command-name]": "./cli.js"
+  }
+}
+```
+
+**cli.js 生成**:
+```javascript
+#!/usr/bin/env node
+
+const [MainClass] = require('./src/[main-file].js');
+
+function showHelp() {
+    console.log(`
+使用方法: [command-name] [options]
+
+オプション:
+  -h, --help     このヘルプを表示
+  -v, --version  バージョンを表示
+    `);
+}
+
+const args = process.argv.slice(2);
+
+if (args.includes('-h') || args.includes('--help')) {
+    showHelp();
+    process.exit(0);
+}
+
+if (args.includes('-v') || args.includes('--version')) {
+    console.log('1.0.0');
+    process.exit(0);
+}
+
+// メイン処理
+const app = new [MainClass]();
+console.log('[プロジェクト名] を実行しました');
+```
+
+#### Python プロジェクト（requirements.txt 等存在時）
+
+**main.py 生成**:
+```python
+"""
+[プロジェクト名] - メイン実装
+TDD で開発されるメインクラス・機能
+"""
+
+class MainClass:
+    def __init__(self):
+        print(f"[プロジェクト名] 初期化")
+    
+    # TDD で実装される機能がここに追加されます
+
+if __name__ == "__main__":
+    app = MainClass()
+    print("[プロジェクト名] を実行しました")
+```
+
+#### 自動生成の実行条件
+
+**生成する条件**:
+- 該当ファイルが存在しない場合のみ
+- プロジェクトタイプが明確に判別できる場合
+- ユーザー要求が Web アプリケーション・ゲーム関連の場合
+
+**生成しない条件**:
+- 既存ファイルがある場合（上書きしない）
+- プロジェクトタイプが不明確な場合
+
 ### 0.3 テストディレクトリ構造生成
 
 **標準構造の作成**:
@@ -476,6 +661,12 @@ CLAUDE.md: [新規作成|TDDセクション追加]
 ✅ 初期テストファイル
 ✅ CI/CD基本設定
 ✅ プロジェクト固有TDD原則
+✅ 価値体験基盤ファイル（index.html, server.js等）
+
+価値体験準備状況:
+✅ Web アプリ: ブラウザで開ける基本構造
+✅ ゲーム: プレイ可能な基盤の準備
+✅ CLI: 実行可能な基本コマンド
 
 確認コマンド:
 → npm test (または該当言語のテストコマンド)
