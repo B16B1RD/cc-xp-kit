@@ -120,7 +120,7 @@ test/
 └── [story-id].regression.js  # 回帰テスト（review reject時に追加）
 ```
 
-#### ユニットテストテンプレート生成
+#### ユニットテストテンプレート生成（価値体験検証強化）
 
 **test/[story-id].spec.js**:
 ```javascript
@@ -148,13 +148,42 @@ describe('[ComponentName]', () => {
     });
   });
 
+  // 🎯 価値体験検証テストの必須生成
+  describe('価値体験実現確認', () => {
+    it('should_provide_minimum_experience_to_user', () => {
+      // Arrange - 価値体験が可能な状態のセットアップ
+      // TODO: minimum_experience に必要な環境構築
+      
+      // Act - 価値体験の実行
+      // TODO: ユーザーが実際に行う操作のシミュレート
+      
+      // Assert - 価値体験の確認
+      // TODO: minimum_experience が実現されることを検証
+      expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+    });
+
+    // 💡 プロジェクトタイプ別の価値体験検証
+    // 「視覚的」要求がある場合の必須テスト例：
+    it('should_render_visual_elements_for_user_experience', () => {
+      // Arrange - DOM/Canvas環境のセットアップ
+      // TODO: document.getElementById, canvas.getContext等の確認
+      
+      // Act - 描画処理の実行
+      // TODO: 実際の描画・更新処理の実行
+      
+      // Assert - 視覚的要素の確認
+      // TODO: DOM要素の存在、Canvas描画内容、視覚的変化を検証
+      expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+    });
+  });
+
   // TODO: 追加のテストケース
   // it('should_handle_edge_case_when_invalid_input', () => { ... });
   // it('should_maintain_state_when_multiple_operations', () => { ... });
 });
 ```
 
-#### E2Eテストテンプレート生成
+#### E2Eテストテンプレート生成（価値体験実地検証強化）
 
 **test/[story-id].e2e.js**:
 ```javascript
@@ -181,11 +210,42 @@ describe('[Story Title] - E2E', () => {
     expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
   });
 
+  // 🎯 プロジェクトタイプ別価値体験検証の強化
+  it('should_demonstrate_visual_value_experience', async () => {
+    // Given - Webアプリケーション・ゲームの価値体験環境
+    // TODO: ブラウザ起動、index.html読み込み、必要なアセットの確認
+    
+    // When - 視覚的価値体験の実行
+    // TODO: 実際の画面描画、アニメーション、ユーザー操作の実行
+    
+    // Then - 視覚的価値の実地検証
+    // TODO: スクリーンショット取得、期待する視覚要素の存在確認
+    // TODO: 「テトロミノ落下」なら実際に落下する様子を確認
+    // TODO: 「ゲーム体験」なら実際にプレイ可能な状態を確認
+    
+    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+  });
+
   it('should_meet_acceptance_criteria', async () => {
     // TODO: 受け入れ条件の自動検証
     // シナリオ1: [acceptance_criteria_1]
     // シナリオ2: [acceptance_criteria_2]  
     // シナリオ3: [acceptance_criteria_3]
+    
+    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+  });
+
+  // 💡 minimum_experience の具体的検証
+  it('should_fulfill_minimum_experience_requirements', async () => {
+    // Given - minimum_experience に必要な全条件の準備
+    // TODO: minimum_experience を分析し、必要な環境を構築
+    
+    // When - minimum_experience に含まれる全操作の実行
+    // TODO: 「視覚的体験」「落下確認」「操作可能」等の実際の実行
+    
+    // Then - minimum_experience の完全実現確認
+    // TODO: ユーザーが実際にその体験を得られることを検証
+    // TODO: 技術的実装ではなく、ユーザー視点での価値確認
     
     expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
   });
@@ -229,6 +289,81 @@ npm test test/[story-id]*.js
 **期待する結果**: 全テストが失敗（🔴 Red状態）
 - 失敗しない場合：既に実装が存在する可能性
 - テスト実行エラー：環境設定の問題
+
+#### 価値体験検証テストの具体例
+
+**🎮 ゲーム・視覚アプリケーション向けテスト例**:
+
+```javascript
+// Canvas描画検証の例
+it('should_render_tetromino_on_canvas', () => {
+  const game = new TetrisGame('testCanvas');
+  game.start();
+  
+  // Canvas描画内容の確認
+  const canvas = document.getElementById('testCanvas');
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  
+  // 描画内容が存在することを確認（全てが透明でない）
+  const hasDrawing = Array.from(imageData.data).some((pixel, index) => 
+    index % 4 === 3 && pixel > 0 // アルファチャネルが0でない
+  );
+  
+  expect(hasDrawing).toBe(true);
+});
+
+// DOM要素の動的更新検証の例
+it('should_update_score_display_in_dom', () => {
+  const game = new TetrisGame('testCanvas');
+  game.clearLine();
+  
+  const scoreElement = document.getElementById('score');
+  expect(scoreElement.textContent).toContain('100');
+});
+```
+
+**🌐 Webアプリケーション向けテスト例**:
+
+```javascript
+// E2Eでのスクリーンショット比較例
+it('should_display_expected_visual_state', async () => {
+  await page.goto('http://localhost:3000');
+  await page.waitForSelector('#gameCanvas');
+  
+  const screenshot = await page.screenshot({ 
+    clip: { x: 0, y: 0, width: 400, height: 800 } 
+  });
+  
+  // 期待するビジュアル要素の存在確認
+  expect(screenshot).toMatchImageSnapshot({
+    threshold: 0.1,
+    thresholdType: 'percent'
+  });
+});
+```
+
+**📱 レスポンシブUI向けテスト例**:
+
+```javascript
+// 複数解像度での価値体験確認
+it('should_provide_value_experience_on_mobile', async () => {
+  await page.setViewport({ width: 375, height: 667 }); // iPhone SE
+  await page.goto('http://localhost:3000');
+  
+  // モバイルでも操作可能な状態かを確認
+  const gameArea = await page.$('#gameCanvas');
+  expect(gameArea).toBeTruthy();
+  
+  const isVisible = await gameArea.isIntersectingViewport();
+  expect(isVisible).toBe(true);
+});
+```
+
+**⚠️ 重要：価値体験検証の原則**
+- **技術仕様ではなくユーザー体験を検証**: 「Canvasが存在する」ではなく「ゲームが表示される」
+- **minimum_experienceの直接検証**: ストーリーで定義した最小価値体験が実現されているか
+- **実際の操作性確認**: ユーザーが実際に操作して価値を得られるかを確認
 
 ---
 
