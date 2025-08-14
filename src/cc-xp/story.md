@@ -152,28 +152,96 @@ describe('[ComponentName]', () => {
   describe('価値体験実現確認', () => {
     it('should_provide_minimum_experience_to_user', () => {
       // Arrange - 価値体験が可能な状態のセットアップ
-      // TODO: minimum_experience に必要な環境構築
+      const [ComponentName] = require('../src/[component-name]');
+      const component = new [ComponentName]();
       
-      // Act - 価値体験の実行
-      // TODO: ユーザーが実際に行う操作のシミュレート
+      // Act - 価値体験の実行：minimum_experience の検証
+      // backlog.yamlから: "[minimum_experience内容を具体的に記載]"
+      component.start(); // ゲーム開始・アプリ起動
+      
+      // minimum_experienceに基づく具体的な検証
+      const experience = [];
+      for (let i = 0; i < 10; i++) { // 複数フレーム実行
+        const state = component.getCurrentState();
+        experience.push(state);
+        component.update(); // 状態更新
+      }
       
       // Assert - 価値体験の確認
-      // TODO: minimum_experience が実現されることを検証
-      expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+      // 1. minimum_experienceが実際に動作する
+      expect(component).toBeDefined();
+      expect(typeof component.start).toBe('function');
+      expect(typeof component.update).toBe('function');
+      
+      // 2. 価値の本質が体験できる（dynamic behavior）
+      const hasValueExperience = experience.some((state, index) => {
+        // 時間経過による価値のある変化を検証
+        return index > 0 && state !== experience[index - 1];
+      });
+      expect(hasValueExperience).toBe(true); // 🔴 Red: 最初は失敗するテスト
     });
 
-    // 💡 プロジェクトタイプ別の価値体験検証
+    // 🎮 プロジェクトタイプ別の価値体験検証
     // 「視覚的」要求がある場合の必須テスト例：
     it('should_render_visual_elements_for_user_experience', () => {
       // Arrange - DOM/Canvas環境のセットアップ
-      // TODO: document.getElementById, canvas.getContext等の確認
+      const [ComponentName] = require('../src/[component-name]');
+      const component = new [ComponentName]();
+      component.start();
       
-      // Act - 描画処理の実行
-      // TODO: 実際の描画・更新処理の実行
+      // Act - 描画処理の実行（基本的な描画機能テスト）
+      const renderResult = component.render(); // 描画メソッドの呼び出し
       
       // Assert - 視覚的要素の確認
-      // TODO: DOM要素の存在、Canvas描画内容、視覚的変化を検証
-      expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+      // 1. 描画メソッドが存在し実行可能である
+      expect(typeof component.render).toBe('function');
+      
+      // 2. 描画結果が存在する（視覚化可能な状態）
+      expect(renderResult).toBeDefined();
+      
+      // 3. 実際のゲーム・アプリ要素が描画可能である
+      expect(component.getCurrentState()).toBeDefined();
+      
+      // 4. 「開発中」メッセージが表示されない（価値体験阻害要因の排除）
+      const stateString = JSON.stringify(component.getCurrentState());
+      expect(stateString).not.toContain('開発中');
+      expect(stateString).not.toContain('TODO');
+      expect(stateString).not.toContain('準備完了'); // 🔴 Red: 最初は失敗するテスト
+    });
+
+    it('should_provide_basic_satisfaction_experience', () => {
+      // Arrange - 満足度確認環境のセットアップ
+      const [ComponentName] = require('../src/[component-name]');
+      const component = new [ComponentName]();
+      
+      // Act - 基礎的な満足体験の実行
+      component.start(); // アプリ・ゲーム開始
+      
+      // 完全な価値体験サイクル
+      const experienceLog = [];
+      for (let i = 0; i < 5; i++) {
+        const beforeState = component.getCurrentState();
+        component.update(); // 価値のある更新
+        const renderInfo = component.render(); // 価値のある表示
+        
+        experienceLog.push({
+          frame: i,
+          beforeState,
+          afterState: component.getCurrentState(),
+          rendered: !!renderInfo
+        });
+      }
+      
+      // Assert - 満足度の確認
+      // 1. "価値のある変化" を検証（core_valueの実現）
+      const valueChangesDetected = experienceLog.some(log => 
+        log.afterState !== log.beforeState
+      );
+      expect(valueChangesDetected).toBe(true);
+      
+      // 2. "継続的な体験" を検証（minimum_experienceの持続）
+      const allFramesRendered = experienceLog.every(log => log.rendered);
+      expect(allFramesRendered).toBe(true); // 🔴 Red: 最初は失敗するテスト
     });
   });
 
@@ -198,32 +266,71 @@ describe('[ComponentName]', () => {
 describe('[Story Title] - E2E', () => {
   it('should_provide_core_value_experience', async () => {
     // Given - 価値体験が可能な状態
-    // TODO: アプリケーション起動・初期状態設定
+    // 実際のブラウザ環境でのアプリケーション確認
+    const baseUrl = 'http://localhost:3000'; // 開発サーバーURL
     
     // When - ユーザーが実際に行う価値体験操作
-    // TODO: 実際のユーザー操作をシミュレート
+    // Step 1: アプリケーションにアクセス
+    const response = await fetch(baseUrl);
+    expect(response.ok).toBe(true); // アクセス可能確認
+    
+    // Step 2: 価値体験の核心確認（core_value実現）
+    // "[core_value内容を具体的に記載]" の実現確認
+    const htmlContent = await response.text();
     
     // Then - 価値が実現されていることの確認
-    // TODO: core_value が体験できることを確認
-    // TODO: minimum_experience が実現されることを確認
+    // 1. core_value が体験できることを確認
+    expect(htmlContent).toContain('<canvas'); // 視覚的要素存在
+    expect(htmlContent).not.toContain('開発中'); // 開発メッセージ不存在
+    expect(htmlContent).not.toContain('TODO'); // スタブ状態不存在
     
-    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+    // 2. minimum_experience が実現されることを確認
+    // "[minimum_experience内容を具体的に記載]"
+    expect(htmlContent).toContain('<script'); // JavaScript実行可能
+    expect(htmlContent).toMatch(/<title>.*[^準備中|開発中].*<\/title>/); // 🔴 Red: 最初は失敗するテスト
   });
 
-  // 🎯 プロジェクトタイプ別価値体験検証の強化
+  // 🎯 統合実装の価値体験検証（最重要テスト）
   it('should_demonstrate_visual_value_experience', async () => {
-    // Given - Webアプリケーション・ゲームの価値体験環境
-    // TODO: ブラウザ起動、index.html読み込み、必要なアセットの確認
+    // Given - Webアプリケーション・ゲームの統合実装確認
+    const baseUrl = 'http://localhost:3000';
     
     // When - 視覚的価値体験の実行
-    // TODO: 実際の画面描画、アニメーション、ユーザー操作の実行
+    // Step 1: index.html読み込み確認
+    const indexResponse = await fetch(baseUrl);
+    expect(indexResponse.ok).toBe(true);
+    const indexHtml = await indexResponse.text();
     
-    // Then - 視覚的価値の実地検証
-    // TODO: スクリーンショット取得、期待する視覚要素の存在確認
-    // TODO: 「テトロミノ落下」なら実際に落下する様子を確認
-    // TODO: 「ゲーム体験」なら実際にプレイ可能な状態を確認
+    // Step 2: 統合実装の確認（ロジック+表示の連携）
+    // JSファイルが適切に読み込まれているか
+    const jsFilePattern = /<script.*src=["']([^"']*\.js)["']/g;
+    const jsFiles = Array.from(indexHtml.matchAll(jsFilePattern));
+    expect(jsFiles.length).toBeGreaterThan(0); // JSファイル存在
     
-    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
+    // Step 3: 実際の統合動作確認
+    for (const [, jsPath] of jsFiles) {
+      const jsUrl = jsPath.startsWith('http') ? jsPath : `${baseUrl}/${jsPath}`;
+      const jsResponse = await fetch(jsUrl);
+      expect(jsResponse.ok).toBe(true); // JSファイルアクセス可能
+      
+      const jsContent = await jsResponse.text();
+      // 統合実装の必須要素確認
+      expect(jsContent).not.toContain('TDDで開発中'); // スタブメッセージ排除
+      expect(jsContent).not.toContain('showWelcomeMessage'); // 開発用メッセージ排除
+    }
+    
+    // Then - 統合された価値体験の実地検証
+    // 1. Canvas要素の存在確認
+    expect(indexHtml).toMatch(/<canvas[^>]*id=/); // Canvas要素存在
+    
+    // 2. 統合実装の証明（ロジック + 表示の連携）
+    const hasGameLogic = jsFiles.some(([, path]) => path.includes('game'));
+    const hasDisplayLogic = indexHtml.includes('<canvas') || indexHtml.includes('getElementById');
+    expect(hasGameLogic || hasDisplayLogic).toBe(true);
+    
+    // 3. 価値体験阻害要因の完全排除
+    expect(indexHtml.toLowerCase()).not.toContain('準備完了');
+    expect(indexHtml.toLowerCase()).not.toContain('coming soon'); // 🔴 Red: 最初は失敗するテスト
   });
 
   it('should_meet_acceptance_criteria', async () => {

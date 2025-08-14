@@ -236,10 +236,15 @@ TDD完全性: ✅ Red→Green→Refactor確認
 - テスト失敗が1つでもある
 - TDDテストファイルが存在しない  
 - Red→Green→Refactorサイクルが不完全
+- **🚨 開発メッセージ検出**: 即座に強制Reject
+  - Web アプリ: 「開発中」「実装中」「準備完了」等のメッセージ表示
+  - ゲーム: 「TDDで開発中」「Coming Soon」等のスタブメッセージ
+  - Canvas/DOM: 実際のコンテンツではなく開発状況メッセージ
 - **価値体験不可能**: ユーザーが実際に価値体験できない状態
   - Web アプリ: index.html が存在しない、ブラウザで開けない
   - ゲーム: プレイできる状態になっていない
   - CLI: 実行可能な形になっていない
+- **実装-体験分離**: バックエンド完成でもフロントエンド未統合
 
 **自動reject時の処理**:
 1. ステータスを `testing → in-progress` に戻す
@@ -283,39 +288,154 @@ TDD完全性: ✅ Red→Green→Refactor確認
 
 **e2e-required または e2e-optional の場合のみ実行**
 
-#### MCP Playwright利用時の自動E2E実行
+#### 🚨 CRITICAL: 価値体験の詳細検証（必須実行）
 
+**Step 1: 基本アクセス確認**
 ```javascript
-// 受け入れ条件を自動的にE2Eテストに変換
-const story = readStoryFile(storyId);
-for (const scenario of story.acceptanceCriteria) {
-  await mcp__playwright__browser_navigate(serverUrl);
-  await executeScenario(scenario);
-  await mcp__playwright__browser_snapshot();
+await mcp__playwright__browser_navigate(serverUrl);
+await mcp__playwright__browser_snapshot();
+```
+
+**Step 2: 開発メッセージの検出（強制Reject条件）**
+```javascript
+// DOM内の開発メッセージ検出
+const developmentMessages = await page.evaluate(() => {
+  const bodyText = document.body.innerText.toLowerCase();
+  const patterns = [
+    'tddで開発中', '開発中', '実装中', '準備中', '準備完了',
+    'coming soon', 'under development', 'work in progress',
+    'todo', 'not implemented', '未実装'
+  ];
+  
+  return patterns.filter(pattern => bodyText.includes(pattern));
+});
+
+// Canvas内のテキストメッセージ検出
+const canvasMessages = await page.evaluate(() => {
+  const canvas = document.querySelector('canvas');
+  if (!canvas) return [];
+  
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  
+  // テキスト描画パターンの検出（開発メッセージの特徴）
+  const textRegions = [];
+  // 単色のテキスト領域を検出
+  // 「開発中」等のメッセージは通常、単色でCanvas中央に配置される
+  
+  return textRegions;
+});
+```
+
+**Step 3: minimum_experience実現度の詳細確認**
+```javascript
+// backlog.yamlのminimum_experienceを確認
+const minimumExperience = getMinimumExperience(storyId);
+
+// プロジェクトタイプ別の価値体験検証
+if (minimumExperience.includes('テトロミノ') && minimumExperience.includes('落下')) {
+  // テトリスゲームの価値体験検証
+  await verifyTetrisGameExperience();
+} else if (minimumExperience.includes('表示') && minimumExperience.includes('操作')) {
+  // 一般的なWebアプリの価値体験検証
+  await verifyWebAppExperience();
 }
 ```
 
-実行結果を表示する。
+**Step 4: 実際のゲーム要素検証（テトリス例）**
+```javascript
+const verifyTetrisGameExperience = async () => {
+  // Canvas内の実際のゲーム要素確認
+  const gameElements = await page.evaluate(() => {
+    const canvas = document.getElementById('tetris-canvas');
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // 色分析で実際のゲーム要素を検出
+    const pixelAnalysis = analyzePixelPatterns(imageData);
+    
+    return {
+      hasGameField: detectGameField(pixelAnalysis),       // ゲームフィールド検出
+      hasTetromino: detectTetromino(pixelAnalysis),      // テトロミノ検出
+      hasAnimation: detectMovement(pixelAnalysis),       // 動きの検出
+      developmentText: detectDevelopmentText(pixelAnalysis) // 開発メッセージ検出
+    };
+  });
+  
+  // 時間差での動作確認（落下動作の検証）
+  await page.waitForTimeout(3000);
+  const gameMovement = await page.evaluate(() => {
+    // 3秒後の状態と比較して動的要素を確認
+  });
+  
+  return {
+    gameElements,
+    hasMovement: gameMovement.detected,
+    experienceLevel: calculateExperienceLevel(gameElements, gameMovement)
+  };
+};
 ```
-🌐 E2Eテスト実行結果
-==================
-✅ シナリオ1: ログインフォーム表示
-✅ シナリオ2: 正常ログイン処理  
-✅ シナリオ3: エラーハンドリング
+
+#### MCP Playwright利用時の価値体験検証実行
+
+```javascript
+// 価値体験中心の検証シナリオ実行
+const valueExperienceResults = [];
+
+// シナリオ1: 基本的な価値体験アクセス
+await mcp__playwright__browser_navigate(serverUrl);
+const basicAccess = await verifyBasicAccess();
+valueExperienceResults.push({
+  scenario: '基本アクセス',
+  result: basicAccess.accessible ? 'PASS' : 'FAIL',
+  details: basicAccess
+});
+
+// シナリオ2: 開発メッセージの不存在確認（Critical）
+const developmentCheck = await checkDevelopmentMessages();
+if (developmentCheck.found) {
+  // 開発メッセージが検出された場合は即座に強制Reject
+  return {
+    criticalFailure: true,
+    reason: '開発メッセージが検出されました',
+    messages: developmentCheck.messages,
+    autoReject: true
+  };
+}
+
+// シナリオ3: minimum_experience実現確認
+const experienceVerification = await verifyMinimumExperience();
+valueExperienceResults.push({
+  scenario: 'minimum_experience実現',
+  result: experienceVerification.realized ? 'PASS' : 'FAIL',
+  realizationLevel: experienceVerification.level,
+  details: experienceVerification.details
+});
+
+return valueExperienceResults;
+```
+
+実行結果を表示する：
+```
+🌐 E2Eテスト実行結果（価値体験検証）
+================================
+✅ シナリオ1: 基本アクセス - アプリケーション正常表示
+❌ シナリオ2: 開発メッセージ検出 - 「TDDで開発中」メッセージを検出
+⚠️ シナリオ3: minimum_experience - 部分的実現（テトロミノ未検出）
+
+🚨 CRITICAL FAILURE: 開発メッセージが検出されました
+検出メッセージ: ["TDDで開発中"]
+自動判定: 強制Reject
 
 スクリーンショット: 3枚保存
-実行時間: 12.3秒
+実行時間: 15.2秒
 ```
-
-#### 通常Playwright利用時
-
-Playwrightテストを実行してください（`npx playwright test --headed --reporter=html`）。
 
 #### E2E非対応環境またはunit-onlyの場合
 
 この段階をスキップし、Phase 3 へ進む。
 
-**重要**: E2E テストの実行結果（成功/失敗/スキップ）に関わらず、必ず Phase 3（動作確認ガイド表示）に進みます。テスト結果による自動判定は行いません。
+**⚠️ 重要**: E2E テストで「開発メッセージ検出」や「minimum_experience未実現」が確認された場合、Phase 3 の価値実現度評価で自動的に低スコア（1-2点）となり、強制Reject となります。
 
 ## Phase 3: 価値×技術の二軸評価
 
@@ -366,9 +486,18 @@ Playwrightテストを実行してください（`npx playwright test --headed -
 | **1-4❌** | ⚠️Reject | ⚠️Reject | ⚠️Reject | ❌**Reject** |
 
 **判定ルール（厳格化）**:
-- **⛔ 価値実現度 < 5**: **強制Reject** (価値が体験できない場合は技術品質に関わらず却下)
-- **⛔ minimum_experience未実現**: **強制Reject** (ストーリーで約束した最小体験が提供されない)
-- **⛔ 「実装準備完了」等の開発メッセージ表示**: **強制Reject** (実際のコンテンツが提供されていない)
+- **⛔ 開発メッセージ検出**: **問答無用で強制Reject**
+  - 検出パターン: 「TDD開発中」「実装中」「準備完了」「Coming Soon」等
+  - Canvas内テキスト、DOM内テキスト問わず即座にReject
+  - 技術的実装の完成度に関係なく価値未提供として却下
+- **⛔ minimum_experience未実現**: **強制Reject**
+  - backlog.yamlで約束した最小価値体験が実際に提供されていない
+  - 例：「テトロミノ落下」約束 → スタティックな画面のみ表示
+- **⛔ 価値実現度 < 3**: **強制Reject**
+  - 価値が全く体験できない状態（エラー・開発メッセージ・機能なし）
+- **⛔ 実装-体験分離**: **強制Reject**
+  - バックエンド実装は完成しているがフロントエンド未統合
+  - テストPASSだが実際のユーザー体験不可能
 - **技術品質 < 5**: 自動 Reject (動作しない)
 - **価値実現度 ≥ 7**: 優先 Accept (ユーザーに価値提供)
 - **総合スコア ≥ 6.0**: Accept
