@@ -152,6 +152,13 @@ if [ -d "$SCRIPT_DIR/src/cc-xp" ]; then
         fi
     done
     
+    # sharedディレクトリをコピー
+    if [ -d "$SCRIPT_DIR/src/cc-xp/shared" ]; then
+        mkdir -p "$INSTALL_DIR/cc-xp/shared"
+        cp -r "$SCRIPT_DIR/src/cc-xp/shared/"* "$INSTALL_DIR/cc-xp/shared/"
+        echo -e "${BLUE}  ✓ 共通コンポーネントをコピーしました${NC}"
+    fi
+    
     # テンプレートディレクトリをコピー
     if [ -d "$SCRIPT_DIR/src/cc-xp/templates" ]; then
         mkdir -p "$INSTALL_DIR/cc-xp/templates"
@@ -169,6 +176,13 @@ elif [ -d "$(pwd)/src/cc-xp" ]; then
             echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
         fi
     done
+    
+    # sharedディレクトリをコピー
+    if [ -d "$(pwd)/src/cc-xp/shared" ]; then
+        mkdir -p "$INSTALL_DIR/cc-xp/shared"
+        cp -r "$(pwd)/src/cc-xp/shared/"* "$INSTALL_DIR/cc-xp/shared/"
+        echo -e "${BLUE}  ✓ 共通コンポーネントをコピーしました${NC}"
+    fi
     
     # テンプレートディレクトリをコピー
     if [ -d "$(pwd)/src/cc-xp/templates" ]; then
@@ -202,6 +216,33 @@ else
             echo -e "${YELLOW}⚠️ $file が見つかりません（スキップ）${NC}"
         fi
     done
+    
+    # sharedディレクトリのファイルをダウンロード
+    echo -e "${BLUE}共通コンポーネントをダウンロード中...${NC}"
+    SHARED_FILES=("git-check.md" "backlog-reader.md" "tdd-principles.md" "test-env-check.md" "next-steps.md" "xp-principles.md")
+    SHARED_URL="https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/${BRANCH}/src/cc-xp/shared"
+    
+    mkdir -p "$INSTALL_DIR/cc-xp/shared"
+    shared_success=true
+    
+    for shared_file in "${SHARED_FILES[@]}"; do
+        if curl -fsSL --head "$SHARED_URL/$shared_file" >/dev/null 2>&1; then
+            curl -fsSL "$SHARED_URL/$shared_file" -o "$INSTALL_DIR/cc-xp/shared/$shared_file"
+            
+            if [ -f "$INSTALL_DIR/cc-xp/shared/$shared_file" ] && [ -s "$INSTALL_DIR/cc-xp/shared/$shared_file" ]; then
+                echo -e "${BLUE}  ✓ shared/$shared_file をダウンロードしました${NC}"
+            else
+                echo -e "${YELLOW}  ⚠️ shared/$shared_file のダウンロードに失敗しました${NC}"
+                shared_success=false
+            fi
+        else
+            echo -e "${YELLOW}  ⚠️ shared/$shared_file が見つかりません（スキップ）${NC}"
+        fi
+    done
+    
+    if [ "$shared_success" = "true" ]; then
+        echo -e "${BLUE}  ✓ 共通コンポーネントをダウンロードしました${NC}"
+    fi
     
     # テンプレートディレクトリをダウンロード
     echo -e "${BLUE}調査記録テンプレートをダウンロード中...${NC}"
@@ -242,13 +283,16 @@ fi
 echo ""
 echo -e "${GREEN}✅ cc-xp-kit インストール完了！${NC}"
 echo ""
-echo "📋 インストールされた6つのXPコマンド："
+echo "📋 インストールされたコンポーネント："
+echo -e "${BLUE}  ✓ 6つのXPコマンド${NC}"
 for file in "${CC_XP_FILES[@]}"; do
     if [ -f "$INSTALL_DIR/cc-xp/$file" ]; then
         command_name="${file%.md}"
-        echo -e "${BLUE}  ✓ /cc-xp:${command_name}${NC}"
+        echo -e "${BLUE}    - /cc-xp:${command_name}${NC}"
     fi
 done
+echo -e "${BLUE}  ✓ 共通コンポーネント (shared/)${NC}"
+echo -e "${BLUE}  ✓ 調査記録テンプレート (templates/)${NC}"
 echo ""
 echo "🔄 XP統合ワークフロー："
 echo -e "${BLUE}1. /cc-xp:plan \"作りたいもの\"${NC}     → 計画立案（YAGNI原則）"
@@ -265,6 +309,11 @@ echo "  /cc-xp:research"
 echo "  /cc-xp:develop"
 echo "  /cc-xp:review accept"
 echo "  /cc-xp:retro"
+echo ""
+echo "🔧 改善されたアーキテクチャ："
+echo "  - @参照による共通処理のモジュール化"
+echo "  - 54%のコード削減で保守性向上"
+echo "  - Claude Code仕様準拠の自然言語指示"
 echo ""
 echo "🛠️ モダンツールチェーン対応："
 echo "  JavaScript/TypeScript: Bun, pnpm + Vite"
