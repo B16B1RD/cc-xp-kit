@@ -4,46 +4,20 @@ Claude Code (claude.ai/code) でこのリポジトリのコード作業をする
 
 ## プロジェクト概要
 
-cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD サイクルを統合した価値中心の開発支援ツールキットです。6 つのスラッシュコマンドで体系的な開発ワークフローを提供します。
+cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD サイクルを統合した価値中心の開発支援ツールキットです。このプロジェクトでは、cc-xp-kit 自体を開発します。
+
+### 開発目標
+
+- 6 つのスラッシュコマンド（plan/story/research/develop/review/retro）の実装
+- 価値駆動開発ワークフローの自動化
+- Claude Code スラッシュコマンドシステムの活用
+- TDD 原則に基づく高品質な開発支援ツールの提供
 
 ## 重要な言語設定
 
 **すべての出力は日本語で行ってください。** ただし以下を除く。
 - YAML のキー名（id, title, status 等）
 - 英語が標準のテクニカルターム（TDD, XP, hypothesis 等）
-
-## コマンド
-
-### XPワークフローコマンド（メイン）
-
-```bash
-# 1. 要求分析とストーリー抽出
-/cc-xp:plan "ユーザーの要望"
-
-# 2. ストーリー詳細化
-/cc-xp:story [story-id]
-
-# 3. 技術調査・仕様確認
-/cc-xp:research
-
-# 4. TDD開発
-/cc-xp:develop
-
-# 5. レビュー
-/cc-xp:review
-
-# 6. 振り返り
-/cc-xp:retro
-```
-
-### ワークフロー進行
-
-1. **plan** → backlog.yaml 生成（価値中心ストーリー抽出）
-2. **story** → 価値実現の条件定義、フィーチャーブランチ作成
-3. **research** → 技術調査・仕様確認（品質向上の必須ステップ）
-4. **develop** → Red→Green→Refactor サイクル（価値駆動 TDD）
-5. **review** → 価値×技術の二軸評価、価値体験検証
-6. **retro** → 価値実現分析、健全性評価
 
 ## アーキテクチャ
 
@@ -70,37 +44,6 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD �
     research-references.md
     research-decisions.md
 
-/docs/cc-xp/       # 生成される作業ファイル（プロジェクトごと）
-  backlog.yaml     # ストーリーバックログ
-  research/        # 調査結果（story別）
-  *.spec.js        # テストファイル
-  *.js             # 実装ファイル
-```
-
-### backlog.yamlの構造
-
-```yaml
-iteration:
-  id: タイムスタンプ
-  core_value: 本質価値（最重要）
-  minimum_experience: 最小価値体験
-  target_experience: 目標価値体験
-  value_experiencers: 価値体験者
-
-stories:
-  - id: ストーリーID
-    title: タイトル
-    value_story: 価値ストーリー
-    # 価値実現情報
-    core_value: 本質価値
-    minimum_experience: 最小価値体験
-    hypothesis: 価値仮説
-    kpi_target: 価値測定目標
-    # ステータス管理
-    status: selected|in-progress|testing|done
-    priority: "Core Value|Experience Enhancement|Context Optimization"
-    # 検証結果
-    value_realization: 価値実現状況（完了時）
 ```
 
 ### plan.mdのシンプル化について
@@ -116,24 +59,6 @@ stories:
 - 真の目的分析、ペルソナ特定、ストーリー生成の核心プロセス
 - backlog.yaml の構造（他コマンドとの互換性）
 - 仮説駆動開発の要素（hypothesis, kpi_target）
-
-### 日本語統一に関する重要事項
-
-backlog.yaml の内容は以下のルールで日本語化。
-- **値（value）**: すべて日本語
-- **キー（key）**: 英語のまま維持
-- **例外**:
-  - ステータス値（selected, in-progress 等）は英語
-  - URL やファイルパスは英語
-  - 技術用語（TDD, KPI 等）は英語可
-
-### 価値駆動開発の要素
-
-すべてのストーリーには以下が必須。
-- **core_value**: 実現すべき本質価値（日本語）。
-- **minimum_experience**: 最低限必要な価値体験（日本語）。
-- **hypothesis**: 価値体験を中心とした検証可能な仮説（日本語）。
-- **success_metrics**: 価値体験の測定方法（日本語）。
 
 ## 🔴🟢🔵 Kent Beck式TDD厳格遵守
 
@@ -253,28 +178,6 @@ describe('ValueExtractor', () => {
 **重大な哲学的変更**:「Technical Excellence」から「User Value Excellence」への転換。
 - **従来**: 技術的に完璧だが価値がない実装を許容
 - **新規**: ユーザーが実際に価値を体験できる実装を必須化
-
-**テトリス例での改善**:
-- 従来: テトロミノデータ構造は完璧だが、プレイできない
-- 新規: プレイヤーが実際にゲームを楽しめる実装を必須
-
-## 開発時の注意事項
-
-1. **backlog.yamlは自動生成**
-   - 手動編集禁止
-   - `/cc-xp:plan`コマンドで生成・更新
-
-2. **ブランチ戦略**
-   - story-{id}形式でフィーチャーブランチ作成
-   - main へのマージはレビュー後。
-
-3. **価値優先**
-   - 必ず Red→Green→Refactor サイクルで価値実現を確認。
-   - ユーザーが実際に価値を体験できることを重視
-
-4. **言語統一の維持**
-   - backlog.yaml で英語が混入した場合、生成元の.md ファイルを修正
-   - 特に value_experiencer, core_value, value_story などの文字列項目に注意
 
 ## カスタムスラッシュコマンドの作成指針
 

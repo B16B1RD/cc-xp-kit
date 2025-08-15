@@ -37,18 +37,24 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 
 *このセクションは /cc-xp:plan により自動生成されました*
 
-@shared/tdd-principles.md
+### TDD原則
 
-### /cc-xp コマンド使用時の注意
+このプロジェクトでは厳格な TDD サイクルを遵守してください：
 
-#### develop実行時
+#### 🔴 Red → 🟢 Green → 🔵 Refactor サイクル
 
+1. **Red**: 失敗するテストを1つだけ書く
+2. **Green**: テストを通す最小限のコード
+3. **Refactor**: 全テストが通る状態で構造を改善
+
+#### /cc-xp コマンド使用時の注意
+
+**develop実行時**:
 - 必ず `npm test` が存在することを確認
 - テストなしでの実装は自動的に拒否されます
 - 手動テストのみでの検証は禁止
 
-#### review実行時  
-
+**review実行時**:
 - 全テストPASSが必須条件
 - カバレッジ85%未満は自動reject
 - 回帰テストの失敗は即座に修正
@@ -60,8 +66,6 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 - テストを後から追加
 - テストを通すためにテストを修正
 - 構造と振る舞いの変更を混在
-
-@shared/next-steps.md
 
 <!-- cc-xp-kit:end -->
 ```
