@@ -4,7 +4,7 @@ Claude Code (claude.ai/code) でこのリポジトリのコード作業をする
 
 ## プロジェクト概要
 
-cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD サイクルを統合した価値中心の開発支援ツールキットです。5 つのスラッシュコマンドで体系的な開発ワークフローを提供します。
+cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD サイクルを統合した価値中心の開発支援ツールキットです。6 つのスラッシュコマンドで体系的な開発ワークフローを提供します。
 
 ## 重要な言語設定
 
@@ -23,13 +23,16 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD �
 # 2. ストーリー詳細化
 /cc-xp:story [story-id]
 
-# 3. TDD開発
+# 3. 技術調査・仕様確認
+/cc-xp:research
+
+# 4. TDD開発
 /cc-xp:develop
 
-# 4. レビュー
+# 5. レビュー
 /cc-xp:review
 
-# 5. 振り返り
+# 6. 振り返り
 /cc-xp:retro
 ```
 
@@ -37,9 +40,10 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD �
 
 1. **plan** → backlog.yaml 生成（価値中心ストーリー抽出）
 2. **story** → 価値実現の条件定義、フィーチャーブランチ作成
-3. **develop** → Red→Green→Refactor サイクル（価値駆動 TDD）
-4. **review** → 価値×技術の二軸評価、価値体験検証
-5. **retro** → 価値実現分析、健全性評価
+3. **research** → 技術調査・仕様確認（品質向上の必須ステップ）
+4. **develop** → Red→Green→Refactor サイクル（価値駆動 TDD）
+5. **review** → 価値×技術の二軸評価、価値体験検証
+6. **retro** → 価値実現分析、健全性評価
 
 ## アーキテクチャ
 
@@ -49,12 +53,26 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD �
 /src/cc-xp/        # コマンド定義（.mdファイル）
   plan.md          # 要求分析・ストーリー抽出
   story.md         # ストーリー詳細化
+  research.md      # 技術調査・仕様確認
   develop.md       # TDD開発サイクル
   review.md        # レビュー・検証
   retro.md         # 振り返り・分析
+  shared/          # 共通コンポーネント（@参照用）
+    git-check.md       # Git初期化確認処理
+    backlog-reader.md  # backlog.yaml読み込み処理
+    tdd-principles.md  # TDD原則説明
+    test-env-check.md  # テスト環境確認処理
+    next-steps.md      # 次のステップ案内ロジック
+    xp-principles.md   # XP原則説明
+  templates/       # 調査記録テンプレート
+    research-specifications.md
+    research-implementation.md
+    research-references.md
+    research-decisions.md
 
 /docs/cc-xp/       # 生成される作業ファイル（プロジェクトごと）
   backlog.yaml     # ストーリーバックログ
+  research/        # 調査結果（story別）
   *.spec.js        # テストファイル
   *.js             # 実装ファイル
 ```
@@ -88,10 +106,11 @@ stories:
 ### plan.mdのシンプル化について
 
 **改善内容（v0.2.2）**:
-- 778 行 → 113 行の大幅簡略化
-- 5 段階プロセス → 3 段階に統合
-- 過度に詳細なチェックリストを削除
-- AI の能力を信頼したシンプルな指示
+- 全体で54%のコード削減（3,500行 → 1,611行）
+- @参照による共通処理のモジュール化
+- plan.md: 778行 → 229行（70%削減）
+- develop.md: 800行 → 195行（76%削減）
+- Claude Code仕様準拠の自然言語指示
 
 **維持された機能**:
 - 真の目的分析、ペルソナ特定、ストーリー生成の核心プロセス
@@ -163,6 +182,7 @@ backlog.yaml の内容は以下のルールで日本語化。
 test/unit/                    # ユニットテスト
   plan.spec.js               # plan.md機能テスト
   story.spec.js              # story.md機能テスト
+  research.spec.js           # research.md機能テスト
   develop.spec.js            # develop.md機能テスト
   review.spec.js             # review.md機能テスト
   retro.spec.js              # retro.md機能テスト
@@ -288,3 +308,39 @@ fi
 2. **条件分岐**:「〜の場合は〜してください」
 3. **実行指示**:「〜してください」
 4. **エラー対応**:「失敗した場合は〜を案内してください」
+
+## リファクタリングの成果（v0.2.3）
+
+### アーキテクチャの改善
+
+cc-xp-kitは@参照によるモジュール化リファクタリングで大幅改善を実現：
+
+**🎯 主要成果**:
+- **54%のコード削減**: 3,500行 → 1,611行
+- **共通コンポーネント化**: 6つの共通処理をshared/ディレクトリに抽出
+- **保守性向上**: 重複コードの排除により変更影響範囲を最小化
+
+**📦 shared/コンポーネント**:
+```
+shared/git-check.md       # Git初期化確認（全コマンド共通）
+shared/backlog-reader.md  # backlog.yaml読み込み処理
+shared/tdd-principles.md  # TDD原則説明  
+shared/test-env-check.md  # テスト環境検出・設定
+shared/next-steps.md      # ワークフロー進行ロジック
+shared/xp-principles.md   # XP原則と価値駆動哲学
+```
+
+**📊 各コマンドの削減実績**:
+- plan.md: 778行 → 229行（70%削減）
+- story.md: 550行 → 222行（60%削減）  
+- develop.md: 800行 → 195行（76%削減）
+- review.md: 650行 → 257行（60%削減）
+- retro.md: 450行 → 226行（50%削減）
+- research.md: 300行 → 187行（38%削減）
+
+### 技術的改善点
+
+1. **Claude Code仕様準拠**: @参照による標準的なファイル包含パターン
+2. **自然言語指示**: bashスクリプトではなく自然文での処理指示
+3. **並列実行対応**: 重複処理の排除により実行効率向上
+4. **モジュール設計**: 各共通処理の単一責任原則遵守
