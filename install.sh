@@ -47,6 +47,38 @@ show_help() {
     echo ""
 }
 
+# @参照パス書き換え関数
+fix_reference_paths() {
+    local install_dir="$1"
+    local install_type="$2"
+    
+    echo -e "${BLUE}@参照パスを書き換え中...${NC}"
+    
+    # インストール先に応じてパスを決定
+    local shared_path=""
+    local templates_path=""
+    
+    if [ "$install_type" = "user" ]; then
+        shared_path="@~/.claude/commands/cc-xp/shared/"
+        templates_path="@~/.claude/commands/cc-xp/templates/"
+    else
+        shared_path="@.claude/commands/cc-xp/shared/"
+        templates_path="@.claude/commands/cc-xp/templates/"
+    fi
+    
+    # cc-xp コマンドファイルの@参照パスを書き換え
+    for file in "${CC_XP_FILES[@]}"; do
+        local target_file="$install_dir/cc-xp/$file"
+        if [ -f "$target_file" ]; then
+            # @shared/ を適切なパスに置換
+            sed -i "s|@shared/|${shared_path}|g" "$target_file"
+            # @templates/ を適切なパスに置換
+            sed -i "s|@templates/|${templates_path}|g" "$target_file"
+            echo -e "${BLUE}  ✓ $file の@参照パスを更新しました${NC}"
+        fi
+    done
+}
+
 # 引数解析
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -166,6 +198,9 @@ if [ -d "$SCRIPT_DIR/src/cc-xp" ]; then
         echo -e "${BLUE}  ✓ 調査記録テンプレートをコピーしました${NC}"
     fi
     
+    # @参照パスを書き換え
+    fix_reference_paths "$INSTALL_DIR" "$INSTALL_TYPE"
+    
 elif [ -d "$(pwd)/src/cc-xp" ]; then
     # カレントディレクトリからコピー
     for file in "${CC_XP_FILES[@]}"; do
@@ -190,6 +225,9 @@ elif [ -d "$(pwd)/src/cc-xp" ]; then
         cp -r "$(pwd)/src/cc-xp/templates/"* "$INSTALL_DIR/cc-xp/templates/"
         echo -e "${BLUE}  ✓ 調査記録テンプレートをコピーしました${NC}"
     fi
+    
+    # @参照パスを書き換え
+    fix_reference_paths "$INSTALL_DIR" "$INSTALL_TYPE"
 else
     # GitHub raw URLから直接ダウンロード
     echo -e "${BLUE}GitHubからダウンロード中...${NC}"
@@ -277,6 +315,9 @@ else
         echo "   例: main, develop, feature/branch-name"
         exit 1
     fi
+    
+    # @参照パスを書き換え
+    fix_reference_paths "$INSTALL_DIR" "$INSTALL_TYPE"
 fi
 
 # 完了メッセージ
