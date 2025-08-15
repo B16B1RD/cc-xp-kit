@@ -12,69 +12,24 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(grep), Read
 
 ## XP原則
 
-- **コミュニケーション**: ストーリーはユーザーとの約束
-- **フィードバック**: 受け入れ条件で期待を明確化
-- **勇気**: 不明点があれば仮定を置いて進む
-- **継続的インテグレーション**: 各ステップをコミット
+@src/cc-xp/shared/xp-principles.md
 
-## 現在の状態確認
+## 共通処理
 
-### Git リポジトリ確認（必須）
+@src/cc-xp/shared/git-check.md
 
-**🚨 最初に必ず実行してください 🚨**
+### 現在の状態確認
 
-Gitリポジトリが初期化されているか確認してください。初期化されていない場合は以下を自動実行してください：
-
-1. `git init` でリポジトリを初期化
-2. `git branch -m main` でデフォルトブランチをmainに変更
-3. `git add .` で全ファイルをステージング
-4. `git commit -m "Initial commit"` で初期コミットを作成
-
-### 環境チェック
-
-- backlog 存在確認: !test -f docs/cc-xp/backlog.yaml
-- Git 状態: !git status --short
-- 現在のブランチ: !git branch --show-current
-- 現在時刻: !date +"%Y-%m-%dT%H:%M:%S%:z"
+@src/cc-xp/shared/backlog-reader.md
 
 ### 対象ストーリーの特定
 
 $ARGUMENTS が指定されている場合はその ID、なければ最初の `selected` ステータスのストーリーを使用してください。
 
-@docs/cc-xp/backlog.yaml から該当ストーリーの**全情報**を取得：
-
-#### 基本情報
-
-- ID, タイトル, サイズ, 価値, 現在のステータス
-
-#### 戦略的情報（plan.mdで生成）
-
-- **business_value**: 事業価値スコア（1-10）
-- **user_value**: ユーザー価値スコア（1-10）
-- **implementation_cost**: 実装コスト（1-10）
-- **risk_level**: リスクレベル（1-10）
-- **priority_score**: 優先順位スコア（計算値）
-
-#### 仮説駆動項目（必須）
-
-- **hypothesis**: 検証すべき仮説
-- **kpi_target**: 具体的成功指標
-- **success_metrics**: 測定方法
-
-#### 戦略コンテキスト
-
-- **user_persona**: 対象ユーザー
-- **business_context**: 事業上の位置づけ
-- **competition_analysis**: 競合との差別化要因
-
 **ステータスバリデーション**：
 - 対象ストーリーが `selected` であることを確認
 - すでに `in-progress` 以降のステータスの場合は、そのまま継続するか確認
 - `done` ステータスのストーリーは詳細化不可
-
-**重要**: 上記の戦略的情報が存在しない場合は、旧形式の backlog.yaml として扱い、基本機能のみで進行してください。
-
-backlog が存在しない場合は、先に `/cc-xp:plan` の実行を案内してください。
 
 ### AI分析レポートの参照
 
@@ -87,9 +42,6 @@ backlog が存在しない場合は、先に `/cc-xp:plan` の実行を案内し
 - 差別化要因を理解
 
 存在しない場合は、限定的なストーリー詳細化のみ実行してください。
-
-**活用方法**:
-AI分析レポート（docs/cc-xp/analysis_summary.md）が存在するか確認してください。存在する場合はビジネス戦略を考慮したストーリー詳細化を、存在しない場合は基本的なストーリー詳細化のみを実行してください。
 
 ## フィーチャーブランチの作成
 
@@ -180,679 +132,92 @@ describe('[ComponentName]', () => {
       });
       expect(hasValueExperience).toBe(true); // 🔴 Red: 最初は失敗するテスト
     });
-
-    // 🎮 プロジェクトタイプ別の価値体験検証
-    // 「視覚的」要求がある場合の必須テスト例：
-    it('should_render_visual_elements_for_user_experience', () => {
-      // Arrange - DOM/Canvas環境のセットアップ
-      const [ComponentName] = require('../src/[component-name]');
-      const component = new [ComponentName]();
-      component.start();
-      
-      // Act - 描画処理の実行（基本的な描画機能テスト）
-      const renderResult = component.render(); // 描画メソッドの呼び出し
-      
-      // Assert - 視覚的要素の確認
-      // 1. 描画メソッドが存在し実行可能である
-      expect(typeof component.render).toBe('function');
-      
-      // 2. 描画結果が存在する（視覚化可能な状態）
-      expect(renderResult).toBeDefined();
-      
-      // 3. 実際のゲーム・アプリ要素が描画可能である
-      expect(component.getCurrentState()).toBeDefined();
-      
-      // 4. 「開発中」メッセージが表示されない（価値体験阻害要因の排除）
-      const stateString = JSON.stringify(component.getCurrentState());
-      expect(stateString).not.toContain('開発中');
-      expect(stateString).not.toContain('TODO');
-      expect(stateString).not.toContain('準備完了'); // 🔴 Red: 最初は失敗するテスト
-    });
-
-    it('should_provide_basic_satisfaction_experience', () => {
-      // Arrange - 満足度確認環境のセットアップ
-      const [ComponentName] = require('../src/[component-name]');
-      const component = new [ComponentName]();
-      
-      // Act - 基礎的な満足体験の実行
-      component.start(); // アプリ・ゲーム開始
-      
-      // 完全な価値体験サイクル
-      const experienceLog = [];
-      for (let i = 0; i < 5; i++) {
-        const beforeState = component.getCurrentState();
-        component.update(); // 価値のある更新
-        const renderInfo = component.render(); // 価値のある表示
-        
-        experienceLog.push({
-          frame: i,
-          beforeState,
-          afterState: component.getCurrentState(),
-          rendered: !!renderInfo
-        });
-      }
-      
-      // Assert - 満足度の確認
-      // 1. "価値のある変化" を検証（core_valueの実現）
-      const valueChangesDetected = experienceLog.some(log => 
-        log.afterState !== log.beforeState
-      );
-      expect(valueChangesDetected).toBe(true);
-      
-      // 2. "継続的な体験" を検証（minimum_experienceの持続）
-      const allFramesRendered = experienceLog.every(log => log.rendered);
-      expect(allFramesRendered).toBe(true); // 🔴 Red: 最初は失敗するテスト
-    });
   });
-
-  // TODO: 追加のテストケース
-  // it('should_handle_edge_case_when_invalid_input', () => { ... });
-  // it('should_maintain_state_when_multiple_operations', () => { ... });
 });
 ```
 
-#### E2Eテストテンプレート生成（価値体験実地検証強化）
+#### E2Eテストテンプレート生成
 
 **test/[story-id].e2e.js**:
 ```javascript
 /**
- * [Story Title] - End-to-End Tests
- * 価値体験の実際の検証
- * 
- * Story: [story-id]  
- * Value Story: [value_story]
+ * [Story Title] - E2E Tests
+ * 価値体験の完全なエンドツーエンド検証
  */
 
-describe('[Story Title] - E2E', () => {
-  it('should_provide_core_value_experience', async () => {
-    // Given - 価値体験が可能な状態
-    // 実際のブラウザ環境でのアプリケーション確認
-    const baseUrl = 'http://localhost:3000'; // 開発サーバーURL
+describe('[Story Title] - E2E価値体験検証', () => {
+  it('should_provide_complete_value_experience', () => {
+    // E2E環境セットアップ
+    // 実際のユーザー環境に近い状態での価値体験検証
     
-    // When - ユーザーが実際に行う価値体験操作
-    // Step 1: アプリケーションにアクセス
-    const response = await fetch(baseUrl);
-    expect(response.ok).toBe(true); // アクセス可能確認
-    
-    // Step 2: 価値体験の核心確認（core_value実現）
-    // "[core_value内容を具体的に記載]" の実現確認
-    const htmlContent = await response.text();
-    
-    // Then - 価値が実現されていることの確認
-    // 1. core_value が体験できることを確認
-    expect(htmlContent).toContain('<canvas'); // 視覚的要素存在
-    expect(htmlContent).not.toContain('開発中'); // 開発メッセージ不存在
-    expect(htmlContent).not.toContain('TODO'); // スタブ状態不存在
-    
-    // 2. minimum_experience が実現されることを確認
-    // "[minimum_experience内容を具体的に記載]"
-    expect(htmlContent).toContain('<script'); // JavaScript実行可能
-    expect(htmlContent).toMatch(/<title>.*[^準備中|開発中].*<\/title>/); // 🔴 Red: 最初は失敗するテスト
-  });
-
-  // 🎯 統合実装の価値体験検証（最重要テスト）
-  it('should_demonstrate_visual_value_experience', async () => {
-    // Given - Webアプリケーション・ゲームの統合実装確認
-    const baseUrl = 'http://localhost:3000';
-    
-    // When - 視覚的価値体験の実行
-    // Step 1: index.html読み込み確認
-    const indexResponse = await fetch(baseUrl);
-    expect(indexResponse.ok).toBe(true);
-    const indexHtml = await indexResponse.text();
-    
-    // Step 2: 統合実装の確認（ロジック+表示の連携）
-    // JSファイルが適切に読み込まれているか
-    const jsFilePattern = /<script.*src=["']([^"']*\.js)["']/g;
-    const jsFiles = Array.from(indexHtml.matchAll(jsFilePattern));
-    expect(jsFiles.length).toBeGreaterThan(0); // JSファイル存在
-    
-    // Step 3: 実際の統合動作確認
-    for (const [, jsPath] of jsFiles) {
-      const jsUrl = jsPath.startsWith('http') ? jsPath : `${baseUrl}/${jsPath}`;
-      const jsResponse = await fetch(jsUrl);
-      expect(jsResponse.ok).toBe(true); // JSファイルアクセス可能
-      
-      const jsContent = await jsResponse.text();
-      // 統合実装の必須要素確認
-      expect(jsContent).not.toContain('TDDで開発中'); // スタブメッセージ排除
-      expect(jsContent).not.toContain('showWelcomeMessage'); // 開発用メッセージ排除
-    }
-    
-    // Then - 統合された価値体験の実地検証
-    // 1. Canvas要素の存在確認
-    expect(indexHtml).toMatch(/<canvas[^>]*id=/); // Canvas要素存在
-    
-    // 2. 統合実装の証明（ロジック + 表示の連携）
-    const hasGameLogic = jsFiles.some(([, path]) => path.includes('game'));
-    const hasDisplayLogic = indexHtml.includes('<canvas') || indexHtml.includes('getElementById');
-    expect(hasGameLogic || hasDisplayLogic).toBe(true);
-    
-    // 3. 価値体験阻害要因の完全排除
-    expect(indexHtml.toLowerCase()).not.toContain('準備完了');
-    expect(indexHtml.toLowerCase()).not.toContain('coming soon'); // 🔴 Red: 最初は失敗するテスト
-  });
-
-  it('should_meet_acceptance_criteria', async () => {
-    // TODO: 受け入れ条件の自動検証
-    // シナリオ1: [acceptance_criteria_1]
-    // シナリオ2: [acceptance_criteria_2]  
-    // シナリオ3: [acceptance_criteria_3]
-    
-    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
-  });
-
-  // 💡 minimum_experience の具体的検証
-  it('should_fulfill_minimum_experience_requirements', async () => {
-    // Given - minimum_experience に必要な全条件の準備
-    // TODO: minimum_experience を分析し、必要な環境を構築
-    
-    // When - minimum_experience に含まれる全操作の実行
-    // TODO: 「視覚的体験」「落下確認」「操作可能」等の実際の実行
-    
-    // Then - minimum_experience の完全実現確認
-    // TODO: ユーザーが実際にその体験を得られることを検証
-    // TODO: 技術的実装ではなく、ユーザー視点での価値確認
+    // 価値体験の完全なフロー実行
+    // minimum_experience から target_experience まで
     
     expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
   });
 });
 ```
 
-#### 回帰テストテンプレート生成
+## ストーリー詳細化プロセス
 
-**test/[story-id].regression.js** (初期は空、reject時に自動追加):
-```javascript
-/**
- * [Story Title] - Regression Tests
- * review reject時に自動追加される回帰テスト
- * 
- * Story: [story-id]
- */
+### 1. 受け入れ条件の明確化
 
-describe('[Story Title] - Regression', () => {
-  // review reject時に自動的にテストケースが追加されます
-  // reject理由に基づいた具体的な回帰テストが生成されます
-});
-```
+選択されたストーリーについて、以下を明確にしてください：
 
-#### テストファイル生成の実行
+1. **価値体験の具体化**
+   - minimum_experience を実際に体験可能な形に詳細化
+   - ユーザーが「これが欲しかった」と感じる瞬間の特定
 
-以下の手順でテストファイルを生成：
+2. **技術仕様の定義**
+   - 価値実現に必要な技術要素の特定
+   - 実装アプローチの検討
 
-1. **テストディレクトリの確認・作成**
-2. **ストーリー情報の取得**（backlog.yamlから）
-3. **テンプレートへの情報挿入**
-4. **ファイル生成・保存**
-5. **初回テスト実行**（全て失敗することを確認）
+3. **検証方法の設計**
+   - 価値体験が実現されたことをどう確認するか
+   - 自動テストでの検証項目
 
-#### Red状態の確認
+### 2. ストーリー詳細ファイルの生成
 
-生成後、即座にテスト実行して Red 状態を確認：
-```bash
-npm test test/[story-id]*.js
-```
-
-**期待する結果**: 全テストが失敗（🔴 Red状態）
-- 失敗しない場合：既に実装が存在する可能性
-- テスト実行エラー：環境設定の問題
-
-#### 価値体験検証テストの具体例
-
-**🎮 ゲーム・視覚アプリケーション向けテスト例**:
-
-```javascript
-// Canvas描画検証の例
-it('should_render_tetromino_on_canvas', () => {
-  const game = new TetrisGame('testCanvas');
-  game.start();
-  
-  // Canvas描画内容の確認
-  const canvas = document.getElementById('testCanvas');
-  const ctx = canvas.getContext('2d');
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  
-  // 描画内容が存在することを確認（全てが透明でない）
-  const hasDrawing = Array.from(imageData.data).some((pixel, index) => 
-    index % 4 === 3 && pixel > 0 // アルファチャネルが0でない
-  );
-  
-  expect(hasDrawing).toBe(true);
-});
-
-// DOM要素の動的更新検証の例
-it('should_update_score_display_in_dom', () => {
-  const game = new TetrisGame('testCanvas');
-  game.clearLine();
-  
-  const scoreElement = document.getElementById('score');
-  expect(scoreElement.textContent).toContain('100');
-});
-```
-
-**🌐 Webアプリケーション向けテスト例**:
-
-```javascript
-// E2Eでのスクリーンショット比較例
-it('should_display_expected_visual_state', async () => {
-  await page.goto('http://localhost:3000');
-  await page.waitForSelector('#gameCanvas');
-  
-  const screenshot = await page.screenshot({ 
-    clip: { x: 0, y: 0, width: 400, height: 800 } 
-  });
-  
-  // 期待するビジュアル要素の存在確認
-  expect(screenshot).toMatchImageSnapshot({
-    threshold: 0.1,
-    thresholdType: 'percent'
-  });
-});
-```
-
-**📱 レスポンシブUI向けテスト例**:
-
-```javascript
-// 複数解像度での価値体験確認
-it('should_provide_value_experience_on_mobile', async () => {
-  await page.setViewport({ width: 375, height: 667 }); // iPhone SE
-  await page.goto('http://localhost:3000');
-  
-  // モバイルでも操作可能な状態かを確認
-  const gameArea = await page.$('#gameCanvas');
-  expect(gameArea).toBeTruthy();
-  
-  const isVisible = await gameArea.isIntersectingViewport();
-  expect(isVisible).toBe(true);
-});
-```
-
-**⚠️ 重要：価値体験検証の原則**
-- **技術仕様ではなくユーザー体験を検証**: 「Canvasが存在する」ではなく「ゲームが表示される」
-- **minimum_experienceの直接検証**: ストーリーで定義した最小価値体験が実現されているか
-- **実際の操作性確認**: ユーザーが実際に操作して価値を得られるかを確認
-
----
-
-## 戦略的ストーリー詳細化
-
-### 1. 価値実現ストーリーの作成
-
-選択されたストーリー「[タイトル]」を**価値体験を中心**に詳細化してください：
-
-#### 🎯 本質価値の確認と詳細化
-
-**最重要**: backlog.yaml の項目が価値実現レベルに達していない場合、以下に従って**価値中心に詳細化**してください：
-
-##### core_value の明確化
-
-このストーリーが実現すべき本質価値を明確に：
-```
-「[ユーザー]が[具体的な体験]を通じて[本質的な価値]を得る」
-```
-
-**価値明確化例**:
-- 技術的 ❌: "テトロミノを正確に生成する"
-- 価値中心 ✅: "プレイヤーが落下ブロックを操作してライン消去の達成感を味わう"
-
-##### minimum_experience の定義
-
-最低限必要な価値体験を明確に：
-```
-「[ユーザー]が最低限[この体験]ができれば[本質価値]が実現される」
-```
-
-**最小体験例**:
-- 技術的 ❌: "7 種類のテトロミノが正確に生成される"
-- 価値中心 ✅: "ブロックが落下し、キーで移動・回転でき、ラインが消える"
-
-##### 価値測定方法の明確化
-
-価値が実際に体験できることの確認項目：
-```
-「1.[価値体験確認]、2.[操作可能性確認]、3.[視覚的確認]、4.[満足度確認]」
-```
-
-**価値測定例**:
-- 技術的 ❌: "データ構造検証、アルゴリズムテスト、パフォーマンス測定"
-- 価値中心 ✅: "1.実際にゲームをプレイできる、2.キー入力で操作できる、3.ライン消去が見える、4.楽しいと感じる"
-
-#### 👤 戦略的ペルソナの活用
-
-以下を統合してペルソナを定義：
-- backlog.yaml の`user_persona`
-- analysis_summary.md のペルソナ分析
-- 競合分析結果(`competition_analysis`)
-
-#### 📝 Value Story形式
-
-```
-As a [価値体験者]
-I want [価値体験]
-So that [本質価値の実現]
-And I expect [体験できること・感じること]
-```
-
-**技術中心例**（避けるべき）：
-- As a **プレイヤー**
-- I want **テトロミノが正確に生成される**
-- So that **データ構造が正しい**
-
-**価値中心例**（推奨）：
-- As a **ゲームプレイヤー**
-- I want **落下ブロックを操作してライン消去を楽しむ体験**
-- So that **巧妙な配置による達成感と継続的なフロー体験を得られる**
-- And I expect **実際にプレイして楽しいと感じ、もう一度やりたくなる**
-
-### 2. 価値実現の受け入れ条件定義
-
-**価値が実際に体験できる**条件を**3つ以内**で作成してください。各条件は必ず価値体験を確認可能な形式にします：
-
-#### 🎯 価値体験可能な受け入れ条件の必須要件
-
-**全受け入れ条件は価値体験を確認できる必要があります**：
-1. **Given条件**: 価値体験が可能な状態の設定
-   - **技術的前提**: 必要なファイル・環境が存在する具体的な条件
-   - **状態設定**: ユーザーが価値体験を開始できる準備状態
-2. **When操作**: ユーザーが実際に行う価値体験操作
-3. **Then期待結果**: 価値が実現されていることの確認
-4. **And追加条件**: 体験満足度・継続意欲の確認
-
-**⛔ Given条件での技術的前提の必須明示**：
-- **Web アプリ**: 「index.html が存在し、ブラウザで開ける状態で」
-- **ゲーム**: 「ゲーム画面が表示され、操作可能な状態で」  
-- **CLI**: 「コマンドが実行可能な状態で」
-- **API**: 「サーバーが起動し、エンドポイントにアクセス可能な状態で」
-
-#### 価値実現受け入れ条件フォーマット
-
-**必須フォーマット**：
-```gherkin
-シナリオ[N]: [価値体験内容]（[価値層]）
-Given [価値体験が可能な状態]
-When [ユーザーが実際に行う価値体験操作]
-Then [価値が体験できる] AND [本質価値が実現される]
-And [満足度が確認される] AND [継続意欲が生まれる]
-```
-
-#### 🎯 価値実現の3層構造
-
-**第1層：Core Value（本質価値）検証**（最優先 ★★★）
-- `core_value`が実現されていることの確認
-- `minimum_experience`が実際に体験可能であることの確認
-- ユーザーが本質価値を実感できることの検証
-
-**第2層：Experience Enhancement（体験向上）検証**（重要 ★★）  
-- 価値体験がより豊かになる要素の確認
-- ユーザビリティ・操作性の向上確認
-- 継続利用したくなる要素の検証
-
-**第3層：Context Optimization（文脈最適化）検証**（補助 ★）
-- 利用環境・状況への適応確認
-- 異なるユーザー層への対応確認
-- 技術的安定性・パフォーマンスの検証
-
-#### 💡 技術中心から価値中心への改善例
-
-**技術中心の受け入れ条件**（価値が実現されない）：
-```gherkin
-シナリオ1: テトロミノ生成処理
-Given 7種類のテトロミノデータが定義される
-When 生成処理が実行される
-Then 4x4マトリクス形状が正確に生成される
-```
-
-**価値中心の受け入れ条件**（価値が実現される）：
-```gherkin  
-シナリオ1: ゲームとしてのテトリス体験（Core Value検証）
-Given index.html が存在し、ブラウザでテトリスゲームが表示される状態で
-When プレイヤーがゲームを開始する時
-Then ブロックが上から落下してくる AND キー操作で移動・回転できる
-And ラインが完成すると消える AND スコアが加算される
-And プレイして「楽しい」と感じる
-
-シナリオ2: スムーズな操作体験（Experience Enhancement検証）
-Given ゲームが正常に起動し、プレイ可能な状態で
-When プレイヤーがキーを押す時  
-Then 即座にブロックが反応する AND 視覚的フィードバックが明確
-And 操作がスムーズでストレスを感じない AND もっとプレイしたくなる
-
-シナリオ3: 様々な環境での安定動作（Context Optimization検証）
-Given 異なるブラウザやデバイスで
-When ゲームを開いた時
-Then どの環境でも同じようにプレイできる AND パフォーマンスが安定する  
-And ユーザー体験が一貫している AND 技術的問題が発生しない
-```
-
-#### 📊 KPI測定可能性チェック
-
-各受け入れ条件について、以下を確認してください：
-- [ ] 定量的な測定が可能
-- [ ] backlog.yaml の`kpi_target`に対応
-- [ ] `success_metrics`で測定手法が明確
-- [ ] 仮説検証に直結している
-
-### 3. テスト戦略の判定
-
-各受け入れ条件について、以下を判断してください：
-
-#### 基本テスト戦略
-
-- **automated**: プログラムで検証可能（ユニットテストのみ）
-- **manual**: 人の目で確認が必要
-- **hybrid**: 両方必要
-
-#### E2Eテスト戦略（Webアプリケーション限定）
-
-- **e2e-required**: E2E テスト必須（UI 操作の核心機能）
-- **e2e-optional**: E2E テスト推奨（品質向上のため）
-- **unit-only**: ユニットテストのみで十分（ロジック中心）
-
-#### 判定基準
-
-**E2Eテストが必須（e2e-required）**：
-- ユーザーの主要なワークフロー（ログイン、購入、投稿など）
-- フォーム送信とバリデーション
-- ナビゲーションとページ遷移
-- 外部 API との統合部分
-
-**E2Eテストが推奨（e2e-optional）**：
-- 補助的な UI 機能
-- アニメーションや視覚効果
-- レスポンシブデザインの確認
-
-**ユニットテストのみ（unit-only）**：
-- 純粋な計算ロジック
-- データ変換処理
-- バリデーション関数
-
-### 4. 実装ヒントの追加
-
-技術的な観点から実装のヒントを簡潔に追加：
-- 推奨ライブラリ/フレームワーク
-- 注意すべきポイント
-- 参考リンク（あれば）
-
-## 拡張ストーリーファイルの作成
-
-`docs/cc-xp/stories/[ID].md` を**戦略的情報を統合**した以下の内容で作成してください：
-
-### Evidence-Driven品質チェック（生成後必須実行）
-
-**ストーリーファイル作成後、以下を必ず確認**：
-1. ✅ hypothesis に具体的数値・測定条件が含まれている
-2. ✅ kpi_target に複数の数値基準が設定されている
-3. ✅ success_metrics に 4 つ以上の具体的測定項目がリストされている
-4. ✅ 各受け入れ条件が実装・測定可能で具体的である
-
-**品質チェック失敗時は、該当項目を上記詳細化指示に従って修正**
+`docs/cc-xp/stories/[story-id].md` を生成してください：
 
 ```markdown
----
-# 基本情報
-created_at: [現在時刻]
-estimated_time: [推定分数]
-test_strategy: [automated/manual/hybrid]
-e2e_strategy: [e2e-required/e2e-optional/unit-only] # Webアプリの場合のみ
-difficulty: [easy/medium/hard]
+# [Story Title]
 
-# 仮説駆動項目（詳細化済み）
-hypothesis: "上記詳細化指示で具体化された検証可能な仮説"
-kpi_target: "複数数値基準を含む測定可能な目標"
-success_metrics: "自動テスト可能な具体的測定項目リスト"
-business_value: [1-10]
-user_value: [1-10]
-priority_score: [計算値]
+## 価値体験の詳細化
 
-# 戦略コンテキスト
-user_persona: "[対象ユーザー]"
-business_context: "[事業上の位置づけ]"
-competition_analysis: "[競合差別化要因]"
----
+### minimum_experience の具体化
+- [具体的な価値体験の説明]
 
-# Story: [タイトル]
+### target_experience の詳細
+- [目標とする価値体験の説明]
 
-## 核心仮説
-**仮説**: [hypothesis]
-**成功指標**: [kpi_target]  
-**測定方法**: [success_metrics]
+## 受け入れ条件
 
-## 戦略的ユーザーストーリー
-As a [戦略的ペルソナ]
-I want [機能・要望]
-So that [得られる価値]
-And I expect [具体的KPI/成功指標]
+### 価値実現条件
+1. [価値体験が確認できる条件]
+2. [ユーザーが満足を感じる条件]
 
-## 仮説検証重視の受け入れ条件
+### 技術実現条件
+1. [技術的に満たすべき条件]
+2. [品質基準]
 
-### シナリオ1: [核心仮説検証]
-Given [戦略的前提条件]
-When [アクション]
-Then [KPI測定可能な結果]
+## 実装アプローチ
 
-### シナリオ2: [ユーザー体験検証]
-Given [ユーザーコンテキスト]  
-When [ユーザー操作]
-Then [競合優位性を示す結果]
+### 技術的な実装方針
+- [実装の方向性]
 
-## テスト戦略（仮説検証重視）
-- **仮説検証テスト**: [KPI測定を含むテスト]
-- **自動テスト**: [機能検証]
-- **手動確認**: [ユーザー体験検証]
-- **E2E戦略**: [e2e-required/e2e-optional/unit-only]
-
-## ビジネス価値実現のヒント
-- **競合差別化**: [competition_analysisに基づく実装方針]
-- **ユーザー価値最大化**: [user_personaに基づく配慮点]
-- **KPI測定**: [success_metricsの実装方法]
-
-## 前提条件
-- [環境要件]
-- [依存関係]  
-- **KPI測定環境**: [測定ツール・システム要件]
+### 価値実現の検証方法
+- [価値が実現されたことの確認方法]
 ```
 
-## backlog.yamlの更新
+### 3. ステータス更新
 
-@docs/cc-xp/backlog.yaml の該当ストーリーを更新：
-- status: `"selected"` → `"in-progress"`（**重要**: "done" にはしない）
-- updated_at: 現在時刻
+ストーリー詳細化完了後、以下を実行してください：
 
-**ステータスの流れ**：
-- `selected` (plan) → `in-progress` (story) → `testing` (develop) → `done` (review accept のみ)
+1. backlog.yamlのストーリーステータスを `selected` から `in-progress` に更新
+2. `updated_at` を現在時刻で更新
+3. 必要に応じて `development_notes` を追加
 
-## 変更のコミット
+## 次のステップ
 
-以下の手順でコミットしてください：
-
-1. **対象ファイル**:
-   - `docs/cc-xp/stories/[ID].md`（ストーリー詳細）
-   - `docs/cc-xp/backlog.yaml`（ステータス更新）
-   - `test/[ID].spec.js`（ユニットテスト）
-   - `test/[ID].e2e.js`（E2Eテスト）
-   - `test/[ID].regression.js`（回帰テスト）
-
-2. **コミットメッセージ**:
-   ```
-   [Story] [ID]: 詳細化完了 + TDDテスト準備
-   
-   - ストーリー詳細化完了
-   - 受け入れ条件定義
-   - TDDテストファイル生成（Red状態）
-   
-   次のステップ: /cc-xp:develop で Red→Green→Refactor
-   ```
-
-3. **実行手順**:
-   - 生成されたファイルの存在を確認
-   - git addでステージング
-   - 変更があることを確認
-   - 適切なコミットメッセージでコミット実行
-
-コミットに失敗した場合は、ファイルの存在、パーミッション、Git設定を確認してください。
-
-## 戦略的完了サマリーの表示
-
-**必ず以下の拡張サマリーを表示してください**：
-
-```
-🎯 戦略的ストーリー詳細化完了（TDD準備済み）
-===============================================
-
-ストーリー: [タイトル]
-ブランチ: story-[ID]
-ステータス: in-progress ✅
-
-📊 ビジネス指標:
-- 事業価値: [business_value]/10
-- ユーザー価値: [user_value]/10
-- 優先度スコア: [priority_score]
-- サイズ: [ポイント]
-- 総合価値: [High/Medium/Low]
-
-🎲 核心仮説:
-仮説: "[hypothesis]"
-成功指標: "[kpi_target]"
-測定方法: "[success_metrics]"
-
-👤 対象ユーザー:
-ペルソナ: "[user_persona]"
-
-🎯 仮説検証重視の受け入れ条件:
-✓ [シナリオ1: 核心仮説検証要約]
-✓ [シナリオ2: ユーザー体験検証要約]  
-✓ [シナリオ3: 技術品質検証要約]（あれば）
-
-🔴🟢🔵 TDDテスト準備完了:
-✅ ユニットテスト: test/[ID].spec.js
-✅ E2Eテスト: test/[ID].e2e.js
-✅ 回帰テスト: test/[ID].regression.js
-✅ Red状態確認済み（全テスト失敗）
-
-🔬 テスト戦略:
-- TDDサイクル: Red → Green → Refactor
-- テストファースト: 実装前にテスト作成済み
-- 仮説検証: KPI測定を含む自動テスト
-- 回帰防止: reject時に自動追加
-
-⏱️ 推定: [X]分
-🚀 期待効果: [ビジネス成果予測]
-```
-
-### 次のステップ案内
-
-```
-🚀 次のステップ
-
-技術調査を実施してください:
-→ /cc-xp:research
-
-調査完了後、TDD開発を開始:
-→ /cc-xp:develop
-```
-
-## 注意事項
-
-- 受け入れ条件は具体的で測定可能に
-- YAGNI を意識し、過度な詳細化を避ける
-- ユーザー価値を中心に考える
+@src/cc-xp/shared/next-steps.md

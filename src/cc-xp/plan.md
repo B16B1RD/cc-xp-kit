@@ -11,13 +11,15 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 1. **TDD環境の構築** - プロジェクトでTDDを実践できる環境を整備
 2. **価値ストーリーの抽出** - ユーザー要求「$ARGUMENTS」の**本質価値**を抽出し、実現するストーリーセットを生成
 
-## 実行順序
+## 共通処理
 
-### STEP 0: TDD環境構築（最優先）
+@src/cc-xp/shared/git-check.md
 
-### 0.1 CLAUDE.md生成/更新
+## TDD環境構築
 
-プロジェクトにTDD原則を適用するため、CLAUDE.mdを確認・生成します。
+### CLAUDE.md生成/更新
+
+プロジェクトにTDD原則を適用するため、CLAUDE.mdを確認・生成してください。
 
 **既存CLAUDE.mdの確認**:
 - CLAUDE.mdが存在する場合：TDDセクション追加/更新
@@ -35,30 +37,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 
 *このセクションは /cc-xp:plan により自動生成されました*
 
-## 🔴🟢🔵 TDD原則 - このプロジェクトで厳守
-
-### Kent Beck's TDD Cycle
-このプロジェクトでは必ず以下のサイクルに従ってください：
-
-1. **Red**: 失敗するテストを1つ書く
-2. **Green**: テストを通す最小限のコードを書く  
-3. **Refactor**: 全テストが通る状態で構造を改善
-
-### テストファースト必須
-```bash
-# ❌ 禁止：実装してからテストを書く
-# ✅ 必須：テストを書いてから実装
-```
-
-### コミット規律
-
-```bash
-# すべてのコミットは以下のプレフィックスを使用
-[Red] テスト追加
-[Green] 実装
-[Refactor] リファクタリング
-[Structure] 構造的変更（振る舞い不変）
-```
+@src/cc-xp/shared/tdd-principles.md
 
 ### /cc-xp コマンド使用時の注意
 
@@ -82,89 +61,16 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 - テストを通すためにテストを修正
 - 構造と振る舞いの変更を混在
 
-## 🚀 コマンド終了時の次のステップ案内（必須）
-
-**重要**: すべてのcc-xp:*コマンド終了時に、必ず「🚀 次のステップ」セクションを表示してください。
-
-### ワークフロー進行ルール
-
-コマンド終了時、backlog.yamlのステータスに基づいて適切な次のコマンドを案内：
-
-1. **plan 完了時**
-   → /cc-xp:story [selected-story-id]
-   （最初のストーリーを詳細化）
-
-2. **story 完了時**
-   → /cc-xp:research
-   （技術調査を実施）
-
-3. **develop 完了時（status: "testing"）**
-   → /cc-xp:review
-   （自動テスト実行とコードレビュー）
-
-4. **review accept時（status: "done"）**
-   - 他のストーリーがある場合:
-     → /cc-xp:story [next-story-id]
-   - 振り返りを実施する場合:
-     → /cc-xp:retro
-
-5. **review reject時（status: "testing"）**
-   → /cc-xp:develop
-   （修正を実施）
-
-6. **retro 完了時**
-   - selectedストーリーがある:
-     → /cc-xp:story
-   - in-progressストーリーがある:
-     → /cc-xp:develop
-   - すべて完了:
-     → /cc-xp:plan "次の要求"
-
-### 表示フォーマット
-
-必ず以下の形式で表示：
-
-```
-🚀 次のステップ
-================
-[状況に応じた案内文]:
-→ /cc-xp:[次のコマンド]
-
-[補足説明があれば記載]
-```
+@src/cc-xp/shared/next-steps.md
 
 <!-- cc-xp-kit:end -->
-
 ```
 
-### 0.2 プロジェクトタイプ検出とテスト環境構築
+### プロジェクトタイプ検出とテスト環境構築
 
-**言語・フレームワークの検出**:
-- package.json → JavaScript/TypeScript/Node.js
-- requirements.txt/pyproject.toml → Python
-- Cargo.toml → Rust
-- go.mod → Go
-- Gemfile → Ruby
+@src/cc-xp/shared/test-env-check.md
 
-**テストランナーの確認・セットアップ**:
-
-**JavaScript/TypeScript**:
-
-package.jsonが存在する場合は以下を確認・実行してください：
-- testスクリプトが存在しない場合は、"jest"または"vitest"を追加してください
-- jestがインストールされていない場合は、`npm install --save-dev jest jest-environment-jsdom`を実行してください  
-- `npm install`を実行して全依存関係をインストールしてください
-
-**Python**:
-
-requirements.txtまたはpyproject.tomlが存在する場合：
-- pytestが見つからない場合は、`pip install pytest`を実行してください
-
-**Go**:
-
-`go mod tidy`を実行してモジュール依存関係を整理してください
-
-### 0.25 プロジェクトタイプ別必須ファイル生成
+### プロジェクトタイプ別必須ファイル生成
 
 **🎯 価値体験を可能にする基本ファイルの自動生成**
 
@@ -172,245 +78,25 @@ requirements.txtまたはpyproject.tomlが存在する場合：
 
 #### Web アプリケーション・ゲーム（package.json 存在時）
 
-**必須ファイルの生成**:
+以下のファイルが存在しない場合のみ生成してください：
 
-1. **index.html** - ブラウザで開けるメインファイル
-```html
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[プロジェクト名]</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px; 
-            background-color: #f0f0f0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>[プロジェクト名]</h1>
-        <div id="app">読み込み中...</div>
-    </div>
-    
-    <script src="src/[main-file].js"></script>
-    <script>
-        // アプリ初期化
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('[プロジェクト名] 開始');
-        });
-    </script>
-</body>
-</html>
-```
-
-1. **server.js** - 開発サーバー（npm run dev 対応）
-```javascript
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-
-const PORT = process.env.PORT || 3000;
-
-const server = http.createServer((req, res) => {
-    let filePath = req.url === '/' ? '/index.html' : req.url;
-    filePath = path.join(__dirname, filePath);
-    
-    const extname = path.extname(filePath);
-    const mimeTypes = {
-        '.html': 'text/html',
-        '.js': 'text/javascript',
-        '.css': 'text/css',
-        '.json': 'application/json'
-    };
-    
-    const contentType = mimeTypes[extname] || 'text/plain';
-    
-    fs.readFile(filePath, (err, content) => {
-        if (err) {
-            res.writeHead(404);
-            res.end('File not found');
-        } else {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content);
-        }
-    });
-});
-
-server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
-```
-
-1. **src/[main-file].js** - メイン実装ファイル（存在しない場合のみ）
-```javascript
-/**
- * [プロジェクト名] - メイン実装ファイル
- * TDD で開発する予定のメインクラス・機能
- */
-
-class [MainClass] {
-    constructor() {
-        console.log('[プロジェクト名] 初期化');
-    }
-    
-    // TDD で実装される機能がここに追加されます
-}
-
-// Node.js環境での利用（テスト用）
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = [MainClass];
-}
-```
+**index.html** - ブラウザで開けるメインファイル
+**server.js** - 開発サーバー（npm run dev 対応）
+**src/[main-file].js** - メイン実装ファイル
 
 #### CLI ツール・ライブラリ（package.json 存在時）
 
-**package.json への bin 設定追加**:
-```json
-{
-  "bin": {
-    "[command-name]": "./cli.js"
-  }
-}
-```
-
-**cli.js 生成**:
-```javascript
-#!/usr/bin/env node
-
-const [MainClass] = require('./src/[main-file].js');
-
-function showHelp() {
-    console.log(`
-使用方法: [command-name] [options]
-
-オプション:
-  -h, --help     このヘルプを表示
-  -v, --version  バージョンを表示
-    `);
-}
-
-const args = process.argv.slice(2);
-
-if (args.includes('-h') || args.includes('--help')) {
-    showHelp();
-    process.exit(0);
-}
-
-if (args.includes('-v') || args.includes('--version')) {
-    console.log('1.0.0');
-    process.exit(0);
-}
-
-// メイン処理
-const app = new [MainClass]();
-console.log('[プロジェクト名] を実行しました');
-```
+package.json への bin 設定追加と cli.js 生成
 
 #### Python プロジェクト（requirements.txt 等存在時）
 
-**main.py 生成**:
-```python
-"""
-[プロジェクト名] - メイン実装
-TDD で開発されるメインクラス・機能
-"""
+main.py 生成
 
-class MainClass:
-    def __init__(self):
-        print(f"[プロジェクト名] 初期化")
-    
-    # TDD で実装される機能がここに追加されます
-
-if __name__ == "__main__":
-    app = MainClass()
-    print("[プロジェクト名] を実行しました")
-```
-
-#### 自動生成の実行条件
-
-**生成する条件**:
-- 該当ファイルが存在しない場合のみ
-- プロジェクトタイプが明確に判別できる場合
-- ユーザー要求が Web アプリケーション・ゲーム関連の場合
-
-**生成しない条件**:
-- 既存ファイルがある場合（上書きしない）
-- プロジェクトタイプが不明確な場合
-
-### 0.3 テストディレクトリ構造生成
-
-**標準構造の作成**:
-
-以下のテストディレクトリ構造を作成してください：
-- `test/unit` - ユニットテスト用
-- `test/integration` - 統合テスト用  
-- `test/regression` - 回帰テスト用
-- `docs/cc-xp` - cc-xp-kit作業ファイル用
-
-**初期テストファイル生成**:
-```javascript
-// test/setup.spec.js
-describe('Project Setup', () => {
-  it('should have test environment ready', () => {
-    expect(true).toBe(true);
-  });
-});
-```
-
-### 0.4 .gitignore更新
-
-テスト関連ファイルを.gitignoreに追加：
-```
-# Test coverage
-coverage/
-.nyc_output/
-*.log
-
-# Test artifacts  
-test-results/
-.pytest_cache/
-```
-
-### 0.5 CI/CD設定（基本）
-
-**GitHub Actions基本設定** (.github/workflows/test.yml):
-```yaml
-name: Test
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm ci
-      - run: npm test
-```
-
----
-
-## STEP 1-4: 価値抽出プロセス
-
-### 4段階価値抽出プロセス
+## 価値抽出プロセス
 
 ### Stage 0: 要求から本質価値を抽出（最重要）
 
-表面的要求から本質的なユーザー価値を発見する。
+表面的要求から本質的なユーザー価値を発見してください。
 
 #### 1. 本質価値の特定
 
@@ -430,56 +116,19 @@ jobs:
 - **体験測定**: ユーザーが実際に体験してどう感じるかをどう測るか。
 - **価値証明**: 技術的成功と価値実現の整合性をどう確認するか。
 
-**テトリス例の本質価値抽出**:
-- 本質価値:「落下するブロックを巧みに操作し、ライン消去で得点を競う達成感とゲームフロー体験」
-- 最小体験:「ブロックが上から落ちてきて、矢印キーで移動・回転でき、底で停止し、ライン完成で消える」
-- 確認方法:「実際にプレイして楽しいか、もう一度やりたいと感じるか、ゲームとして成立しているか」
-
 ### Stage 1: 真の目的分析
 
-本質価値を背景から確認・強化する。
-- **価値の背景**: なぜこの価値が重要なのか。
-- **解決される問題**: 現状のどんな不満がこの価値で解消されるか。
-- **成功のイメージ**: この価値が実現された時のユーザー体験はどうなるか。
+本質価値を背景から確認・強化してください。
 
 ### Stage 2: 価値体験者の特定
 
-本質価値を体験する人々とその動機を明確化。
-
-#### 価値体験者の分析
-
-- **プライマリーユーザー**: 本質価値を直接体験する主要な人々
-- **セカンダリーユーザー**: 間接的に価値の恩恵を受ける人々
-- **価値提供者**: 価値実現をサポート・維持する人々
-
-#### 各体験者の価値動機
-
-- **体験動機**: なぜこの価値を求めるのか。
-- **体験文脈**: どんな状況でこの価値を必要とするのか。
-- **成功体験**: この価値が実現された時、どんな感情・状態になるのか。
+本質価値を体験する人々とその動機を明確化してください。
 
 ### Stage 3: 価値ストーリー生成と優先度設定
 
-本質価値を実現するストーリーを価値優先度で整理。
+本質価値を実現するストーリーを価値優先度で整理してください。
 
-#### 価値実現カテゴリ
-
-**Core Value（核心価値）**:
-- 本質価値の直接実現（Stage 0 で定義した価値の実体化）
-- 最小価値体験の確実な提供
-- ユーザーが「これが欲しかった」と感じる体験
-
-**Experience Enhancement（体験向上）**:
-- 核心価値をより豊かにする要素
-- ユーザビリティ・操作性の向上
-- 継続利用したくなる要素
-
-**Context Optimization（文脈最適化）**:
-- 利用環境・状況への適応
-- 異なるユーザー層への対応
-- 長期的な価値維持
-
-## Value Story フォーマット（改訂版）
+## Value Story フォーマット
 
 価値実現を中心としたストーリーフォーマット。
 
@@ -496,118 +145,14 @@ Experience Criteria:
 - [価値体験が提供されていることの確認方法]
 ```
 
-**テトリス例のValue Story**:
-```
-As a ゲームプレイヤー
-I want 落下ブロックを操作してライン消去を楽しむ体験
-So that 巧妙な配置による達成感と継続的なフロー体験を得られる
-And I expect 実際にプレイして楽しいと感じ、もう一度やりたくなる
-
-Core Value Criteria:
-- ブロックが落下し、キー操作で動かせ、ライン消去で得点できる
-- プレイして「楽しい」「もう一度」と感じられる
-
-Experience Criteria:
-- スムーズな操作感と即座の視覚的フィードバック
-- 継続的な挑戦意欲を喚起する難易度バランス
-```
-
 **優先度判定（価値中心）**:
 - **Core Value**: 本質価値の直接実現（最優先）
 - **Experience Enhancement**: 価値体験の向上
 - **Context Optimization**: 価値提供の文脈適応
 
-## 実行プロセス（改訂版）
-
-### フェーズ1: TDD環境構築
-
-1. **CLAUDE.md確認・生成**
-   - 既存ファイルの解析
-   - TDDセクションの追加/更新
-   - マーカーによる保護領域設定
-
-2. **プロジェクトタイプ検出**
-   - package.json, requirements.txt等の検出
-   - 適切なテストランナーの選定
-   - 自動セットアップ実行
-
-3. **テスト環境構築**
-   - テストスクリプト追加（package.json等）
-   - 依存関係インストール（jest, pytest等）
-   - ディレクトリ構造生成
-   - 初期テストファイル生成
-
-4. **品質設定**
-   - .gitignore更新
-   - CI/CD基本設定
-   - 初回テスト実行確認
-
-### フェーズ2: 価値抽出実行
-
-**環境確認**: docs/cc-xpディレクトリが存在しない場合は作成
-
-**分析実行**: ユーザー要求「$ARGUMENTS」について、4段階価値抽出を実行
-
-1. **要求本質価値の抽出**: 本質価値、最小体験、目標体験
-2. **価値体験者の特定**: 誰がどんな価値を体験するのか  
-3. **Value Storyの生成**: 価値体験を中心としたストーリー
-4. **価値優先度の決定**: Core Value → Experience Enhancement → Context Optimization
-
-### 価値実現Evidence生成（最重要）
-
-**各ストーリーに価値実現の証拠を必ず含める：**
-
-#### 1. 価値実現仮説の作成
-
-仮説は必ず価値体験を中心に以下のフォーマットで生成する。
-
-```
-「[ユーザー]が[価値体験]を実際に体験できることで、[本質価値]が実現され、[測定可能な満足度・継続意欲]が[具体的数値]以上達成される」
-```
-
-**良い価値仮説例**:
-- 「プレイヤーが落下ブロックを操作してライン消去を楽しめることで、ゲームとしての達成感が実現され、再プレイ意欲が 80%以上達成される」
-- 「ユーザーが 2 秒以内にログインして業務開始できることで、ストレスフリーな体験が実現され、継続利用率が 90%以上達成される」
-
-**避けるべき技術仮説**:
-- ❌「テトロミノ生成処理が 100ms 以内に完了する」
-- ❌「データ構造が正確に実装される」
-
-#### 2. 価値実現KPIの設定
-
-kpi_target は必ず価値体験の実現度を測定する。
-
-```
-「[価値体験完成度][数値]%、[ユーザー満足度][数値]%、[継続利用意欲][数値]%、[本質価値実現度][数値]%」
-```
-
-**価値KPI設定例**:
-- 「ゲーム体験完成度 100%、プレイ満足度 85%、再プレイ意欲 80%、楽しさ実現度 90%」
-- 「業務開始スムーズ度 95%、ストレス軽減度 90%、継続利用意欲 85%、価値実感度 88%」
-
-#### 3. 価値体験の測定方法生成
-
-各ストーリーに価値が体験できることの確認項目。
-
-```
-「1.[価値体験確認]、2.[操作可能性確認]、3.[視覚的確認]、4.[満足度確認]」
-```
-
-**価値測定例**:
-- 「1.ブロックが実際に落下し操作できる、2.キー入力で左右移動・回転できる、3.ライン消去時の視覚効果確認、4.プレイして楽しいと感じる」
-- 「1.ログイン画面が表示される、2.認証後すぐ業務画面に遷移、3.レスポンス 2 秒以内、4.ストレスなく使える」
-
-#### 4. 価値の独自性明示
-
-各ストーリーにこのソフトウェアならではの価値を必ず含める。
-
-```
-value_uniqueness: "[競合]にはない[独自の価値体験]により[ユーザーの特定の期待]を満たす"
-```
-
 ### backlog.yaml生成
 
-分析結果を基に価値中心のストーリーセットを生成し、backlog.yaml に記録します。
+分析結果を基に価値中心のストーリーセットを生成し、backlog.yaml に記録してください。
 
 **価値実現必須メタデータ**:
 ```yaml
@@ -635,17 +180,7 @@ stories:
     priority: "Core Value|Experience Enhancement|Context Optimization"
 ```
 
-**生成時の価値中心チェック**:
-
-各ストーリー生成後、以下を必ず確認する。
-1. ✅ core_value が明確に定義されている
-2. ✅ minimum_experience が実際に体験可能な内容である
-3. ✅ hypothesis が価値体験を中心に記述されている
-4. ✅ success_metrics が価値の体験確認を含んでいる
-
-**価値中心チェック失敗時は再生成する**
-
-### 完了確認
+## 完了確認
 
 **TDD環境構築完了**:
 ```
@@ -673,8 +208,6 @@ CLAUDE.md: [新規作成|TDDセクション追加]
 ```
 
 **価値ストーリー抽出完了**:
-分析完了後、生成されたストーリーの概要と次ステップを表示する。
-
 ```
 🎯 価値ストーリー抽出完了
 ========================
@@ -692,28 +225,6 @@ CLAUDE.md: [新規作成|TDDセクション追加]
 → 自動生成されたテストは全て通ることを確認済み
 ```
 
-## 重要な注意事項
+## 次のステップ
 
-### CLAUDE.md更新の冪等性
-
-- 既存内容は保護され、上書きされません
-- TDDセクションのみが更新されます
-- マーカー（`# cc-xp-kit TDD Guidelines`）で保護領域を管理
-
-### エラーハンドリング
-
-```
-⛔ TDD環境構築失敗
-
-考えられる原因:
-1. package.json等の設定ファイル破損
-2. 依存関係のインストール権限不足
-3. 既存テスト設定との競合
-
-対処方法:
-1. プロジェクト設定ファイルの確認
-2. パッケージマネージャーの権限確認
-3. 手動での環境構築後、再実行
-```
-
-**この改修により、すべてのプロジェクトが自動的に正しいTDD環境でスタートします。**
+@src/cc-xp/shared/next-steps.md
