@@ -173,24 +173,6 @@ development_notes: |
   - 設計品質: リファクタリング[N]回実施
 ```
 
-### 完了確認
-
-```
-🔧 TDD Development 完了
-========================
-対象ストーリー: [story-id]
-実装テスト数: [N]件
-TDDサイクル数: [N]回
-
-品質メトリクス:
-✅ Red-Green-Refactor完全遵守
-✅ テストファースト原則遵守
-✅ 価値体験実現確認済み
-✅ 設計品質向上確認済み
-
-ステータス: in-progress → testing
-```
-
 ## 次のステップ
 
 @shared/next-steps.md

@@ -2,11 +2,11 @@
 
 ## ワークフロー進行ルール
 
-コマンド終了時、backlog.yamlのステータスに基づいて適切な次のコマンドを案内してください：
+コマンド終了時、backlog.yaml のステータスに基づいて適切な次のコマンドを案内してください：
 
 ### 1. plan 完了時
 
-→ /cc-xp:story [selected-story-id]
+→ /cc-xp:story[selected-story-id]
 （最初のストーリーを詳細化）
 
 ### 2. story 完了時
@@ -17,7 +17,7 @@
 ### 3. research 完了時
 
 → /cc-xp:develop
-（TDD開発サイクル開始）
+（TDD 開発サイクル開始）
 
 ### 4. develop 完了時（status: "testing"）
 
@@ -27,7 +27,7 @@
 ### 5. review accept時（status: "done"）
 
 - 他のストーリーがある場合:
-  → /cc-xp:story [next-story-id]
+  → /cc-xp:story[next-story-id]
 - 振り返りを実施する場合:
   → /cc-xp:retro
 
@@ -38,9 +38,9 @@
 
 ### 7. retro 完了時
 
-- selectedストーリーがある:
+- selected ストーリーがある:
   → /cc-xp:story
-- in-progressストーリーがある:
+- in-progress ストーリーがある:
   → /cc-xp:develop
 - すべて完了:
   → /cc-xp:plan "次の要求"
@@ -60,4 +60,4 @@
 
 ## 重要注意事項
 
-**重要**: すべてのcc-xp:*コマンド終了時に、必ず「🚀 次のステップ」セクションを表示してください。
+**重要**: すべての cc-xp:*コマンド終了時に、必ず「🚀 次のステップ」セクションを表示してください。

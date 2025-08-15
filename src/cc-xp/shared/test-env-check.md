@@ -37,15 +37,15 @@ dotnet test
 
 #### JavaScript/TypeScript
 
-package.jsonが存在する場合は以下を確認・実行してください：
-- testスクリプトが存在しない場合は、"jest"または"vitest"を追加してください
-- jestがインストールされていない場合は、`npm install --save-dev jest jest-environment-jsdom`を実行してください  
+package.json が存在する場合は以下を確認・実行してください：
+- test スクリプトが存在しない場合は、"jest"または"vitest"を追加してください
+- jest がインストールされていない場合は、`npm install --save-dev jest jest-environment-jsdom`を実行してください  
 - `npm install`を実行して全依存関係をインストールしてください
 
 #### Python
 
-requirements.txtまたはpyproject.tomlが存在する場合：
-- pytestが見つからない場合は、`pip install pytest`を実行してください
+requirements.txt または pyproject.toml が存在する場合：
+- pytest が見つからない場合は、`pip install pytest`を実行してください
 
 #### Go
 
@@ -59,7 +59,7 @@ requirements.txtまたはpyproject.tomlが存在する場合：
 - `test/unit` - ユニットテスト用
 - `test/integration` - 統合テスト用  
 - `test/regression` - 回帰テスト用
-- `docs/cc-xp` - cc-xp-kit作業ファイル用
+- `docs/cc-xp` - cc-xp-kit 作業ファイル用
 
 **初期テストファイル生成**:
 ```javascript
