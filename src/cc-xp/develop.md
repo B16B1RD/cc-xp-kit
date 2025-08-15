@@ -59,35 +59,84 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 
 ## 🔴🟢🔵 TDD実行フェーズ
 
-### 実装前チェック: TODOテスト検出
+### 実装前チェック: 受け入れ基準とE2Eテストの確認
 
-#### TODOテスト検出と進捗確認
+#### 1. 受け入れ基準の存在確認
 
-テストファイル内のTODOテストを検出し、反復的TDDサイクルの準備を行ってください。
+backlog.yamlから対象ストーリーの `acceptance_criteria` を確認してください：
 
-**TODOテストの判定条件**：
-```javascript
-// パターン1: TODOコメント付きテスト
-it('should_move_tetromino_down_when_time_passes', () => {
-  // TODO: 落下中のテトロミノをセットアップ
-  expect(true).toBe(false); // 🔴 未実装テスト
+```yaml
+acceptance_criteria:
+  - "ブラウザでページを開くとゲーム画面が表示される"
+  - "テトロミノが1秒間隔で自動的に1行下に移動する"
+  - "プレースホルダーメッセージが表示されない"
+```
+
+**acceptance_criteria がない場合**：
+```
+⛔ TDD実行不可: 受け入れ基準が未定義です
+
+以下を先に実行してください：
+→ /cc-xp:story  # 受け入れ基準の詳細化
+```
+
+#### 2. E2Eテストファイルの確認と生成要求
+
+**E2Eテストファイルの検出**：
+- `test/*e2e*` パターンでファイルを検索
+- `test/*integration*` パターンでファイルを検索
+- Playwrightやその他のE2Eテストフレームワークの設定確認
+
+**E2Eテストファイルが存在しない場合**：
+```
+⚠️ E2Eテストが必要: このストーリーには出力・表示要素が含まれています
+
+以下のE2Eテストファイルを作成してください：
+test/[story-id].e2e.js (またはプロジェクトに適した拡張子)
+
+各acceptance_criteriaを以下の形式でテストケースに変換：
+
+// acceptance_criteria: "ブラウザでページを開くとゲーム画面が表示される"
+it('should_display_game_screen_when_page_loads', async () => {
+  await page.goto('/');
+  const gameElement = await page.locator('[data-testid="game-screen"]');
+  expect(await gameElement.isVisible()).toBe(true);
 });
 
-// パターン2: スケルトンテスト
-it('should_handle_collision', () => {
-  expect(true).toBe(false); // 🔴 仮の失敗テスト
+// acceptance_criteria: "テトロミノが1秒間隔で自動的に1行下に移動する"
+it('should_move_tetromino_down_every_second', async () => {
+  const tetromino = await page.locator('[data-testid="tetromino"]');
+  const initialY = (await tetromino.boundingBox()).y;
+  await page.waitForTimeout(1000);
+  const newY = (await tetromino.boundingBox()).y;
+  expect(newY).toBeGreaterThan(initialY);
 });
 ```
 
-**検出処理**：
-1. テストファイル内の全 `it()` を走査
-2. `// TODO:` コメントまたは `expect(true).toBe(false)` を含むテストをTODOと判定
-3. TODOテスト数と実装済みテスト数をカウント
-4. 進捗状況を表示（例：「テスト進捗: 3/7 実装済み, 4件のTODOテスト検出」）
+#### 3. E2Eテスト失敗確認（Red状態）
 
-**TODOテスト検出時の処理**：
-- **TODOテストが存在する場合**: 反復的TDDサイクルを開始
-- **TODOテストが0件の場合**: 通常のTDD完了条件チェックへ進行
+E2Eテストファイルが存在する場合、実行して失敗することを確認：
+
+```bash
+# E2Eテスト実行例
+npm run test:e2e
+# または
+npx playwright test
+```
+
+**E2Eテストが成功してしまう場合**：
+受け入れ基準が既に実装済みの可能性があります。reviewコマンドで確認を推奨。
+
+#### 4. ユニットテスト（TODOテスト）の確認
+
+既存のTODOテスト検出も並行して実行：
+
+**TODOテストの判定条件**：
+```javascript
+it('should_implement_game_logic', () => {
+  expect(true).toBe(false); // 🔴 未実装テスト
+});
+```
 
 ### TDDサイクル実行
 
@@ -128,33 +177,52 @@ it('should_handle_collision', () => {
 
 全TODOテストの実装が完了するまで反復してください。
 
-### 価値体験実現の確認
+### 価値体験実現の確認（E2Eテストベース）
 
-#### minimum_experience の実装確認
+#### acceptance_criteria の完全実現確認
 
-全TODOテスト実装完了後、価値体験テストを実行：
+全TODOテスト実装完了後、E2Eテストを実行して受け入れ基準の実現を確認：
 
-```javascript
-// 価値体験実現確認テスト例
-it('should_provide_minimum_experience_to_user', () => {
-  // backlog.yamlのminimum_experienceが実際に体験可能であることを確認
-});
+```bash
+# E2Eテスト実行
+npm run test:e2e
+# または
+npx playwright test
 ```
 
-**価値体験確認項目**：
-1. minimum_experience が実際に動作する
-2. ユーザーが期待する価値を体験できる
-3. 技術的成功と価値実現が一致している
+**E2Eテスト成功の確認項目**：
+1. **全acceptance_criteriaのテストがPASS**
+   - 各受け入れ基準が実際に動作している
+   - プレースホルダーメッセージが表示されない
+   - ユーザーが期待する出力・操作が実現されている
+
+2. **minimum_experienceの完全実現**
+   - E2EテストがPASSすることで、minimum_experienceが実現されている証明
+   - 技術的成功＝価値実現の一致が保証される
+
+3. **実際のアプリケーション動作確認**
+   - ブラウザ/アプリを手動で起動して最終確認
+   - E2Eテストで検証された動作が実際に体験可能
+
+**E2Eテストが失敗する場合**：
+- 受け入れ基準が未実装または不完全
+- ユニットテストは成功しても、統合・表示層で問題がある
+- この場合は実装を継続し、E2EテストがPASSするまで開発
 
 ### TDDサイクル完了条件
 
 以下の条件をすべて満たした場合、TDDサイクル完了：
 
 1. **全TODOテストが実装済み**（`expect(true).toBe(false)` が0件）
-2. **全テストがPASS**
-3. **価値体験テストがPASS**
+2. **全ユニットテストがPASS**
+3. **🎯 全E2EテストがPASS**（受け入れ基準の完全実現）
 4. **コードの重複が除去済み**
 5. **設計品質が向上済み**
+
+**最重要**: E2EテストのPASSがTDD完了の必須条件です。これにより：
+- acceptance_criteriaの完全実現が保証される
+- minimum_experienceが実際に体験可能であることが証明される
+- 技術的成功と価値実現の一致が確認される
 
 ### ステータス更新（最終段階のみ）
 

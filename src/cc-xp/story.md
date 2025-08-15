@@ -57,166 +57,123 @@ $ARGUMENTS が指定されている場合はその ID、なければ最初の `s
 
 ブランチ作成に失敗した場合は、同名ブランチの存在や未コミット変更の有無を確認してください。
 
-## テストファースト準備（TDD）
+## 受け入れ基準の詳細化（最重要）
 
-### テストファイル自動生成
+### ユーザーとの対話による受け入れ基準の改善
 
-ストーリー詳細化と同時に、TDD実践のためのテストファイルを自動生成します。
+ストーリー詳細化では、**acceptance_criteria** をユーザーとの対話を通じて具体化・改善することが最重要です。
 
-#### 生成されるテストファイル構造
+#### 1. 既存受け入れ基準の確認
 
+backlog.yamlから対象ストーリーの `acceptance_criteria` を確認し、以下を評価してください：
+
+- **具体性**: 実装者が何を作るべきか明確か
+- **テスト可能性**: E2Eテストで自動検証できるか
+- **完全性**: minimum_experienceを完全にカバーしているか
+- **ユーザー視点**: 技術仕様ではなく体験の観点か
+
+#### 2. ユーザーとの対話による改善
+
+ユーザーに以下を確認し、受け入れ基準を改善してください：
+
+**質問例**:
 ```
-test/
-├── [story-id].spec.js        # ユニットテスト（振る舞い検証）
-├── [story-id].e2e.js         # E2Eテスト（価値体験検証）  
-└── [story-id].regression.js  # 回帰テスト（review reject時に追加）
-```
-
-#### ユニットテストテンプレート生成（価値体験検証強化）
-
-**test/[story-id].spec.js**:
-```javascript
-/**
- * [Story Title] - Unit Tests
- * TDD: Red → Green → Refactor
- * 
- * Story: [story-id]
- * Core Value: [core_value]
- * Minimum Experience: [minimum_experience]
- */
-
-describe('[ComponentName]', () => {
-  describe('[MethodName]', () => {
-    it('should_[expected_behavior]_when_[condition]', () => {
-      // Arrange - 準備
-      // TODO: テスト対象のセットアップ
-      
-      // Act - 実行
-      // TODO: テスト対象メソッドの実行
-      
-      // Assert - 検証
-      // TODO: 期待する結果の検証
-      expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
-    });
-  });
-
-  // 🎯 価値体験検証テストの必須生成
-  describe('価値体験実現確認', () => {
-    it('should_provide_minimum_experience_to_user', () => {
-      // Arrange - 価値体験が可能な状態のセットアップ
-      const [ComponentName] = require('../src/[component-name]');
-      const component = new [ComponentName]();
-      
-      // Act - 価値体験の実行：minimum_experience の検証
-      // backlog.yamlから: "[minimum_experience内容を具体的に記載]"
-      component.start(); // ゲーム開始・アプリ起動
-      
-      // minimum_experienceに基づく具体的な検証
-      const experience = [];
-      for (let i = 0; i < 10; i++) { // 複数フレーム実行
-        const state = component.getCurrentState();
-        experience.push(state);
-        component.update(); // 状態更新
-      }
-      
-      // Assert - 価値体験の確認
-      // 1. minimum_experienceが実際に動作する
-      expect(component).toBeDefined();
-      expect(typeof component.start).toBe('function');
-      expect(typeof component.update).toBe('function');
-      
-      // 2. 価値の本質が体験できる（dynamic behavior）
-      const hasValueExperience = experience.some((state, index) => {
-        // 時間経過による価値のある変化を検証
-        return index > 0 && state !== experience[index - 1];
-      });
-      expect(hasValueExperience).toBe(true); // 🔴 Red: 最初は失敗するテスト
-    });
-  });
-});
+「ページを開いたとき、最初に何が見えることを期待していますか？」
+「操作したとき、どのような反応が返ってくることを期待していますか？」
+「この機能が正しく動いていることを、どうやって確認できますか？」
+「もしエラーが起きたら、どのように表示されるべきですか？」
 ```
 
-#### E2Eテストテンプレート生成
+#### 3. 受け入れ基準の具体化
 
-**test/[story-id].e2e.js**:
-```javascript
-/**
- * [Story Title] - E2E Tests
- * 価値体験の完全なエンドツーエンド検証
- */
+対話結果を基に、以下の観点で受け入れ基準を具体化してください：
 
-describe('[Story Title] - E2E価値体験検証', () => {
-  it('should_provide_complete_value_experience', () => {
-    // E2E環境セットアップ
-    // 実際のユーザー環境に近い状態での価値体験検証
-    
-    // 価値体験の完全なフロー実行
-    // minimum_experience から target_experience まで
-    
-    expect(true).toBe(false); // 🔴 Red: 最初は失敗するテスト
-  });
-});
-```
+**出力・表示の確認**:
+- 何が、どこに、どのように表示されるか
+- 表示のタイミング（ページ読み込み時、操作時等）
+- 表示の継続時間や変化
+
+**操作・インタラクションの確認**:
+- どのような操作が可能か
+- 操作に対する反応とその速度
+- 無効な操作時の処理
+
+**エラー・例外処理の確認**:
+- どのような状況でエラーが発生するか
+- エラー時の表示内容と処理
+- 復旧方法や代替手段
+
+#### 4. E2Eテスト変換可能性の保証
+
+各受け入れ基準が以下を満たすことを確認してください：
+
+- **自動テスト可能**: プログラムで検証できる
+- **定量的**: 時間、サイズ、位置等の具体的な値
+- **環境非依存**: 特定の環境に依存しない
 
 ## ストーリー詳細化プロセス
 
-### 1. 受け入れ条件の明確化
+### 1. 受け入れ基準の対話による改善
 
-選択されたストーリーについて、以下を明確にしてください：
+選択されたストーリーの `acceptance_criteria` をユーザーとの対話を通じて改善してください：
 
-1. **価値体験の具体化**
-   - minimum_experience を実際に体験可能な形に詳細化
-   - ユーザーが「これが欲しかった」と感じる瞬間の特定
+1. **現在の受け入れ基準をユーザーに提示**
+   - backlog.yamlからacceptance_criteriaを読み上げ
+   - 「この基準で、あなたが期待する価値体験がカバーされていますか？」と確認
 
-2. **技術仕様の定義**
-   - 価値実現に必要な技術要素の特定
-   - 実装アプローチの検討
+2. **ユーザーの期待との比較**
+   - 不足している基準があるか確認
+   - 曖昧で改善が必要な基準があるか確認
+   - 不要または重複している基準があるか確認
 
-3. **検証方法の設計**
-   - 価値体験が実現されたことをどう確認するか
-   - 自動テストでの検証項目
+3. **対話による具体化**
+   - ユーザーの回答を基に受け入れ基準を具体化
+   - E2Eテストで検証可能な形式に変換
 
-### 2. ストーリー詳細ファイルの生成
+### 2. backlog.yamlの更新
 
-`docs/cc-xp/stories/[story-id].md` を生成してください：
+改善された受け入れ基準をbacklog.yamlに反映してください：
+
+```yaml
+acceptance_criteria:
+  - "具体化された受け入れ基準1"
+  - "具体化された受け入れ基準2"
+  - "追加された受け入れ基準3"
+```
+
+### 3. ストーリー詳細ファイルの生成
+
+`docs/cc-xp/stories/[story-id].md` を生成し、詳細化の記録を残してください：
 
 ```markdown
 # [Story Title]
 
-## 価値体験の詳細化
+## 受け入れ基準の詳細化記録
 
-### minimum_experience の具体化
-- [具体的な価値体験の説明]
+### 対話による改善内容
+- [ユーザーとの対話で明らかになった点]
+- [追加・修正された受け入れ基準の理由]
 
-### target_experience の詳細
-- [目標とする価値体験の説明]
+### 最終的な受け入れ基準
+[backlog.yamlのacceptance_criteriaの内容]
 
-## 受け入れ条件
+### E2Eテスト観点での確認項目
+- [各受け入れ基準のテスト方法]
+- [自動化可能な検証ポイント]
 
-### 価値実現条件
-1. [価値体験が確認できる条件]
-2. [ユーザーが満足を感じる条件]
-
-### 技術実現条件
-1. [技術的に満たすべき条件]
-2. [品質基準]
-
-## 実装アプローチ
-
-### 技術的な実装方針
-- [実装の方向性]
-
-### 価値実現の検証方法
-- [価値が実現されたことの確認方法]
+## 実装時の注意事項
+- [価値体験実現のための重要なポイント]
+- [技術的な制約や考慮事項]
 ```
 
-### 3. ステータス更新
+### 4. ステータス更新
 
-ストーリー詳細化完了後、以下を実行してください：
+受け入れ基準の詳細化完了後、以下を実行してください：
 
 1. backlog.yamlのストーリーステータスを `selected` から `in-progress` に更新
 2. `updated_at` を現在時刻で更新
-3. 必要に応じて `development_notes` を追加
+3. `acceptance_criteria` を改善された内容で更新
+4. `development_notes` に詳細化の要点を追加
 
 ## 次のステップ
 
