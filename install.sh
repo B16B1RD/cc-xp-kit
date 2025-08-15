@@ -54,33 +54,33 @@ fix_reference_paths() {
     
     echo -e "${BLUE}@参照パスを書き換え中...${NC}"
     
-    # プロジェクト用はそのまま（相対パス参照可能）
-    if [ "$install_type" = "project" ]; then
-        echo -e "${BLUE}  プロジェクト用インストール: @参照パスは相対パスのまま維持${NC}"
-        return
+    # インストール先に応じてパスを決定
+    local shared_path=""
+    local templates_path=""
+    
+    if [ "$install_type" = "user" ]; then
+        shared_path="~/.claude/commands/cc-xp/shared/"
+        templates_path="~/.claude/commands/cc-xp/templates/"
+        echo -e "${BLUE}  ユーザー用インストール: @参照パスを絶対パスに変換${NC}"
+    else
+        shared_path=".claude/commands/cc-xp/shared/"
+        templates_path=".claude/commands/cc-xp/templates/"
+        echo -e "${BLUE}  プロジェクト用インストール: @参照パスを相対パスに変換${NC}"
     fi
     
-    # ユーザー用のみ絶対パスに書き換え
-    if [ "$install_type" = "user" ]; then
-        local shared_path="~/.claude/commands/cc-xp/shared/"
-        local templates_path="~/.claude/commands/cc-xp/templates/"
-        
-        echo -e "${BLUE}  ユーザー用インストール: @参照パスを絶対パスに変換${NC}"
-        
-        # cc-xp コマンドファイルの@参照パスを書き換え
-        for file in "${CC_XP_FILES[@]}"; do
-            local target_file="$install_dir/cc-xp/$file"
-            if [ -f "$target_file" ]; then
-                # @shared/ を絶対パスに置換（@は1つだけ）
-                sed -i "s|@shared/|@${shared_path}|g" "$target_file"
-                # @templates/ を絶対パスに置換
-                sed -i "s|@templates/|@${templates_path}|g" "$target_file"
-                echo -e "${BLUE}    ✓ $file の@参照パスを更新しました${NC}"
-            else
-                echo -e "${YELLOW}    ⚠️ $file が見つかりません${NC}"
-            fi
-        done
-    fi
+    # cc-xp コマンドファイルの@参照パスを書き換え
+    for file in "${CC_XP_FILES[@]}"; do
+        local target_file="$install_dir/cc-xp/$file"
+        if [ -f "$target_file" ]; then
+            # @shared/ を適切なパスに置換（@は1つだけ）
+            sed -i "s|@shared/|@${shared_path}|g" "$target_file"
+            # @templates/ を適切なパスに置換
+            sed -i "s|@templates/|@${templates_path}|g" "$target_file"
+            echo -e "${BLUE}    ✓ $file の@参照パスを更新しました${NC}"
+        else
+            echo -e "${YELLOW}    ⚠️ $file が見つかりません${NC}"
+        fi
+    done
 }
 
 # 引数解析
