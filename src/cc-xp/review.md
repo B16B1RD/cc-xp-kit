@@ -32,7 +32,7 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(kill:*), Bash(cat), Bas
 
 ## XP原則
 
-@src/cc-xp/shared/xp-principles.md
+@shared/xp-principles.md
 
 ## 引数チェック（最初に実行）
 
@@ -46,7 +46,7 @@ $ARGUMENTS の最初の単語を確認：
 
 ## 共通処理
 
-@src/cc-xp/shared/git-check.md
+@shared/git-check.md
 
 ## ステータス遷移ルール
 
@@ -66,7 +66,7 @@ selected (plan) → in-progress (story) → testing (develop) → done (review a
 
 ### 価値実現中心のストーリー情報取得
 
-@src/cc-xp/shared/backlog-reader.md から `"testing"` ステータスのストーリーを確認し、**価値実現に必要な全情報**を取得してください。
+@shared/backlog-reader.md から `"testing"` ステータスのストーリーを確認し、**価値実現に必要な全情報**を取得してください。
 
 **重要なバリデーション**：
 - `"testing"` ステータスのストーリーがない場合は、「先に `/cc-xp:develop` を実行してください」と案内
@@ -255,4 +255,4 @@ go test -cover ./...
 
 ## 次のステップ
 
-@src/cc-xp/shared/next-steps.md
+@shared/next-steps.md

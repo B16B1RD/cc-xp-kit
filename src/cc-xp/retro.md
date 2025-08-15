@@ -11,11 +11,11 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(grep), Bash(wc:*), Read
 
 ## XP原則
 
-@src/cc-xp/shared/xp-principles.md
+@shared/xp-principles.md
 
 ## 共通処理
 
-@src/cc-xp/shared/git-check.md
+@shared/git-check.md
 
 ## Gitメトリクスの収集
 
@@ -224,4 +224,4 @@ hypothesis_driven:
 
 ## 次のステップ
 
-@src/cc-xp/shared/next-steps.md
+@shared/next-steps.md

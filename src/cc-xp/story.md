@@ -12,15 +12,15 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(grep), Read
 
 ## XP原則
 
-@src/cc-xp/shared/xp-principles.md
+@shared/xp-principles.md
 
 ## 共通処理
 
-@src/cc-xp/shared/git-check.md
+@shared/git-check.md
 
 ### 現在の状態確認
 
-@src/cc-xp/shared/backlog-reader.md
+@shared/backlog-reader.md
 
 ### 対象ストーリーの特定
 
@@ -220,4 +220,4 @@ describe('[Story Title] - E2E価値体験検証', () => {
 
 ## 次のステップ
 
-@src/cc-xp/shared/next-steps.md
+@shared/next-steps.md

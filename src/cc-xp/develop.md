@@ -14,7 +14,7 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 
 ## TDD原則
 
-@src/cc-xp/shared/tdd-principles.md
+@shared/tdd-principles.md
 
 ## 🚨 CRITICAL: ステータス変更の厳格制限
 
@@ -31,11 +31,11 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 
 ### 共通処理
 
-@src/cc-xp/shared/git-check.md
+@shared/git-check.md
 
 ### テスト環境確認
 
-@src/cc-xp/shared/test-env-check.md
+@shared/test-env-check.md
 
 **テスト環境がない場合は処理を停止**し、以下を案内：
 ```
@@ -49,7 +49,7 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 
 ⚠️ **このコマンドではステータス確認のみ行います**
 
-@src/cc-xp/shared/backlog-reader.md から `in-progress` ステータスのストーリーを確認：
+@shared/backlog-reader.md から `in-progress` ステータスのストーリーを確認：
 - `"in-progress"` であることを確認
 - **"done" の場合は処理停止**（review完了済み）
 - **"testing" の場合は処理停止**（既にdevelop実行済み）
@@ -193,4 +193,4 @@ TDDサイクル数: [N]回
 
 ## 次のステップ
 
-@src/cc-xp/shared/next-steps.md
+@shared/next-steps.md

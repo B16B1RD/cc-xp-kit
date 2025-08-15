@@ -12,11 +12,11 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 
 ## XP原則
 
-@src/cc-xp/shared/xp-principles.md
+@shared/xp-principles.md
 
 ## 共通処理
 
-@src/cc-xp/shared/git-check.md
+@shared/git-check.md
 
 ## 現在の状態確認
 
@@ -24,7 +24,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 
 $ARGUMENTS が指定されている場合はその ID、なければ `in-progress` ステータスのストーリーを使用してください。
 
-@src/cc-xp/shared/backlog-reader.md から該当ストーリーの情報を取得：
+@shared/backlog-reader.md から該当ストーリーの情報を取得：
 - ID、タイトル、ステータス
 - core_value（本質価値）
 - minimum_experience（最小価値体験）
@@ -185,4 +185,4 @@ $ARGUMENTS が指定されている場合はその ID、なければ `in-progres
 
 ## 次のステップ
 
-@src/cc-xp/shared/next-steps.md
+@shared/next-steps.md

@@ -13,7 +13,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 
 ## 共通処理
 
-@src/cc-xp/shared/git-check.md
+@shared/git-check.md
 
 ## TDD環境構築
 
@@ -37,7 +37,7 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 
 *このセクションは /cc-xp:plan により自動生成されました*
 
-@src/cc-xp/shared/tdd-principles.md
+@shared/tdd-principles.md
 
 ### /cc-xp コマンド使用時の注意
 
@@ -61,14 +61,14 @@ allowed-tools: Bash(date), Bash(echo), Bash(git:*), Bash(test), Bash(mkdir:*), B
 - テストを通すためにテストを修正
 - 構造と振る舞いの変更を混在
 
-@src/cc-xp/shared/next-steps.md
+@shared/next-steps.md
 
 <!-- cc-xp-kit:end -->
 ```
 
 ### プロジェクトタイプ検出とテスト環境構築
 
-@src/cc-xp/shared/test-env-check.md
+@shared/test-env-check.md
 
 ### プロジェクトタイプ別必須ファイル生成
 
@@ -227,4 +227,4 @@ CLAUDE.md: [新規作成|TDDセクション追加]
 
 ## 次のステップ
 
-@src/cc-xp/shared/next-steps.md
+@shared/next-steps.md
