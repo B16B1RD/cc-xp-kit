@@ -59,12 +59,18 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 
 ## 🔴🟢🔵 インクリメンタルTDDサイクル
 
-### 進捗確認と次ステップの決定
+### 🚨 CRITICAL: 1回実行での完全実装必須
 
-**🚨 CRITICAL: 全受け入れ基準の実装必須**
+**develop コマンドは以下を1回の実行で完了**します：
+- **全てのacceptance_criteriaの実装**（Red→Green→Refactorサイクル）
+- **全テストがPASS状態**
+- **カバレッジ85%以上達成**
+- **testingステータスへの更新**
 
-develop コマンドは**全てのacceptance_criteriaがgreenになるまで自動継続**します。
-部分実装での終了や時間制約による早期終了は**絶対禁止**です。
+**絶対禁止事項**：
+- 部分実装での終了
+- 時間制約による早期終了
+- 「次回継続」の案内
 
 #### 1. 受け入れ基準の存在確認
 
@@ -107,29 +113,45 @@ test_progress:
 **test_progressが存在しない場合**：
 新規にtest_progressセクションをbacklog.yamlに追加し、全てのacceptance_criteriaを`not_started`ステータスで初期化してください。
 
-#### 3. 次のアクションを決定
+#### 3. 自動TDDサイクル実行
 
-進捗状態に基づいて、次に実行すべきアクションを1つだけ決定：
+**シンプルな自動ループ**で全acceptance_criteriaを実装完了まで継続：
 
-**Case A: 全て not_started の場合**
-→ 最初のacceptance_criteriaのテストを1つ作成
+```
+🔄 自動実装ループ（全criteria greenまで継続）
+=================================================
+while (未完了のacceptance_criteriaが存在) {
+  
+  // Step 1: 次のnot_startedまたはredのcriteriaを特定
+  nextCriteria = 最初のnot_startedまたはredステータスのcriteria
+  
+  // Step 2: TDDサイクル実行
+  if (nextCriteria.status == "not_started") {
+    → Red: そのcriteriaのテストを作成
+    → 必ずテストが失敗することを確認
+    → criteriaのstatusを"red"に更新
+  }
+  
+  if (nextCriteria.status == "red") {
+    → Green: テストを通す最小限の実装
+    → テストがPASSすることを確認
+    → criteriaのstatusを"green"に更新
+  }
+  
+  // Step 3: 進捗確認と継続判定
+  remainingCount = not_startedまたはredのcriteria数
+  if (remainingCount > 0) {
+    → 🔄 自動継続（次のサイクルを即座に実行）
+  } else {
+    → ✅ 全criteria実装完了（testingステータス更新）
+  }
+}
+```
 
-**Case B: 現在 red ステータスがある場合**
-→ そのテストを通す最小限の実装を生成
-
-**Case C: 現在 green で、次が not_started の場合**
-→ 次のacceptance_criteriaのテストを1つ作成（自動継続）
-
-**Case D: 全て green の場合**
-→ **全criteria実装完了** - reviewコマンドへの案内
-
-**🚨 継続実装の必須ルール**:
-- Case A→B→C を**全criteria greenになるまで自動的に繰り返し**
-- 部分実装での停止は絶対禁止
-- 各サイクル後に残り作業数を表示
-- 「時間制約」「判断」による早期終了は一切認めない
-
-**重要**: 一度に複数のテストを作成したり、複数の実装を行うことは禁止です。
+**重要原則**：
+- 1つのcriteriaずつ確実に実装
+- Red→Green→次のcriteriaの自動サイクル
+- 中断・早期終了は一切認めない
 
 ### TDDサイクル実行
 
@@ -276,148 +298,92 @@ development_notes: |
 4. **TODOテスト禁止**: expect(true).toBe(false)を含むテストは作成しない
 5. **🚨 継続実装の必須原則**: 全criteria greenまで自動継続、早期終了禁止
 
-### 🔄 継続実装の自動ループ
+### 🔄 実装進捗の自動管理
 
-**各TDDサイクル完了後の必須確認**：
+**各TDDサイクル完了後の自動処理**：
 
-#### 1. 残り作業の確認と表示
-
-各criteria完了後、必ず以下を確認・表示してください：
+#### 1. 進捗状況の確認と表示
 
 ```
 📊 実装進捗確認
 ================
-- 完了済み: [N]件 / [Total]件
-- 残り作業: [Remaining]件の受け入れ基準
-- 進捗率: [N/Total * 100]%
+- 完了済み: [Green件数]件 / [Total]件  
+- 残り作業: [Not_started + Red件数]件
+- 進捗率: [Green/Total * 100]%
 
-残り受け入れ基準:
-[remaining_criteria_list]
+🔄 次のアクション: [次のcriteria名]の[Red/Green]フェーズを実行
 ```
 
-#### 2. 継続判定と自動ループ
+#### 2. 自動継続の実行
 
 ```
-🔄 継続実装判定
-================
-if (残りacceptance_criteria > 0) {
-  → 🚨 自動継続: 次のacceptance_criteriaのテスト作成を開始
-  → 部分実装での終了は絶対禁止
-  → 「時間制約」「判断」による停止は一切認めない
-} else {
-  → ✅ 全criteria実装完了: testingステータス更新とreview案内
+🚨 CRITICAL: 自動継続実行
+==========================
+while (not_started または red のcriteriaが存在) {
+  nextAction = 次のnot_startedまたはredのcriteria
+  
+  if (nextAction found) {
+    → 即座に次のTDDサイクルを実行
+    → 進捗更新後、再度このループを継続
+  }
+}
+
+if (全criteriaがgreen) {
+  → testingステータス更新
+  → reviewコマンド案内
+  → develop完了宣言
 }
 ```
 
-#### 3. 強制継続メッセージ
+#### 3. 継続実装の保証
 
-残り作業がある場合、以下を必ず表示：
+**絶対に実行される処理**：
+- 各criteria完了後の自動進捗チェック
+- 残り作業がある場合の強制継続
+- 全criteria完了まで停止しない自動ループ
 
-```
-🚨 重要: 継続実装が必要です
-================================
-現在の実装は部分的です。cc-xp-kitでは全受け入れ基準の実装が必須です。
-
-❌ 部分実装での終了は禁止
-❌ 「時間制約」による早期終了は禁止
-❌ 「判断」による停止は禁止
-
-✅ 次のacceptance_criteriaの実装を継続します
-✅ 全criteria greenまで自動実行を継続
-```
-
-### 次回実行時の動作
-
-developコマンドの次回実行時は、test_progressを確認して自動的に次のアクションを決定：
-
-#### 🚨 部分実装状態の自動検出と復旧
-
-```
-📋 部分実装検出ロジック
-=======================
-if (in-progressステータス && 一部criteriaがgreen) {
-  → ⚠️ 部分実装状態を検出
-  → 🔄 自動的に残りcriteriaの実装を継続
-  → 全criteria完了まで強制継続
-}
-```
-
-#### 継続実装の自動判定
-
-- **redステータスがある**: そのテストを通す最小限実装を実行（継続）
-- **次のnot_startedがある**: 次のacceptance_criteriaのテスト作成（継続）
-- **全てgreen**: reviewコマンドへの案内（完了）
-
-#### 部分実装警告メッセージ
-
-```
-⚠️ 部分実装状態を検出しました
-============================
-現在の実装状況: [N]件/[Total]件 ([%]%)
-
-❌ 以前の実行で部分実装のまま終了している可能性があります
-🔄 残り[Remaining]件の受け入れ基準を自動的に継続実装します
-
-cc-xp-kitは全受け入れ基準の実装を必須とします。
-部分実装での終了は一切認められません。
-```
-
-これにより、**真のTDDの小さなサイクルを全criteria完了まで確実に継続**し、段階的に価値を積み重ねることができます。
+**絶対に実行されない処理**：
+- 部分実装での終了メッセージ
+- 「次回継続」の案内
+- 時間制約による早期終了
 
 ## 次のステップ
 
 @shared/next-steps.md
 
-### develop 完了時の重要な案内
+### develop 完了時の案内
 
-#### 🔍 完了条件の厳格な確認
+#### ✅ 完全実装完了の確認
 
-develop完了を宣言する前に、以下を**必ず確認**してください：
-
-```
-📋 完了条件チェックリスト
-========================
-□ 全acceptance_criteriaがgreen状態
-□ test_progressに not_started または red が0件
-□ 全テストがPASS状態
-□ 価値体験が完全実現済み
-□ minimum_experienceが体験可能
-```
-
-#### Case A: 完全実装完了時の案内
-
-**全条件クリア時のみ**以下を案内：
+develop実行により、以下が**確実に達成**されています：
 
 ```
-🚀 次のステップ（全criteria実装完了）
-=======================================
-develop完了：ストーリーのレビューと価値検証を実施してください:
+✅ 完了条件確認済み
+=====================
+✅ 全acceptance_criteriaがgreen状態
+✅ test_progressに not_started/red が0件
+✅ 全テストがPASS状態  
+✅ カバレッジ85%以上達成
+✅ 価値体験が完全実現済み
+✅ testingステータス更新完了
+```
+
+#### 🚀 次のステップ案内
+
+**develop完了により自動的に案内**：
+
+```
+🎉 develop完了: 全acceptance_criteria実装完了
+============================================
+ストーリーのレビューと価値検証を実施してください:
+
 → /cc-xp:review
 
 価値体験確認とコード品質評価を実行し、accept/rejectを判定します。
+全ての実装が完了しているため、reviewで承認される可能性が高いです。
 ```
 
-#### Case B: 部分実装時の継続案内
-
-**部分実装の場合**は以下を案内：
-
-```
-🔄 継続実装が必要です
-==================
-現在の状況: [N]件/[Total]件の受け入れ基準が完了
-
-❌ develop未完了: 残り[Remaining]件の受け入れ基準があります
-🚨 部分実装での終了は禁止されています
-
-次のアクション:
-→ 同一セッション内で継続実装を実行
-→ または次回 /cc-xp:develop で残り実装を継続
-
-⚠️ 重要: review コマンドは全criteria完了後のみ実行してください
-```
-
-**🚨 CRITICAL 禁止事項**:
-- **部分実装での review 案内は絶対禁止**
-- **部分実装での "develop完了" 宣言は絶対禁止**
-- 決して "accept" を直接指示しないでください
-- review コマンドでの評価後に accept/reject が判定されます
+**🎯 成果確認**：
+- 1回のdevelop実行で全実装完了
+- 部分実装状態での終了なし
+- 継続実行の必要なし
