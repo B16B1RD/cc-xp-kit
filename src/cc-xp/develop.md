@@ -57,9 +57,9 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 ⛔ **TDDサイクル完了まではステータスを変更しない**
 ⛔ **done への変更は絶対に行わない（review accept のみ可能）**
 
-## 🔴🟢🔵 TDD実行フェーズ
+## 🔴🟢🔵 インクリメンタルTDDサイクル
 
-### 実装前チェック: 受け入れ基準とE2Eテストの確認
+### 進捗確認と次ステップの決定
 
 #### 1. 受け入れ基準の存在確認
 
@@ -80,166 +80,174 @@ acceptance_criteria:
 → /cc-xp:story  # 受け入れ基準の詳細化
 ```
 
-#### 2. E2Eテストファイルの確認と生成要求
+#### 2. 現在の進捗状態を確認
 
-**E2Eテストファイルの検出**：
-- `test/*e2e*` パターンでファイルを検索
-- `test/*integration*` パターンでファイルを検索
-- Playwrightやその他のE2Eテストフレームワークの設定確認
+backlog.yamlから対象ストーリーの開発進捗を確認してください：
 
-**E2Eテストファイルが存在しない場合**：
-```
-⚠️ E2Eテストが必要: このストーリーには出力・表示要素が含まれています
-
-以下のE2Eテストファイルを作成してください：
-test/[story-id].e2e.js (またはプロジェクトに適した拡張子)
-
-各acceptance_criteriaを以下の形式でテストケースに変換：
-
-// acceptance_criteria: "ブラウザでページを開くとゲーム画面が表示される"
-it('should_display_game_screen_when_page_loads', async () => {
-  await page.goto('/');
-  const gameElement = await page.locator('[data-testid="game-screen"]');
-  expect(await gameElement.isVisible()).toBe(true);
-});
-
-// acceptance_criteria: "テトロミノが1秒間隔で自動的に1行下に移動する"
-it('should_move_tetromino_down_every_second', async () => {
-  const tetromino = await page.locator('[data-testid="tetromino"]');
-  const initialY = (await tetromino.boundingBox()).y;
-  await page.waitForTimeout(1000);
-  const newY = (await tetromino.boundingBox()).y;
-  expect(newY).toBeGreaterThan(initialY);
-});
+```yaml
+test_progress:
+  - criteria_index: 0
+    criteria: "ブラウザでページを開くとゲーム画面が表示される"
+    status: green  # green/red/not_started
+    test_file: "test/display.spec.js"
+  - criteria_index: 1
+    criteria: "テトロミノが1秒間隔で自動的に1行下に移動する"
+    status: red
+    test_file: "test/movement.spec.js"
+  - criteria_index: 2
+    criteria: "プレースホルダーメッセージが表示されない"
+    status: not_started
 ```
 
-#### 3. E2Eテスト失敗確認（Red状態）
+**test_progressが存在しない場合**：
+新規にtest_progressセクションをbacklog.yamlに追加し、全てのacceptance_criteriaを`not_started`ステータスで初期化してください。
 
-E2Eテストファイルが存在する場合、実行して失敗することを確認：
+#### 3. 次のアクションを決定
 
-```bash
-# E2Eテスト実行例
-npm run test:e2e
-# または
-npx playwright test
-```
+進捗状態に基づいて、次に実行すべきアクションを1つだけ決定：
 
-**E2Eテストが成功してしまう場合**：
-受け入れ基準が既に実装済みの可能性があります。reviewコマンドで確認を推奨。
+**Case A: 全て not_started の場合**
+→ 最初のacceptance_criteriaのテストを1つ作成
 
-#### 4. ユニットテスト（TODOテスト）の確認
+**Case B: 現在 red ステータスがある場合**
+→ そのテストを通す最小限の実装を生成
 
-既存のTODOテスト検出も並行して実行：
+**Case C: 現在 green で、次が not_started の場合**
+→ 次のacceptance_criteriaのテストを1つ作成
 
-**TODOテストの判定条件**：
-```javascript
-it('should_implement_game_logic', () => {
-  expect(true).toBe(false); // 🔴 未実装テスト
-});
-```
+**Case D: 全て green の場合**
+→ リファクタリングまたはreviewコマンドへの案内
+
+**重要**: 一度に複数のテストを作成したり、複数の実装を行うことは禁止です。
 
 ### TDDサイクル実行
 
-#### 一度に1つのテストだけ（TODOテスト順次実装）
+### 現在の状態に基づいたアクション実行
 
-**厳格なルール**:
-1. **1つのテストを書く** → **そのテストを通す** → **構造を改善する**
-2. **複数機能の同時実装は禁止**
-3. **一度に1つの振る舞いのみ**
-4. **最小限の進歩を積み重ねる**
+進捗状態に基づいて、以下のいずれか1つを実行してください：
 
-#### Red-Green-Refactorサイクル
+#### Case A: 最初のテスト作成 (not_started → red)
 
-**🔴 Red フェーズ**：
-1. 1つのTODOテストを選択
-2. テストを実行して失敗することを確認
-3. 失敗の原因が期待通りであることを確認
+最初のacceptance_criteriaのみにフォーカスした実動作テストを作成：
 
-**🟢 Green フェーズ**：
-1. テストを通す最小限のコードを実装
-2. そのテストのみが通ることを確認
-3. 他のテストが壊れていないことを確認
-
-**🔵 Refactor フェーズ**：
-1. 全テストが通る状態で構造を改善
-2. 重複の除去
-3. 可読性の向上
-4. 設計の改善
-
-#### TODOテスト順次処理
-
-各TODOテストについて以下を実行：
-
-1. **選択したTODOテストの Red フェーズ**
-2. **Green フェーズ：最小実装**
-3. **Refactor フェーズ：構造改善**
-4. **次のTODOテストへ進行**
-
-全TODOテストの実装が完了するまで反復してください。
-
-### 価値体験実現の確認（E2Eテストベース）
-
-#### acceptance_criteria の完全実現確認
-
-全TODOテスト実装完了後、E2Eテストを実行して受け入れ基準の実現を確認：
-
-```bash
-# E2Eテスト実行
-npm run test:e2e
-# または
-npx playwright test
+```javascript
+// 例: "ブラウザでページを開くとゲーム画面が表示される"
+describe('Game Display', () => {
+  it('should_display_canvas_element', () => {
+    // DOM環境のセットアップ
+    document.body.innerHTML = '<div id="app"></div>';
+    
+    // ゲーム初期化
+    const game = new TetrisGame();
+    
+    // canvas要素の存在確認
+    const canvas = document.getElementById('gameCanvas');
+    expect(canvas).toBeTruthy();
+    expect(canvas.tagName).toBe('CANVAS');
+  });
+});
 ```
 
-**E2Eテスト成功の確認項目**：
-1. **全acceptance_criteriaのテストがPASS**
-   - 各受け入れ基準が実際に動作している
-   - プレースホルダーメッセージが表示されない
-   - ユーザーが期待する出力・操作が実現されている
+**重要**: expect(true).toBe(false) のTODOテストは作成禁止。必ず実動作するテストを作成。
 
-2. **minimum_experienceの完全実現**
-   - E2EテストがPASSすることで、minimum_experienceが実現されている証明
-   - 技術的成功＝価値実現の一致が保証される
+#### Case B: 最小限実装 (red → green)
 
-3. **実際のアプリケーション動作確認**
-   - ブラウザ/アプリを手動で起動して最終確認
-   - E2Eテストで検証された動作が実際に体験可能
+現在失敗しているテストを通す最小限の実装：
 
-**E2Eテストが失敗する場合**：
-- 受け入れ基準が未実装または不完全
-- ユニットテストは成功しても、統合・表示層で問題がある
-- この場合は実装を継続し、E2EテストがPASSするまで開発
+```javascript
+// 最小限実装例
+class TetrisGame {
+  constructor() {
+    // canvas要素を作成してDOMに追加
+    const canvas = document.createElement('canvas');
+    canvas.id = 'gameCanvas';
+    canvas.width = 300;
+    canvas.height = 600;
+    document.getElementById('app').appendChild(canvas);
+  }
+}
+```
 
-### TDDサイクル完了条件
+**重要**: 「最小限」とは、テストを通すための必要最小限のコード。完璧でなくても良い。
 
-以下の条件をすべて満たした場合、TDDサイクル完了：
+#### Case C: 次のテスト作成 (green → red)
 
-1. **全TODOテストが実装済み**（`expect(true).toBe(false)` が0件）
-2. **全ユニットテストがPASS**
-3. **🎯 全E2EテストがPASS**（受け入れ基準の完全実現）
-4. **コードの重複が除去済み**
-5. **設計品質が向上済み**
+次のacceptance_criteriaのテストを1つ作成：
 
-**最重要**: E2EテストのPASSがTDD完了の必須条件です。これにより：
-- acceptance_criteriaの完全実現が保証される
-- minimum_experienceが実際に体験可能であることが証明される
-- 技術的成功と価値実現の一致が確認される
+```javascript
+// 例: "テトロミノが画面上部に出現する"
+it('should_display_tetromino_at_top', () => {
+  const game = new TetrisGame();
+  
+  // テトロミノの初期位置確認
+  expect(game.currentPiece).toBeDefined();
+  expect(game.currentPiece.y).toBe(0);
+  
+  // canvasに描画されているか確認
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, 90, 90); // 上部領域
+  const hasDrawing = Array.from(imageData.data).some(pixel => pixel !== 0);
+  expect(hasDrawing).toBe(true);
+});
+```
 
-### ステータス更新（最終段階のみ）
+#### Case D: リファクタリングまたは完了
 
-TDDサイクル完了後、以下を実行：
+全てのacceptance_criteriaがgreenの場合：
+- コードの重複除去
+- 設計の改善
+- または review コマンドへの案内
 
-1. backlog.yamlのストーリーステータスを `in-progress` から `testing` に更新
-2. `updated_at` を現在時刻で更新
-3. `development_notes` に実装サマリーを追加
+### サイクル完了後の状態更新
+
+1つのacceptance_criteriaのTDDサイクルが完了したら、進捗を記録：
+
+#### Red → Green 完了時の更新
 
 ```yaml
-development_notes: |
-  TDD実装完了:
-  - 実装テスト数: [N]件
-  - Red-Green-Refactorサイクル: [N]回完了
-  - 価値体験実現: minimum_experience 確認済み
-  - 設計品質: リファクタリング[N]回実施
+# backlog.yamlの更新
+test_progress:
+  - criteria_index: 0
+    criteria: "ブラウザでページを開くとゲーム画面が表示される"
+    status: green  # red から green に更新
+    test_file: "test/display.spec.js"
+    implementation_notes: "最小限実装: canvas要素のDOM追加"
+    completed_at: "2025-08-16T17:30:00+09:00"
 ```
+
+#### 全criteria完了時のステータス更新
+
+全てのacceptance_criteriaがgreenになった場合のみ：
+
+```yaml
+stories:
+  - id: story-id
+    status: testing  # in-progress から testing に更新
+    updated_at: "2025-08-16T17:30:00+09:00"
+    development_notes: |
+      インクリメンタルTDD完了:
+      - 実装基準数: 3/3件
+      - 最小限実装 → 段階的改善サイクル: 3回完了
+      - 真のTDDサイクルで価値体験を段階的に実現
+```
+
+#### 重要な原則
+
+1. **1つずつの進捗**: 必ず1つのacceptance_criteriaに集中
+2. **最小限から開始**: 完璧を目指さず、動作することを優先
+3. **段階的な価値実現**: 各criteria完了時にユーザーが体験可能
+4. **TODOテスト禁止**: expect(true).toBe(false)を含むテストは作成しない
+
+### 次回実行時の動作
+
+developコマンドの次回実行時は、test_progressを確認して自動的に次のアクションを決定：
+
+- **redステータスがある**: そのテストを通す最小限実装を提案
+- **次のnot_startedがある**: 次のacceptance_criteriaのテスト作成
+- **全てgreen**: reviewコマンドへの案内
+
+これにより、真のTDDの小さなサイクルを繰り返し、段階的に価値を積み重ねることができます。
 
 ## 次のステップ
 
