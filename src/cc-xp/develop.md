@@ -161,7 +161,9 @@ while (未完了のacceptance_criteriaが存在) {
 
 #### Case A: 最初のテスト作成 (not_started → red)
 
-最初のacceptance_criteriaのみにフォーカスした実動作テストを作成：
+最初のacceptance_criteriaのみにフォーカスした **ユニットテストとE2Eテストの両方** を作成：
+
+##### A-1: ユニットテスト作成
 
 ```javascript
 // 例: "ブラウザでページを開くとゲーム画面が表示される"
@@ -179,6 +181,65 @@ describe('Game Display', () => {
     expect(canvas.tagName).toBe('CANVAS');
   });
 });
+```
+
+##### A-2: E2Eテスト作成（必須）
+
+**⚠️ CRITICAL**: acceptance_criteriaの検証にはE2Eテストが必須です。
+
+`test/e2e/[story-id].e2e.js` にPlaywrightを使用したE2Eテストを作成：
+
+```javascript
+// 例: test/e2e/tetris-core-01.e2e.js
+const { test, expect } = require('@playwright/test');
+
+test.describe('Tetris Game - Core Functionality', () => {
+  test('should display game canvas when page loads', async ({ page }) => {
+    // ページを開く
+    await page.goto('http://localhost:8080');
+    
+    // canvas要素の存在確認
+    const canvas = page.locator('#gameCanvas');
+    await expect(canvas).toBeVisible();
+    
+    // canvas要素の属性確認
+    await expect(canvas).toHaveAttribute('width');
+    await expect(canvas).toHaveAttribute('height');
+    
+    // 実際のcanvas描画確認
+    const canvasElement = await page.locator('#gameCanvas').elementHandle();
+    const context = await page.evaluate(canvas => {
+      return canvas.getContext('2d');
+    }, canvasElement);
+    expect(context).toBeTruthy();
+  });
+});
+```
+
+##### A-3: Playwright設定の自動確認・生成
+
+Playwright設定ファイル（`playwright.config.js`）が存在しない場合は作成：
+
+```javascript
+// playwright.config.js
+module.exports = {
+  testDir: './test/e2e',
+  timeout: 30000,
+  expect: {
+    timeout: 5000
+  },
+  use: {
+    baseURL: 'http://localhost:8080',
+    headless: true,
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure'
+  },
+  webServer: {
+    command: 'npm run start',
+    port: 8080,
+    reuseExistingServer: !process.env.CI
+  }
+};
 ```
 
 **重要**: expect(true).toBe(false) のTODOテストは作成禁止。必ず実動作するテストを作成。
@@ -205,7 +266,9 @@ class TetrisGame {
 
 #### Case C: 次のテスト作成 (green → red)
 
-次のacceptance_criteriaのテストを1つ作成：
+次のacceptance_criteriaに対して **ユニットテストとE2Eテストの両方** を作成：
+
+##### C-1: ユニットテスト作成
 
 ```javascript
 // 例: "テトロミノが画面上部に出現する"
@@ -222,6 +285,66 @@ it('should_display_tetromino_at_top', () => {
   const imageData = ctx.getImageData(0, 0, 90, 90); // 上部領域
   const hasDrawing = Array.from(imageData.data).some(pixel => pixel !== 0);
   expect(hasDrawing).toBe(true);
+});
+```
+
+##### C-2: E2Eテスト作成（必須）
+
+**⚠️ CRITICAL**: 各acceptance_criteriaに対してE2Eテストを必ず追加
+
+```javascript
+// 例: test/e2e/tetris-core-01.e2e.js への追加
+test('should display tetromino at top when game starts', async ({ page }) => {
+  await page.goto('http://localhost:8080');
+  
+  // ゲームキャンバスが表示されるまで待機
+  await page.waitForSelector('#gameCanvas');
+  
+  // テトロミノが上部エリアに表示されているか確認
+  const screenshot = await page.locator('#gameCanvas').screenshot();
+  
+  // 画面上部（例: 上から1/3領域）にピクセルデータが存在するか確認
+  const topRegion = await page.locator('#gameCanvas').boundingBox();
+  const topAreaHeight = Math.floor(topRegion.height / 3);
+  
+  const topPixelData = await page.evaluate(() => {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height / 3);
+    return Array.from(imageData.data).some(pixel => pixel !== 0);
+  });
+  
+  expect(topPixelData).toBe(true);
+});
+```
+
+##### C-3: 価値体験検証の追加
+
+**実際のゲーム体験をE2Eで検証**：
+
+```javascript
+test('should provide actual tetris game experience', async ({ page }) => {
+  await page.goto('http://localhost:8080');
+  
+  // 1秒間隔でテトロミノが落下することを確認
+  await page.waitForSelector('#gameCanvas');
+  
+  // 初期位置を記録
+  const initialPosition = await page.evaluate(() => {
+    const game = window.game; // グローバルアクセス可能な場合
+    return game && game.currentPiece ? game.currentPiece.y : null;
+  });
+  
+  // 1.1秒待機してテトロミノが移動したか確認
+  await page.waitForTimeout(1100);
+  
+  const newPosition = await page.evaluate(() => {
+    const game = window.game;
+    return game && game.currentPiece ? game.currentPiece.y : null;
+  });
+  
+  // テトロミノが下に移動していることを確認
+  expect(newPosition).toBeGreaterThan(initialPosition);
 });
 ```
 
@@ -249,6 +372,60 @@ test_progress:
     completed_at: "2025-08-16T17:30:00+09:00"
 ```
 
+#### カバレッジ設定の確認・改善（必須）
+
+**⚠️ CRITICAL**: カバレッジ85%以上達成のため、Jest設定を確認・改善してください。
+
+##### カバレッジ設定の自動確認
+
+`package.json` の Jest 設定を確認し、以下が含まれていない場合は追加：
+
+```json
+{
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,ts}",
+      "!src/**/*.test.{js,ts}",
+      "!src/**/*.spec.{js,ts}"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"],
+    "coverageThreshold": {
+      "global": {
+        "branches": 85,
+        "functions": 85,
+        "lines": 85,
+        "statements": 85
+      }
+    },
+    "testEnvironment": "jsdom"
+  }
+}
+```
+
+##### カバレッジが0%の場合の対処
+
+カバレッジが0%の場合は以下を確認・実行：
+
+1. **src/ディレクトリの実装ファイル確認**: 実装ファイルが存在するか確認
+2. **Jest設定の追加**: 上記のcollectCoverageFrom設定を package.json に追加
+3. **テスト実行の修正**: `npm test -- --coverage` で再実行してカバレッジを確認
+4. **実装コードのテスト追加**: src/内の関数・クラスに対するユニットテストを追加
+
+##### E2Eテスト環境の確認
+
+Playwright のインストールと設定を確認：
+
+```bash
+# Playwright未インストールの場合
+npm install --save-dev @playwright/test
+npx playwright install
+
+# E2Eテスト実行
+npx playwright test
+```
+
 #### 全criteria完了時のステータス更新
 
 **🚨 CRITICAL: testingステータス更新の厳格な条件**
@@ -256,8 +433,12 @@ test_progress:
 以下の条件を**すべて満たした場合のみ**testingステータスに更新：
 
 1. **全acceptance_criteriaがgreen**: 1つでもnot_startedまたはredがある場合は更新禁止
-2. **全テストが完全に実装**: TODOテストや仮実装は禁止
-3. **価値体験が完全実現**: minimum_experienceが完全に体験可能
+2. **全ユニットテストがPASS**: すべてのテストが成功している状態
+3. **全E2EテストがPASS**: 各acceptance_criteriaに対応するE2Eテストが成功
+4. **カバレッジ85%以上達成**: Jest設定による実装コードのカバレッジが基準を満たす
+5. **価値体験が完全実現**: minimum_experienceが実際のブラウザで体験可能
+6. **E2Eテストファイル存在**: `test/e2e/[story-id].e2e.js` が存在し実行可能
+7. **Playwright設定完了**: playwright.config.js が適切に設定されている
 
 **部分実装での更新は絶対禁止**：
 
