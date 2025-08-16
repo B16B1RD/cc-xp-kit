@@ -76,6 +76,7 @@ cc-xp-kit（旧 cc-tdd-kit）は、Kent Beck の XP 原則と Value-Driven TDD �
 
 **絶対禁止**:
 - テストなしでの実装（アンチパターン）
+- TODO テストの作成（expect(true).toBe(false)等）
 - 複数機能の同時実装
 - Green を飛ばしての Refactor
 - テストを通すためのテスト修正

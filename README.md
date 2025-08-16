@@ -45,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 ```bash
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --user
 
-## 🔄 6 つの XP ワークフロー（research 必須）+ E2Eテスト統合
+## 🔄 6 つの XP ワークフロー（research 必須）+ インクリメンタルTDD統合
 
 ### ワークフロー全体図
 
@@ -113,29 +113,33 @@ stateDiagram-v2
     end note
 ```
 
-### TDD+E2Eサイクル詳細（develop内部）
+### インクリメンタルTDDサイクル詳細（develop内部）
 
 ```mermaid
-graph LR
-    subgraph "/cc-xp:develop"
-        Red[Red<br/>失敗するテスト作成] --> Green[Green<br/>最小限の実装]
-        Green --> Refactor[Refactor<br/>コード改善]
-        Refactor --> E2E{Webアプリ？}
-        E2E -->|Yes| E2ETest[E2E<br/>統合テスト実行]
-        E2E -->|No| Commit[testing状態へ]
-        E2ETest --> Commit
+graph TD
+    subgraph "/cc-xp:develop（段階的実行）"
+        Start([実行]) --> Check{進捗状態確認}
+        
+        Check -->|全てnot_started| CreateFirst[1つ目のテスト作成<br/>🔴 Red]
+        Check -->|現在red| Implement[最小限実装<br/>🟢 Green]
+        Check -->|現在green + 次あり| CreateNext[次のテスト作成<br/>🔴 Red]
+        Check -->|全てgreen| Review[reviewコマンドへ<br/>🔵 Refactor]
+        
+        CreateFirst --> UpdateRed[ステータス: red]
+        Implement --> UpdateGreen[ステータス: green]
+        CreateNext --> UpdateRed
+        
+        UpdateRed --> End([次回実行を待つ])
+        UpdateGreen --> End
     end
     
-    Start([in-progress]) --> Red
-    Commit --> End([testing])
-    
-    style Red fill:#ffcdd2
-    style Green fill:#c8e6c9
-    style Refactor fill:#bbdefb
-    style E2ETest fill:#e1f5fe
+    style CreateFirst fill:#ffcdd2
+    style Implement fill:#c8e6c9
+    style CreateNext fill:#ffcdd2
+    style Review fill:#bbdefb
 ```
 
-### develop ↔ review ループ
+### インクリメンタル develop ↔ review ループ
 
 ```mermaid
 sequenceDiagram
@@ -144,18 +148,27 @@ sequenceDiagram
     participant R as /cc-xp:review
     participant Git as Git Repository
     
-    Dev->>D: 実行
-    D->>D: Red Phase (テスト作成)
-    D->>Git: commit "test: 🔴"
-    D->>D: Green Phase (最小実装)
-    D->>Git: commit "feat: ✅"
-    D->>D: Refactor Phase (改善)
-    D->>Git: commit "refactor: ♻️"
-    opt Webアプリの場合
-        D->>D: E2E Phase (統合テスト)
-        D->>Git: commit "test: 🌐"
-    end
-    D->>Dev: testing状態へ
+    Note over Dev,Git: 1つのacceptance_criteriaずつ段階的に進行
+    
+    Dev->>D: 実行（1回目）
+    D->>D: 1つ目のテスト作成
+    D->>Git: commit "🔴 Red: display test"
+    D->>Dev: red状態で待機
+    
+    Dev->>D: 実行（2回目）
+    D->>D: 最小限実装（return固定値でもOK）
+    D->>Git: commit "🟢 Green: minimal impl"
+    D->>Dev: green状態で待機
+    
+    Dev->>D: 実行（3回目）
+    D->>D: 2つ目のテスト作成
+    D->>Git: commit "🔴 Red: movement test"
+    D->>Dev: red状態で待機
+    
+    Note over Dev,D: 全criteria完了まで繰り返し
+    
+    Dev->>D: 実行（最終）
+    D->>Dev: 全green → reviewへ案内
     
     Dev->>R: 実行
     R->>R: デモ起動
