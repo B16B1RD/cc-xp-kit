@@ -25,7 +25,7 @@ dotnet test
 
 ## E2Eテスト環境の確認（必須）
 
-**⚠️ CRITICAL**: E2Eテストが必須のため、Playwrightの環境確認を実行してください。
+**⚠️ CRITICAL**: E2E テストが必須のため、Playwright の環境確認を実行してください。
 
 ### Playwright環境の確認
 
@@ -52,7 +52,7 @@ dotnet test
 
 ### E2E環境構築失敗時の対応
 
-Playwright環境の構築に失敗した場合は処理を停止し、以下を案内：
+Playwright 環境の構築に失敗した場合は処理を停止し、以下を案内：
 
 ```
 ⛔ E2Eテスト環境構築失敗: Playwrightの設定が必要です
@@ -122,7 +122,7 @@ requirements.txt または pyproject.toml が存在する場合：
 
 以下のテストディレクトリ構造を作成してください：
 - `test/unit` - ユニットテスト用
-- `test/e2e` - E2Eテスト用（必須）
+- `test/e2e` - E2E テスト用（必須）
 - `test/integration` - 統合テスト用  
 - `test/regression` - 回帰テスト用
 - `docs/cc-xp` - cc-xp-kit 作業ファイル用

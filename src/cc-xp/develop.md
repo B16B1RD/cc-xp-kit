@@ -63,14 +63,18 @@ allowed-tools: Bash(git:*), Bash(date), Bash(test), Bash(npm:*), Bash(pnpm:*), B
 
 **develop コマンドは以下を1回の実行で完了**します：
 - **全てのacceptance_criteriaの実装**（Red→Green→Refactorサイクル）
-- **全テストがPASS状態**
-- **カバレッジ85%以上達成**
-- **testingステータスへの更新**
+- **全テストがPASS状態**（1つでも失敗があれば継続実装）
+- **カバレッジ85%以上達成**（未達の場合は追加テスト作成）
+- **E2Eテスト全PASS確認**（失敗時は修正実装）
+- **testingステータスへの更新**（全品質基準達成後のみ）
 
 **絶対禁止事項**：
 - 部分実装での終了
+- テスト失敗状態での終了
+- カバレッジ85%未満での終了
 - 時間制約による早期終了
 - 「次回継続」の案内
+- 品質基準未達成でのtestingステータス更新
 
 #### 1. 受け入れ基準の存在確認
 
@@ -118,32 +122,42 @@ test_progress:
 **シンプルな自動ループ**で全acceptance_criteriaを実装完了まで継続：
 
 ```
-🔄 自動実装ループ（全criteria greenまで継続）
-=================================================
-while (未完了のacceptance_criteriaが存在) {
+🔄 品質保証付き自動実装ループ（品質基準達成まで継続）
+========================================================
+while (true) {
   
-  // Step 1: 次のnot_startedまたはredのcriteriaを特定
-  nextCriteria = 最初のnot_startedまたはredステータスのcriteria
-  
-  // Step 2: TDDサイクル実行
-  if (nextCriteria.status == "not_started") {
-    → Red: そのcriteriaのテストを作成
-    → 必ずテストが失敗することを確認
-    → criteriaのstatusを"red"に更新
+  // Phase 1: acceptance_criteria実装ループ
+  while (未完了のacceptance_criteriaが存在) {
+    // Step 1: 次のnot_startedまたはredのcriteriaを特定
+    nextCriteria = 最初のnot_startedまたはredステータスのcriteria
+    
+    // Step 2: TDDサイクル実行
+    if (nextCriteria.status == "not_started") {
+      → Red: そのcriteriaのテストを作成
+      → 必ずテストが失敗することを確認
+      → criteriaのstatusを"red"に更新
+    }
+    
+    if (nextCriteria.status == "red") {
+      → Green: テストを通す最小限の実装
+      → テストがPASSすることを確認
+      → criteriaのstatusを"green"に更新
+    }
   }
   
-  if (nextCriteria.status == "red") {
-    → Green: テストを通す最小限の実装
-    → テストがPASSすることを確認
-    → criteriaのstatusを"green"に更新
-  }
+  // Phase 2: 品質ゲート検証（必須）
+  全テスト実行結果 = npm test実行
+  カバレッジ結果 = npm test --coverage実行
+  E2Eテスト結果 = npx playwright test実行
   
-  // Step 3: 進捗確認と継続判定
-  remainingCount = not_startedまたはredのcriteria数
-  if (remainingCount > 0) {
-    → 🔄 自動継続（次のサイクルを即座に実行）
+  if (全テストPASS && カバレッジ85%以上 && E2EテストPASS) {
+    → ✅ 品質基準達成（testingステータス更新）
+    break;  // ループ終了
   } else {
-    → ✅ 全criteria実装完了（testingステータス更新）
+    → 🚨 品質基準未達成（継続実装必須）
+    → 失敗テストの修正実装
+    → 不足カバレッジの追加テスト作成
+    continue;  // Phase 1に戻って継続
   }
 }
 ```
@@ -432,30 +446,84 @@ npx playwright test
 
 以下の条件を**すべて満たした場合のみ**testingステータスに更新：
 
+### 🔒 品質ゲート検証の実行（必須）
+
+testingステータスへの更新前に以下を必ず実行し、**全て成功することを確認**：
+
+#### ステップ1: 全テスト実行とPASS確認
+
+```bash
+npm test
+```
+**結果判定**: 1つでもFAILがある場合は実装継続必須
+
+#### ステップ2: カバレッジ85%以上確認
+
+```bash
+npm test -- --coverage
+```
+**結果判定**: 以下すべてが85%以上必須
+- Statements: 85%以上
+- Branches: 85%以上
+- Functions: 85%以上
+- Lines: 85%以上
+
+#### ステップ3: E2Eテスト全PASS確認
+
+```bash
+npx playwright test
+```
+**結果判定**: 1つでもFAILがある場合は修正実装必須
+
+### 📋 更新可能条件（すべて必須）
+
 1. **全acceptance_criteriaがgreen**: 1つでもnot_startedまたはredがある場合は更新禁止
-2. **全ユニットテストがPASS**: すべてのテストが成功している状態
-3. **全E2EテストがPASS**: 各acceptance_criteriaに対応するE2Eテストが成功
-4. **カバレッジ85%以上達成**: Jest設定による実装コードのカバレッジが基準を満たす
+2. **全ユニットテストがPASS**: 上記ステップ1で確認済み
+3. **全E2EテストがPASS**: 上記ステップ3で確認済み
+4. **カバレッジ85%以上達成**: 上記ステップ2で確認済み
 5. **価値体験が完全実現**: minimum_experienceが実際のブラウザで体験可能
 6. **E2Eテストファイル存在**: `test/e2e/[story-id].e2e.js` が存在し実行可能
 7. **Playwright設定完了**: playwright.config.js が適切に設定されている
 
-**部分実装での更新は絶対禁止**：
+### 🚨 テスト失敗時・カバレッジ不足時の必須対応
+
+#### 🔴 ユニットテスト失敗時の対応
+
+1. **失敗内容の詳細確認**: エラーメッセージと期待値/実際値を確認
+2. **実装コードの修正**: 失敗の原因となっている実装を修正
+3. **テスト再実行**: 修正後に npm test で成功確認
+4. **全テストPASSまで継続**: 1つでも失敗があれば修正を継続
+
+#### 📊 カバレッジ不足時の対応
+
+1. **未カバーコードの特定**: カバレッジレポートで未カバー箇所を確認
+2. **追加テストケース作成**: 未カバー部分のユニットテストを作成
+3. **エッジケースのテスト追加**: 境界値、異常系のテストケースを追加
+4. **カバレッジ85%達成まで継続**: 基準達成まで追加テスト作成を継続
+
+#### 🎭 E2Eテスト失敗時の対応
+
+1. **失敗シナリオの確認**: どのE2Eテストケースが失敗しているか確認
+2. **実装の修正**: E2Eテスト失敗の原因となっている実装を修正
+3. **ブラウザ確認**: 実際のブラウザで期待通りの動作をするか確認
+4. **E2E全PASSまで継続**: すべてのE2Eテストが成功するまで修正継続
+
+**部分実装・品質未達成での更新は絶対禁止**：
 
 ```yaml
-# ❌ 禁止例（2/10件実装）
-# status: testing  # 絶対に更新しない
+# ❌ 禁止例（品質基準未達成）
+# status: testing  # テスト失敗・カバレッジ不足で絶対に更新しない
 
-# ✅ 正しい例（全件実装完了時のみ）
+# ✅ 正しい例（全品質基準達成時のみ）
 stories:
   - id: story-id
     status: testing  # in-progress から testing に更新
     updated_at: "2025-08-16T17:30:00+09:00"
     development_notes: |
-      インクリメンタルTDD完了（全基準実装）:
+      品質保証付きTDD完了（全基準達成）:
       - 実装基準数: 10/10件（100%完了）
-      - 最小限実装 → 段階的改善サイクル: 10回完了
-      - 全acceptance_criteriaがgreen確認済み
+      - 全テスト成功: ユニット・E2E全てPASS
+      - カバレッジ達成: 85%以上（Statements/Branches/Functions/Lines）
       - 価値体験完全実現確認済み
 ```
 
@@ -498,21 +566,36 @@ development_notes: |
 #### 2. 自動継続の実行
 
 ```
-🚨 CRITICAL: 自動継続実行
-==========================
-while (not_started または red のcriteriaが存在) {
-  nextAction = 次のnot_startedまたはredのcriteria
-  
-  if (nextAction found) {
-    → 即座に次のTDDサイクルを実行
-    → 進捗更新後、再度このループを継続
+🚨 CRITICAL: 品質保証付き自動継続実行
+=====================================
+while (true) {
+  // Phase 1: criteria実装ループ
+  while (not_started または red のcriteriaが存在) {
+    nextAction = 次のnot_startedまたはredのcriteria
+    
+    if (nextAction found) {
+      → 即座に次のTDDサイクルを実行
+      → 進捗更新後、再度このループを継続
+    }
   }
-}
-
-if (全criteriaがgreen) {
-  → testingステータス更新
-  → reviewコマンド案内
-  → develop完了宣言
+  
+  // Phase 2: 品質ゲート検証（必須）
+  testResults = npm test実行
+  coverageResults = npm test --coverage実行
+  e2eResults = npx playwright test実行
+  
+  if (testResults.allPassed && coverageResults.above85Percent && e2eResults.allPassed) {
+    → ✅ 全品質基準達成
+    → testingステータス更新
+    → reviewコマンド案内
+    → develop完了宣言
+    break;
+  } else {
+    → 🚨 品質基準未達成（継続実装必須）
+    → 失敗要因の詳細分析
+    → 修正実装・追加テスト作成
+    continue;  // Phase 1に戻る
+  }
 }
 ```
 
@@ -527,6 +610,9 @@ if (全criteriaがgreen) {
 - 部分実装での終了メッセージ
 - 「次回継続」の案内
 - 時間制約による早期終了
+- テスト失敗状態での終了
+- カバレッジ85%未満での終了
+- 品質基準未達成でのtestingステータス更新
 
 ## 次のステップ
 
@@ -543,8 +629,10 @@ develop実行により、以下が**確実に達成**されています：
 =====================
 ✅ 全acceptance_criteriaがgreen状態
 ✅ test_progressに not_started/red が0件
-✅ 全テストがPASS状態  
-✅ カバレッジ85%以上達成
+✅ 全ユニットテストがPASS状態（npm test成功）
+✅ 全E2EテストがPASS状態（npx playwright test成功）
+✅ カバレッジ85%以上達成（Statements/Branches/Functions/Lines）
+✅ 品質ゲート検証完了済み
 ✅ 価値体験が完全実現済み
 ✅ testingステータス更新完了
 ```
