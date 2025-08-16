@@ -6,7 +6,7 @@
 
 ### 1. plan 完了時
 
-→ /cc-xp:story[selected-story-id]
+→ /cc-xp:story selected-story-id
 （最初のストーリーを詳細化）
 
 ### 2. story 完了時
@@ -27,7 +27,7 @@
 ### 5. review accept時（status: "done"）
 
 - 他のストーリーがある場合:
-  → /cc-xp:story[next-story-id]
+  → /cc-xp:story next-story-id
 - 振り返りを実施する場合:
   → /cc-xp:retro
 
@@ -53,7 +53,7 @@
 🚀 次のステップ
 ================
 [状況に応じた案内文]:
-→ /cc-xp:[次のコマンド]
+→ /cc-xp:command arguments
 
 [補足説明があれば記載]
 ```
