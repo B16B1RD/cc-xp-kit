@@ -1,33 +1,33 @@
 ---
-description: 現在のプロジェクトを起動してプレビューする（previewer サブエージェント利用）
-argument-hint: "[任意] 実行モード指定（例: web, cli, test）"
-allowed-tools: Bash(npm:*), Bash(yarn:*), Bash(pnpm:*), Bash(pip:*), Bash(python:*), Bash(node:*), Bash(deno:*), Bash(cargo:*), Bash(go:*), Bash(docker:*), Bash(npx:*), Bash(ls:*), Bash(cat:*), Read(*)
+description: プロジェクトを実行/ビルドして動作プレビューを行う。実処理は previewer サブエージェントに委譲する。
+argument-hint: '[任意] プレビューの観点や動かしたいシナリオ（例: "スタンドアロンHTMLの起動確認"）'
+allowed-tools: Read(*), Bash(npm:*), Bash(pnpm:*), Bash(yarn:*), Bash(deno:*), Bash(go:*), Bash(python:*), Bash(uv:*), Test(*)
 ---
 # /xp:preview
 
-## Goal
+## Delegation
 
-- scaffold / tdd により生成されたコードを実行し、**ユーザーが動作を確認できる形でプレビュー**を行う
-- GUI/Web/CLI のいずれかを自動判定して実行
-- フィードバック可能な成果物を得る
+- 実際のプレビュー計画立案・実行・結果記録は **previewer サブエージェント**が担当。
+- 本コマンドは前処理（ファイル受け渡し・チェック）と委譲のみを行う。
 
-## Task
+## Pre-checks（自然文＋相当コマンド）
 
-1. Detect execution context:
+- プレビューに必要なメタ情報の有無を確認する：
+  - `docs/xp/discovery-intent.yaml`（あれば参照）  
+  - `docs/xp/architecture.md`（あれば参照）
+- 代表的な起動手段の存在を確認する（存在確認のみ。変更は行わない）：
+  - Node系: `package.json` の `scripts.start` / `scripts.dev` / `scripts.build`（相当コマンド: `cat package.json`）
+  - Python系: `pyproject.toml` / `requirements.txt`（相当コマンド: `test -f pyproject.toml`）
+  - Deno/Go: 主要エントリ（相当コマンド: `ls -1`）
+  - スタンドアロンHTML: `index.html`（相当コマンド: `test -f index.html || test -f public/index.html`）
 
-   - package.json → npm/yarn/pnpm run start
-   - requirements.txt → python main.py or flask run
-   - Dockerfile → docker build & run
-   - その他のエントリポイント → auto-detect
+## Inputs（ファイル受け渡し）
 
-2. Run the project in preview mode:
+- docs/xp/discovery-intent.yaml（任意／配布形態に応じたプレビュー方法の選択に使用）
+- docs/xp/architecture.md（任意）
+- package.json / pyproject.toml / requirements.txt / deno.json など（任意）
 
-   - Web: URL を表示
-   - CLI: 実行結果をコンソール出力
-   - Test: ユニットテストを走らせ、結果を表示
+## Notes
 
-3. Print summary:
-
-   - 実行コマンド内容
-   - プレビュー URL または出力結果
-   - 次の推奨コマンド（例: `/xp:tdd` で新機能追加、`/xp:retro` で振り返り）
+- **ソースコードの書き換えは行わない。**（プレビューのためのビルド/起動は可）
+- エラーや不具合が見つかった場合は **/xp:review** の実行を案内し、バグ分析（analysis.yaml）へ引き継ぐ。

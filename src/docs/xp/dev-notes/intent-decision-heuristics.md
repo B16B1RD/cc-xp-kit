@@ -4,9 +4,9 @@
 
 ## Confidence しきい値
 
-- 0.75–1.00 : MVPで採用
+- 0.75–1.00 : MVP で採用
 - 0.40–0.74 : Optional（将来拡張）。今は実装しない or 契約/モックに留める
-- 0.00–0.39 : 見送り（ADRに記述し条件が整えば再検討）
+- 0.00–0.39 : 見送り（ADR に記述し条件が整えば再検討）
 
 ## 分岐の考え方
 
@@ -18,5 +18,6 @@
 ## よくある例
 
 - `standalone-html` + `frontend-only(≥0.7)` → **完全ローカルMVP**。API/認証は Optional。
-- `optional-cloud-leaderboard(0.5–0.7)` → `api/leaderboard.stub.yaml` を作成し、採用条件を ADR へ。
+- `optional-cloud-leaderboard(0.5–0.7)` → `api/leaderboard.stub.yaml`
+  を作成し、採用条件を ADR へ。
 - `required-auth(≥0.75)` → 認証ガードの ATDD を先に作る（未ログイン時の期待挙動）。

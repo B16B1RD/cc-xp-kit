@@ -22,6 +22,7 @@ argument-hint: "<requirements|acceptance|architecture|adr|test-strategy|runbook|
 - 併せて「各セクションの埋め方ガイド」をファイル末尾に追加
 
 Notes:
+
 - adr の場合は `docs/xp/adr/000x-template.md` として次の番号で作成
 - 既存ファイルがあれば全置換
 

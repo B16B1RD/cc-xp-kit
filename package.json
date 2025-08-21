@@ -1,0 +1,24 @@
+{
+  "name": "cc-tdd-kit",
+  "version": "0.3.2",
+  "description": "Claude Code XP Kit - Intent Model駆動開発プラットフォーム",
+  "scripts": {
+    "lint:md": "markdownlint **/*.md --ignore node_modules",
+    "lint:fix": "markdownlint **/*.md --ignore node_modules --fix"
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.37.0",
+    "textlint": "^12.6.1",
+    "textlint-rule-preset-ja-spacing": "^2.4.3",
+    "textlint-rule-preset-ja-technical-writing": "^12.0.2"
+  },
+  "keywords": [
+    "tdd",
+    "xp",
+    "claude",
+    "intent-model",
+    "development"
+  ],
+  "author": "CC-TDD-Kit Contributors",
+  "license": "MIT"
+}

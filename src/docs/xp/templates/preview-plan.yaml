@@ -1,0 +1,16 @@
+# Preview Plan (Template)
+kind: "<standalone-html|spa-dev|pwa|cli|api>"
+assumptions:
+  - "<例: Node.js 18+ がインストールされている>"
+  - "<例: 依存のインストール済み>"
+commands:
+  dev: "<例: npm run dev>"
+  build: "<例: npm run build>"
+  serve: "<例: npx serve -s dist>"
+endpoints:
+  - url: "http://localhost:5173/"
+    check: "ページタイトルに 'Tetris' を含む"
+smoke:
+  - "アプリが起動し、主要UI要素が表示される"
+notes:
+  - "失敗したら /xp:review を実行して分析へ"

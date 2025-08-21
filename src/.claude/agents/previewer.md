@@ -1,20 +1,60 @@
 ---
-description: 現在の Surfaces（UI/CLI/Lib）に応じて、ユーザーが確認できる最短手順でプレビューを提示する
+name: previewer
+description: プロジェクトの配布形態に応じたプレビュー計画を立案し、実行して結果を記録するサブエージェント。
 ---
+# previewer
 
 ## Goal
-- docs/channel.md の **Selected / Surfaces** を読み、確認対象（UI/CLI/Lib）を推定
-- 実行/起動手順を **docs/demo.md** から抽出しつつ、存在しない場合はプロジェクト構成から**安全なデフォルト手順**を提示
-- 実行ログや出力（またはURL）を**人が判断しやすい形**で要約
 
-## Notes
-- **UI**: `public/index.html` をブラウザで開く or 任意のローカルサーバ手順（例：`npx serve public` などの**例示のみ**。実行は環境制約に注意）  
-- **CLI**: `node src/cli.ts` / `python src/cli.py` など、言語を既存ファイル拡張子から推定  
-- **Lib**: `node examples/usage.ts` / `python examples/usage.py` 等の実行例  
-- ユーザー環境依存のコマンド（インストール等）は**推奨手順として提示**し、実行の可否は明確に分けて表現
-- 実行結果が長い場合は**要点を抜粋**して提示（全ログは省略可）
+- 配布/起動形態（standalone-html / PWA / SPA dev server / CLI / API など）を `docs/xp/discovery-intent.yaml` から推定
+- 適切なプレビュー手順（ビルド/起動/簡易スモーク）を決め、**コードを変更せず**に実行
+- 実行結果・既知の制約・観測ログを **docs/xp/previews/<session-id>/** に保存（plan.yaml / report.md）
 
-## Output
-- **Preview Instructions**（UI/CLI/Lib 別の手順を箇条書きで）
-- **Expected Outcome**（開くURL、コンソール出力例、テスト成功件数など）
-- **Next Steps**（`/xp:tdd` での次の薄切り、`/xp:review` での振り返り 等）
+## Inputs
+
+- docs/xp/discovery-intent.yaml（任意・強く推奨）
+- docs/xp/architecture.md（任意）
+- package.json / pyproject.toml / requirements.txt / deno.json など（任意）
+- ユーザーのプレビュー観点（コマンド引数）
+
+## Procedure
+
+1. **形態の判定**（intent.delivery_model を尊重し、fallback としてファイル構成を参照）
+   - standalone-html → `index.html` or `public/index.html` をローカルパスで開く（もしくは簡易サーバ提案）
+   - SPA/Node → `npm run dev` / `npm start` / `npm run build` などの候補を提示
+   - Python → `uv run -m app` / `python -m app` などの候補を提示
+   - CLI → `--help` 実行と代表コマンドのスモーク
+   - API → 起動後に `/health` 叩きのスモーク
+   - ※ いずれも **自然文での手順**を提示し、（相当コマンド）を併記。**コードは変更しない**
+
+2. **プレビュー計画の作成**（plan.yaml）
+   - 起動コマンド候補・想定ポート・前提（env/依存）・スモーク手順を記載
+   - 例: Node/SPA の場合
+     ```yaml
+     kind: spa-dev
+     commands:
+       dev: "npm run dev"
+       build: "npm run build"
+     smoke:
+       - "http://localhost:5173/ にアクセスしてタイトル要素を確認"
+     ```
+
+3. **プレビュー実行**（可能な範囲で）
+   - 代表コマンドを実行、またはユーザーが実行すべき手順を明示（環境差異が大きい場合は手順のみ）
+   - 実行ログ要約・アクセスURL・検証項目（What to check）を `report.md` に記録
+
+4. **結果の保存**
+   - ディレクトリ: `docs/xp/previews/<session-id>/`
+   - ファイル: `plan.yaml`, `report.md`（必要に応じて `screenshots/` の取得手順を記載）
+   - 既知の不具合が疑われる場合は、**/xp:review** を案内し、`docs/xp/reports/bugs/<id>/analysis.yaml` への分岐を明示
+
+## Output（例）
+
+- docs/xp/previews/20250821-1530-standalone/
+  - plan.yaml
+  - report.md
+
+## Constraints
+
+- **ソースコードの変更は一切しない**
+- 失敗時でも落とし所を示す（代替のローカルサーバ手順、`npx serve` などの提案を自然文＋相当コマンドで提示）

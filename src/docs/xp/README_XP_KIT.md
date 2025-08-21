@@ -11,7 +11,7 @@
    * `/xp:discovery "<曖昧要件>"`
      → 要件の背景・ペルソナ・ユースケースを分析し、`docs/xp/discovery.yaml` を生成
    * `/xp:design`
-     → `discovery.yaml` を参照し、C4設計・ADR・必要に応じて API 仕様を生成
+     → `discovery.yaml` を参照し、C4 設計・ADR・必要に応じて API 仕様を生成
    * `/xp:scaffold`
      → 設計をもとに最小限の足場を生成（src/, tests/, docs/xp/ 等）
    * `/xp:tdd "<story>"`

@@ -2,7 +2,7 @@
 
 ## C4: Context
 
-- 利用者 / 外部SaaS / 制約
+- 利用者 / 外部 SaaS / 制約
 
 ## C4: Containers
 
@@ -10,7 +10,7 @@
 
 ## C4: Components（主要ユースケース別）
 
-- 認証 / 決済 / 通知 / レポート / 管理 など
+- 認証 / 決済 / 通知 / レポート / 管理など
 
 ## Security & Observability
 
