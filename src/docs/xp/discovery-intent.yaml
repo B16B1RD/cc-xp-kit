@@ -1,0 +1,87 @@
+# load YAML
+Y = read_yaml("docs/xp/discovery-intent.yaml")
+
+# shorthand
+intent = Y.intent
+caps   = Y.capabilities # [{name, confidence, rationale}, ...]
+
+# convenience getters
+conf(name) = (caps.find(c => c.name == name)?.confidence) or 0.0
+has(name, thr=0.75) = conf(name) >= thr
+
+# classification (confidence thresholds)
+frontend_only       = has("frontend-only", 0.70)
+optional_leaderboard= conf("optional-cloud-leaderboard") >= 0.50
+required_auth       = has("required-auth", 0.70)
+optional_auth       = conf("optional-auth") >= 0.50
+delivery            = intent.delivery_model  # "standalone-html" | "pwa" | "desktop" | ...
+
+# choose output mode: single / split / mvp+addons
+# 基本ルール: 確度が高いものをMVP、曖昧なものは Optional Add-on へ。
+mode = "mvp+addons"
+if required_auth or has("backend-required", 0.75):
+  mode = "single"   # 明確にサーバ等が必須
+elif optional_leaderboard or optional_auth:
+  mode = "mvp+addons"
+else:
+  mode = "single"   # ほぼフロント単体で完結
+
+# MVP architecture
+mvp = {
+  runtime: case delivery of
+    "standalone-html" -> "Static HTML+JS+Canvas"
+    "pwa"             -> "PWA (Service Worker, offline cache)"
+    "desktop"         -> "Desktop runtime (e.g., Tauri/Electron)"
+    else              -> "Static SPA"
+  persistence: if frontend_only then "IndexedDB/LocalStorage" else "TBD",
+  auth: if required_auth then "OIDC/JWT" else "none",
+  api:  if required_auth then "REST/Graph endpoints (required)" else "none"
+}
+
+# Optional Add-ons (only if confidence in [0.40, 0.75) or roadmap hints)
+addons = []
+if optional_leaderboard:
+  addons.push({
+    name: "Cloud Leaderboard",
+    api_stub: "api/leaderboard.stub.yaml",
+    adoption_conditions: [
+      "スコア共有を望むユーザーが>30%",
+      "データ保持/プライバシの合意",
+      "運用/コスト予算の確保"
+    ],
+    auth: (optional_auth ? "匿名ID or OIDC (検討)" : "匿名ID"),
+  })
+
+if optional_auth and not required_auth:
+  addons.push({
+    name: "Optional Authentication",
+    adr: "docs/xp/adr/000X-auth-optional.md",
+    adoption_conditions: [
+      "マルチデバイス同期要求",
+      "ランキングの不正対策",
+    ]
+  })
+
+# produce files
+write("docs/xp/architecture.md", render_c4(mvp, addons, delivery)) # MVPは実線, Add-onsは点線
+write("docs/xp/adr/0001-runtime-model.md", rationale_runtime(mvp, delivery))
+write("docs/xp/adr/0002-data-persistence.md", rationale_data(mvp, addons))
+if addons includes "Cloud Leaderboard":
+  write("api/leaderboard.stub.yaml", stub_with_note("未採用（採用条件を満たしたら採用）"))
+
+# suggest first TDD stories
+tdd_first = []
+if delivery in ["standalone-html","pwa","desktop"]:
+  tdd_first.push("ゲームループと入力（60fps、遅延≤16ms）")
+  tdd_first.push("公式ガイド準拠の回転・SRSの検証テスト")
+  tdd_first.push("ローカル高スコアの保存/読み出し（IndexedDB）")
+if optional_leaderboard:
+  tdd_first.push("（Optional）スコア送受信APIのモック/契約テスト")
+
+return {
+  files: [...],
+  next_steps: [
+    `/xp:tdd "${tdd_first[0]}"`,
+    "Open Questions に回答が出たら discovery-intent.yaml を更新し再設計"
+  ]
+}

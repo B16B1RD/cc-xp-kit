@@ -2,6 +2,67 @@
 
 cc-xp-kit の主要な変更をお知らせします。
 
+## [0.3.0] - 2025-08-21
+
+### 🎯 XP Kit アーキテクチャ完全刷新
+
+cc-xp-kit から **cc-xp-kit (XP Kit)** へと進化。コマンド体系とアーキテクチャを根本的に再設計しました。
+
+#### ✨ 新機能
+
+**新しいXPコマンド体系**
+- `/xp:discovery "<曖昧要件>"` - Intent Modelによる要件構造化
+- `/xp:design` - C4設計・ADR・API仕様の自動生成
+- `/xp:scaffold` - 最小限足場の自動構築
+- `/xp:tdd "<story>"` - Red→Green→Refactor TDD実装
+- `/xp:cicd` - CI/CDパイプライン・品質ゲート設定
+- `/xp:review` - レビュー資料・レトロスペクティブ出力
+- `/xp:doc <テンプレ名>` - 各種雛形の展開
+- `/xp:retro` - メトリクス分析による振り返り
+- `/xp:preview` - 動作確認・デモ起動
+
+**サブエージェント・アーキテクチャ**
+- 役割別サブエージェント（`src/.claude/agents/`）
+- 文脈独立管理による専門性の向上
+- intake-classifier, architect, scaffolder, tdd-dev, reviewer, devops, previewer
+
+**Intent Model 駆動設計**
+- 曖昧要件からのcapabilities信頼度分析
+- MVP + Optional Add-ons 自動分離
+- YAML駆動によるコマンド間連携
+
+#### 🔄 破壊的変更
+
+**コマンド体系の変更**
+- 旧: `/cc-xp:plan|story|develop|review|retro` (5コマンド)
+- 新: `/xp:discovery|design|scaffold|tdd|cicd|review|doc|retro|preview` (9コマンド)
+
+**ファイル構造の変更**
+- 旧: `src/cc-xp/*.md`
+- 新: `src/.claude/commands/xp/*.md` + `src/.claude/agents/*.md`
+
+**設計アプローチの変更**
+- 旧: フィーチャーレベルTDD粒度システム
+- 新: Intent Model駆動 + MVP/Add-ons分離
+
+#### 📁 新しい構造
+
+```
+src/
+├── .claude/
+│   ├── commands/xp/        # 9つのXPコマンド
+│   └── agents/             # 専門サブエージェント
+└── docs/xp/
+    ├── templates/          # 各種テンプレート
+    └── discovery-intent.yaml  # Intent Model永続化
+```
+
+#### 🎨 設計哲学の深化
+
+- **Intent Model**: 要件を構造化された意図として表現
+- **Capability Analysis**: 信頼度付きfeature候補分析
+- **MVP First**: 確実な価値から段階的拡張
+
 ## [0.2.1] - 2025-08-07
 
 ### 統合XPワークフロー大幅改善

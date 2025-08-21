@@ -1,0 +1,53 @@
+# Discovery Intent (Template)
+# /xp:discovery 実行時に docs/discovery-intent.yaml を生成・更新する際のベース構造
+
+intent:
+  outcome: "<例: ブラウザだけでテトリスを遊べる>"
+  user_context:
+    connectivity: "<online|offline|mixed>"
+    devices: ["<desktop>", "<mobile?>"]
+    shared_device: false
+  delivery_model: "<standalone-html|pwa|desktop|mobile|cli|library>"
+  data_scope: "<local|org|public>"
+  collaboration: "<none|async|realtime>"
+  persistence_need: "<none|short|long|strong-consistency>"
+  privacy_security:
+    pii: false
+    payment: false
+    age_restriction: false
+  operational_constraints:
+    no_server: true
+    low_cost: true
+    maintenance_team: "<none|small|dedicated>"
+  roadmap_hints:
+    - "<例: cloud-leaderboard?>"
+
+capabilities:
+  - name: "frontend-only"
+    confidence: 0.80
+    rationale: "ローカル実行/配布が主目的で、共有要件が不明"
+  - name: "optional-cloud-leaderboard"
+    confidence: 0.55
+    rationale: "将来スコア共有の可能性"
+  - name: "no-auth"
+    confidence: 0.75
+    rationale: "個人ローカルの利用前提"
+
+non_functional:
+  performance:
+    frame_target: "60fps"
+    input_latency_ms_p95: 16
+    initial_load_budget_kb: 200
+  distribution: "double-click runnable; install-free"
+  accessibility: "basic keyboard support"
+  observability: "local debug logs only"
+
+risks:
+  - "公式ガイド準拠の解釈差（回転・SRS 等）"
+assumptions:
+  - "当面はローカル利用中心"
+
+open_questions:
+  - "スコアを他者と共有したいか？"
+  - "マルチデバイス間で同期したいか？"
+  - "完全オフライン必須か？一時的オンラインは許容？"

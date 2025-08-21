@@ -2,19 +2,19 @@
 
 *🤖 このキットは [Claude Code](https://claude.ai/code) を使った Vibe Coding で開発されました*
 
-Kent Beck XP + TDD 統合開発を、5 つのスラッシュコマンドで。
+Intent Model駆動のXP開発を、9つのスラッシュコマンドで。
 
 ## 🎯 哲学
 
 > "シンプルさこそが究極の洗練である" - レオナルド・ダ・ヴィンチ
 
-Kent Beck の XP 原則と TDD サイクルを完全統合し、フィーチャーレベルでの実用的開発を実現します。
+Intent Modelによる要件構造化からMVP実装まで、XP原則に基づく統合開発プラットフォーム。
 
-- **コミュニケーション** - ユーザーストーリー中心の対話型開発
-- **シンプルさ** - 5 つのコマンドによる明確なワークフロー
-- **フィードバック** - Red→Green→Refactor による継続的改善
-- **勇気** - フィーチャーブランチでの安心実験
-- **尊重** - モダンツールチェーンと開発者体験の最適化
+- **意図の構造化** - 曖昧要件をIntent Modelで分析・信頼度評価
+- **MVP駆動設計** - 確実な価値から段階的拡張
+- **サブエージェント** - 専門役割による文脈独立管理
+- **TDD実装** - Red→Green→Refactor による厳密サイクル
+- **外部統合** - MCP Server経由の拡張性
 
 ## 🚀 クイックスタート
 
@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 
 # 3. Claude Code を起動
 # Claude Code起動後、以下のコマンドを実行：
-/cc-xp:plan "ウェブブラウザで遊べるテトリスが欲しい"
+/xp:discovery "ウェブブラウザで遊べるテトリスが欲しい"
 ```
 
 ### その他のインストール方法
@@ -46,167 +46,183 @@ curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh |
 curl -fsSL https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/main/install.sh | bash -s -- --user
 ```
 
-## 🔄 5 つの XP ワークフロー
+## 🔄 9つのXPワークフロー
 
 ### ワークフロー全体図
 
 ```mermaid
 graph TB
-    Start([開始]) --> Plan["/cc-xp:plan<br/>要望からストーリー抽出"]
-    Plan --> Story["/cc-xp:story<br/>ストーリー詳細化"]
-    Story --> Develop["/cc-xp:develop<br/>TDDサイクル"]
-    Develop --> Review["/cc-xp:review<br/>動作確認"]
+    Start([開始]) --> Discovery["/xp:discovery<br/>要件構造化"]
+    Discovery --> Design["/xp:design<br/>C4設計・ADR"]
+    Design --> Scaffold["/xp:scaffold<br/>足場構築"]
+    Scaffold --> TDD["/xp:tdd<br/>TDD実装"]
+    TDD --> CICD["/xp:cicd<br/>CI/CD設定"]
+    CICD --> Preview["/xp:preview<br/>動作確認"]
     
-    Review --> ReviewDecision{判定}
-    ReviewDecision -->|accept| Done[完了]
-    ReviewDecision -->|reject| Develop
-    ReviewDecision -->|skip| Review
+    Preview --> ReviewDecision{判定}
+    ReviewDecision -->|accept| Review["/xp:review<br/>レビュー"]
+    ReviewDecision -->|reject| TDD
+    ReviewDecision -->|skip| Preview
     
-    Done --> NextDecision{次は？}
-    NextDecision -->|次のストーリー| Story
-    NextDecision -->|振り返り| Retro["/cc-xp:retro<br/>振り返り"]
-    NextDecision -->|新イテレーション| Plan
+    Review --> NextDecision{次は？}
+    NextDecision -->|次のストーリー| TDD
+    NextDecision -->|振り返り| Retro["/xp:retro<br/>振り返り"]
+    NextDecision -->|新要件| Discovery
     
     Retro --> NextDecision2{次は？}
-    NextDecision2 -->|続行| Story
-    NextDecision2 -->|新計画| Plan
+    NextDecision2 -->|続行| TDD
+    NextDecision2 -->|新計画| Discovery
     NextDecision2 -->|終了| End([終了])
     
-    style Plan fill:#e1f5fe
-    style Story fill:#f3e5f5
-    style Develop fill:#fff3e0
-    style Review fill:#f1f8e9
-    style Retro fill:#fce4ec
-    style Done fill:#c8e6c9
+    style Discovery fill:#e1f5fe
+    style Design fill:#f3e5f5
+    style Scaffold fill:#fff3e0
+    style TDD fill:#ffecb3
+    style CICD fill:#e8f5e9
+    style Preview fill:#f1f8e9
+    style Review fill:#fce4ec
+    style Retro fill:#ede7f6
 ```
 
-### ステータス遷移図
+### Intent Model 駆動フロー
 
 ```mermaid
 stateDiagram-v2
-    [*] --> selected
-    selected --> in_progress
-    in_progress --> testing
-    testing --> done
-    testing --> in_progress
+    [*] --> discovery
+    discovery --> design
+    design --> scaffold
+    scaffold --> implementation
+    implementation --> cicd_setup
+    cicd_setup --> preview
+    preview --> review
+    review --> done
+    preview --> implementation
     done --> [*]
     
-    note right of selected
-        計画で選定された
-        ストーリー
+    note right of discovery
+        Intent Model
+        信頼度分析
     end note
     
-    note right of in_progress
-        詳細化され
-        開発中
+    note right of design
+        C4アーキテクチャ
+        ADR決定記録
     end note
     
-    note right of testing
-        TDD完了
-        レビュー待ち
+    note right of implementation
+        TDDサイクル
+        Red→Green→Refactor
     end note
     
-    note right of done
-        受け入れ完了
-        マージ済み
+    note right of review
+        メトリクス分析
+        振り返り
     end note
 ```
 
-### TDDサイクル詳細（develop内部）
+### TDDサイクル詳細（/xp:tdd内部）
 
 ```mermaid
 graph LR
-    subgraph "/cc-xp:develop"
+    subgraph "/xp:tdd"
         Red[Red<br/>失敗するテスト作成] --> Green[Green<br/>最小限の実装]
         Green --> Refactor[Refactor<br/>コード改善]
-        Refactor --> Commit[testing状態へ]
+        Refactor --> Commit[コミット・タグ]
     end
     
-    Start([in-progress]) --> Red
-    Commit --> End([testing])
+    Start([story]) --> Red
+    Commit --> End([implemented])
     
     style Red fill:#ffcdd2
     style Green fill:#c8e6c9
     style Refactor fill:#bbdefb
 ```
 
-### develop ↔ review ループ
+### Intent Model → MVP フロー
 
 ```mermaid
 sequenceDiagram
     participant Dev as Developer
-    participant D as /cc-xp:develop
-    participant R as /cc-xp:review
-    participant Git as Git Repository
+    participant Discovery as /xp:discovery
+    participant Design as /xp:design
+    participant TDD as /xp:tdd
+    participant Preview as /xp:preview
+    participant Review as /xp:review
     
-    Dev->>D: 実行
-    D->>D: Red Phase (テスト作成)
-    D->>Git: commit "test: 🔴"
-    D->>D: Green Phase (最小実装)
-    D->>Git: commit "feat: ✅"
-    D->>D: Refactor Phase (改善)
-    D->>Git: commit "refactor: ♻️"
-    D->>Dev: testing状態へ
+    Dev->>Discovery: 曖昧要件
+    Discovery->>Discovery: Intent Model構造化
+    Discovery->>Design: discovery-intent.yaml
     
-    Dev->>R: 実行
-    R->>R: デモ起動
-    R->>Dev: 動作確認依頼
+    Design->>Design: C4アーキテクチャ
+    Design->>Design: ADR生成
+    Design->>TDD: 設計成果物
+    
+    TDD->>TDD: Red→Green→Refactor
+    TDD->>Preview: 実装完了
+    
+    Preview->>Preview: デモ起動
+    Preview->>Dev: 動作確認依頼
     
     alt Accept
-        Dev->>R: accept
-        R->>Git: merge to main
-        R->>Git: tag "story-done"
-        R->>Dev: ✨ 完了！
+        Dev->>Review: accept
+        Review->>Review: メトリクス分析
+        Review->>Dev: ✨ 振り返り完了
     else Reject
-        Dev->>R: reject "理由"
-        R->>R: フィードバック記録
-        R->>Dev: 修正依頼
-        Dev->>D: 再実行（修正）
-    else Skip
-        Dev->>R: skip
-        R->>Dev: 保留
+        Dev->>TDD: reject + フィードバック
+        TDD->>TDD: 修正実装
     end
 ```
 
-### 完全統合された開発サイクル
+### Intent Model駆動開発サイクル
 
 ```bash
-# 1. 計画立案（YAGNI 原則）
-/cc-xp:plan "作りたいもの"
+# 1. 要件構造化（Intent Model）
+/xp:discovery "作りたいもの"
 
-# 2. ユーザーストーリー詳細化
-/cc-xp:story
+# 2. アーキテクチャ設計
+/xp:design
 
-# 3. TDD 実装（Red→Green→Refactor）
-/cc-xp:develop
+# 3. プロジェクト足場構築
+/xp:scaffold
 
-# 4. 動作確認とフィードバック
-/cc-xp:review [accept/reject]
+# 4. TDD 実装（Red→Green→Refactor）
+/xp:tdd "ユーザーストーリー"
 
-# 5. 振り返りと継続的改善
-/cc-xp:retro
+# 5. CI/CD 設定
+/xp:cicd
+
+# 6. 動作確認
+/xp:preview
+
+# 7. レビュー・振り返り
+/xp:review
+/xp:retro
 ```
 
 ### 実際の使用例
 
 ```bash
-# 新機能の計画
-/cc-xp:plan "ユーザー登録機能を追加したい"
+# 要件分析から始める
+/xp:discovery "ユーザー登録機能を追加したい"
 
-# ストーリー詳細化
-/cc-xp:story
+# アーキテクチャ設計
+/xp:design
 
-# TDD 実装
-/cc-xp:develop
+# プロジェクト初期化
+/xp:scaffold
 
-# 動作確認
-/cc-xp:review
+# TDDで実装
+/xp:tdd "ユーザー登録フォーム"
 
-# 受け入れまたは修正
-/cc-xp:review accept    # または reject "理由"
+# CI/CDパイプライン
+/xp:cicd
 
-# 振り返り
-/cc-xp:retro
+# 動作テスト
+/xp:preview
+
+# レビュー・振り返り
+/xp:review
+/xp:retro
 ```
 
 ## 🛠️ モダンツールチェーン対応
@@ -225,16 +241,16 @@ sequenceDiagram
 
 ### 従来の XP/TDD ツールの問題
 
-- 概念的すぎて実装が曖昧
-- ツールチェーン統合の複雑さ
-- フィーチャーレベルでの実用性不足
+- 曖昧要件からの設計飛躍が困難
+- 個別ツールの組み合わせの複雑さ
+- MVPと将来拡張の適切な分離が困難
 
 ### cc-xp-kit の解決策
 
-- **明確な 5 ステップ** - 迷わない開発フロー
-- **フィーチャーブランチ統合** - Git ワークフローと完全連携
-- **実用的 TDD** - Red→Green→Refactor の厳密実行
-- **バックログ管理** - YAML 形式でのストーリー追跡
+- **Intent Model 駆動** - 曖昧要件を構造化して信頼度分析
+- **サブエージェントアーキテクチャ** - 専門役割による文脈独立管理
+- **MVP+Add-ons 設計** - 確実な価値から段階的拡張
+- **外部統合対応** - MCP Server経由のシームレス連携
 
 ## 📊 典型的な開発セッション
 
@@ -274,14 +290,21 @@ gantt
 
 ```
 cc-xp-kit/
-├── src/cc-xp/                # 📦 5 つの XP コマンド
-│   ├── plan.md              # 計画立案
-│   ├── story.md             # ストーリー詳細化
-│   ├── develop.md           # TDD 実装
-│   ├── review.md            # 動作確認
-│   └── retro.md             # 振り返り
-├── install.sh                # モダンインストーラー
-├── tests/                    # テストスイート
+├── src/
+│   ├── .claude/
+│   │   ├── commands/xp/      # 📦 9つのXPコマンド
+│   │   │   ├── discovery.md  # 要件構造化
+│   │   │   ├── design.md     # アーキテクチャ設計
+│   │   │   ├── scaffold.md   # 足場構築
+│   │   │   ├── tdd.md        # TDD実装
+│   │   │   ├── cicd.md       # CI/CD設定
+│   │   │   ├── preview.md    # 動作確認
+│   │   │   ├── review.md     # レビュー
+│   │   │   ├── retro.md      # 振り返り
+│   │   │   └── doc.md        # テンプレート展開
+│   │   └── agents/           # サブエージェント
+│   └── docs/xp/              # テンプレート・メタデータ
+├── install.sh                # インストーラー
 └── docs/                     # ドキュメント
 ```
 
@@ -289,18 +312,24 @@ cc-xp-kit/
 
 ```
 your-project/
-├── .claude/commands/        # インストールされたコマンド（プロジェクトローカル）
-│   └── cc-xp/
-│       ├── plan.md          # /cc-xp:plan
-│       ├── story.md         # /cc-xp:story
-│       ├── develop.md       # /cc-xp:develop
-│       ├── review.md        # /cc-xp:review
-│       └── retro.md         # /cc-xp:retro
-├── docs/cc-xp/              # プロジェクトデータ（自動生成）
-│   ├── backlog.yaml         # ストーリーバックログ
-│   ├── metrics.json         # ベロシティ・メトリクス
-│   └── stories/             # 詳細化されたストーリー
-└── .git/                    # フィーチャーブランチ管理
+├── .claude/
+│   ├── commands/xp/         # インストールされたコマンド
+│   │   ├── discovery.md     # /xp:discovery
+│   │   ├── design.md        # /xp:design
+│   │   ├── scaffold.md      # /xp:scaffold
+│   │   ├── tdd.md           # /xp:tdd
+│   │   ├── cicd.md          # /xp:cicd
+│   │   ├── preview.md       # /xp:preview
+│   │   ├── review.md        # /xp:review
+│   │   ├── retro.md         # /xp:retro
+│   │   └── doc.md           # /xp:doc
+│   └── agents/              # サブエージェント（コピー）
+├── docs/xp/                 # プロジェクトデータ
+│   ├── discovery-intent.yaml # Intent Model
+│   ├── architecture.md      # C4アーキテクチャ
+│   ├── adr/                 # 決定記録
+│   └── metrics.json         # メトリクス
+└── .git/                    # Git管理
 ```
 
 ## 🎯 実用的な機能

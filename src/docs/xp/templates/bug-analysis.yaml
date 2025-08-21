@@ -1,0 +1,41 @@
+# Bug Analysis Template (for docs/xp/reports/bugs/<bug-id>/analysis.yaml)
+
+bug:
+  id: "bug-YYYYMMDD-HHMM-slug"
+  title: "<短い概要>"
+  reported_by: "<name or system>"
+  reported_at: "YYYY-MM-DDTHH:mm:ssZ"
+  severity: "<blocker|critical|major|minor|trivial>"
+  priority: "<p1|p2|p3|p4>"
+
+context:
+  environment: "<browser/os/runtime>"
+  version: "<app version/commit>"
+  related_commits: []
+  related_files: []  # 参考: ["src/game/rotation.ts", "src/store/score.ts"]
+
+reproduction:
+  steps:
+    - "1. ..."
+    - "2. ..."
+  expected: "..."
+  actual: "..."
+  evidence:
+    logs: ["<log snippet or path>"]
+    screenshots: ["<path or instructions>"]
+
+hypotheses:
+  - cause: "<仮説の説明>"
+    rationale: "<根拠>"
+    confidence: 0.85
+    suspected_files: ["..."]
+
+test_suggestions:
+  - name: "<失敗テスト名>"
+    purpose: "<何を保証したいか>"
+    setup: "<前提データ/状態>"
+    action: "<操作>"
+    assertion: "<期待アサーション>"
+
+notes:
+  - "補足/制約/既知の回避策"

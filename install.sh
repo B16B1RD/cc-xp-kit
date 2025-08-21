@@ -1,5 +1,5 @@
 #!/bin/bash
-# cc-xp-kit installer - Kent Beck哲学 + XPワークフローのインストーラー
+# cc-xp-kit installer - Intent Model駆動XPワークフローのインストーラー
 
 set -e
 
@@ -21,7 +21,7 @@ INSTALL_TYPE=""
 show_help() {
     echo -e "${BLUE}🚀 cc-xp-kit インストーラー${NC}"
     echo ""
-    echo "5つのXPスラッシュコマンドによる統合開発ワークフロー"
+    echo "9つのXPスラッシュコマンドによるIntent Model駆動開発"
     echo ""
     echo "使用方法："
     echo "  bash install.sh [オプション]"
@@ -85,7 +85,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo -e "${BLUE}🚀 cc-xp-kit インストーラー${NC}"
-echo -e "${BLUE}XP統合ワークフロー: plan → story → develop → review → retro${NC}"
+echo -e "${BLUE}Intent Model駆動XP: discovery → design → scaffold → tdd → cicd → preview → review → retro${NC}"
 if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
     echo -e "${YELLOW}📋 ブランチ: $BRANCH${NC}"
 fi
@@ -130,34 +130,56 @@ fi
 
 # ディレクトリ作成
 echo -e "${BLUE}ディレクトリを作成中...${NC}"
-mkdir -p "$INSTALL_DIR/cc-xp"
+mkdir -p "$INSTALL_DIR/xp"
+mkdir -p "$INSTALL_DIR/../agents"
 
-# cc-xp コマンドをインストール
-echo -e "${BLUE}5つのXPコマンドをインストール中...${NC}"
+# xp コマンドをインストール
+echo -e "${BLUE}9つのXPコマンドをインストール中...${NC}"
 
 # インストール用のソースディレクトリを特定
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# cc-xp コマンドファイル一覧
-CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
+# xp コマンドファイル一覧
+XP_FILES=("discovery.md" "design.md" "scaffold.md" "tdd.md" "cicd.md" "preview.md" "review.md" "retro.md" "doc.md")
+AGENT_FILES=("intake-classifier.md" "architect.md" "scaffolder.md" "tdd-dev.md" "devops.md" "previewer.md" "reviewer.md" "requirements-engineer.md")
 
-if [ -d "$SCRIPT_DIR/src/cc-xp" ]; then
+if [ -d "$SCRIPT_DIR/src/.claude/commands/xp" ]; then
     # ローカルファイルからコピー
-    for file in "${CC_XP_FILES[@]}"; do
-        if [ -f "$SCRIPT_DIR/src/cc-xp/$file" ]; then
-            cp "$SCRIPT_DIR/src/cc-xp/$file" "$INSTALL_DIR/cc-xp/"
-            echo -e "${BLUE}  ✓ cc-xp:${file%.md} をコピーしました${NC}"
+    for file in "${XP_FILES[@]}"; do
+        if [ -f "$SCRIPT_DIR/src/.claude/commands/xp/$file" ]; then
+            cp "$SCRIPT_DIR/src/.claude/commands/xp/$file" "$INSTALL_DIR/xp/"
+            echo -e "${BLUE}  ✓ xp:${file%.md} をコピーしました${NC}"
         else
             echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
         fi
     done
     
-elif [ -d "$(pwd)/src/cc-xp" ]; then
+    # サブエージェントファイルをコピー
+    for file in "${AGENT_FILES[@]}"; do
+        if [ -f "$SCRIPT_DIR/src/.claude/agents/$file" ]; then
+            cp "$SCRIPT_DIR/src/.claude/agents/$file" "$INSTALL_DIR/../agents/"
+            echo -e "${BLUE}  ✓ agent:${file%.md} をコピーしました${NC}"
+        else
+            echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
+        fi
+    done
+    
+elif [ -d "$(pwd)/src/.claude/commands/xp" ]; then
     # カレントディレクトリからコピー
-    for file in "${CC_XP_FILES[@]}"; do
-        if [ -f "$(pwd)/src/cc-xp/$file" ]; then
-            cp "$(pwd)/src/cc-xp/$file" "$INSTALL_DIR/cc-xp/"
-            echo -e "${BLUE}  ✓ cc-xp:${file%.md} をコピーしました${NC}"
+    for file in "${XP_FILES[@]}"; do
+        if [ -f "$(pwd)/src/.claude/commands/xp/$file" ]; then
+            cp "$(pwd)/src/.claude/commands/xp/$file" "$INSTALL_DIR/xp/"
+            echo -e "${BLUE}  ✓ xp:${file%.md} をコピーしました${NC}"
+        else
+            echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
+        fi
+    done
+    
+    # サブエージェントファイルをコピー
+    for file in "${AGENT_FILES[@]}"; do
+        if [ -f "$(pwd)/src/.claude/agents/$file" ]; then
+            cp "$(pwd)/src/.claude/agents/$file" "$INSTALL_DIR/../agents/"
+            echo -e "${BLUE}  ✓ agent:${file%.md} をコピーしました${NC}"
         else
             echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
         fi
@@ -165,7 +187,8 @@ elif [ -d "$(pwd)/src/cc-xp" ]; then
 else
     # GitHub raw URLから直接ダウンロード
     echo -e "${BLUE}GitHubからダウンロード中...${NC}"
-    BASE_URL="https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/${BRANCH}/src/cc-xp"
+    BASE_URL="https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/${BRANCH}/src/.claude/commands/xp"
+    AGENT_URL="https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/${BRANCH}/src/.claude/agents"
     
     if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
         echo -e "${YELLOW}📁 ブランチ: $BRANCH${NC}"
@@ -174,15 +197,32 @@ else
     # ブランチ存在確認と各ファイルダウンロード
     download_success=true
     
-    for file in "${CC_XP_FILES[@]}"; do
+    # XPコマンドファイルをダウンロード
+    for file in "${XP_FILES[@]}"; do
         if curl -fsSL --head "$BASE_URL/$file" >/dev/null 2>&1; then
-            curl -fsSL "$BASE_URL/$file" -o "$INSTALL_DIR/cc-xp/$file"
+            curl -fsSL "$BASE_URL/$file" -o "$INSTALL_DIR/xp/$file"
             
-            if [ ! -f "$INSTALL_DIR/cc-xp/$file" ] || [ ! -s "$INSTALL_DIR/cc-xp/$file" ]; then
+            if [ ! -f "$INSTALL_DIR/xp/$file" ] || [ ! -s "$INSTALL_DIR/xp/$file" ]; then
                 echo -e "${RED}❌ $file のダウンロードに失敗しました${NC}"
                 download_success=false
             else
-                echo -e "${BLUE}  ✓ cc-xp:${file%.md} をダウンロードしました${NC}"
+                echo -e "${BLUE}  ✓ xp:${file%.md} をダウンロードしました${NC}"
+            fi
+        else
+            echo -e "${YELLOW}⚠️ $file が見つかりません（スキップ）${NC}"
+        fi
+    done
+    
+    # サブエージェントファイルをダウンロード
+    for file in "${AGENT_FILES[@]}"; do
+        if curl -fsSL --head "$AGENT_URL/$file" >/dev/null 2>&1; then
+            curl -fsSL "$AGENT_URL/$file" -o "$INSTALL_DIR/../agents/$file"
+            
+            if [ ! -f "$INSTALL_DIR/../agents/$file" ] || [ ! -s "$INSTALL_DIR/../agents/$file" ]; then
+                echo -e "${RED}❌ $file のダウンロードに失敗しました${NC}"
+                download_success=false
+            else
+                echo -e "${BLUE}  ✓ agent:${file%.md} をダウンロードしました${NC}"
             fi
         else
             echo -e "${YELLOW}⚠️ $file が見つかりません（スキップ）${NC}"
@@ -201,27 +241,42 @@ fi
 echo ""
 echo -e "${GREEN}✅ cc-xp-kit インストール完了！${NC}"
 echo ""
-echo "📋 インストールされた5つのXPコマンド："
-for file in "${CC_XP_FILES[@]}"; do
-    if [ -f "$INSTALL_DIR/cc-xp/$file" ]; then
+echo "📋 インストールされた9つのXPコマンド："
+for file in "${XP_FILES[@]}"; do
+    if [ -f "$INSTALL_DIR/xp/$file" ]; then
         command_name="${file%.md}"
-        echo -e "${BLUE}  ✓ /cc-xp:${command_name}${NC}"
+        echo -e "${BLUE}  ✓ /xp:${command_name}${NC}"
     fi
 done
 echo ""
-echo "🔄 XP統合ワークフロー："
-echo -e "${BLUE}1. /cc-xp:plan \"作りたいもの\"${NC}     → 計画立案（YAGNI原則）"
-echo -e "${BLUE}2. /cc-xp:story${NC}                  → ユーザーストーリー詳細化"
-echo -e "${BLUE}3. /cc-xp:develop${NC}                → TDD実装（Red→Green→Refactor）"
-echo -e "${BLUE}4. /cc-xp:review [accept/reject]${NC}  → 動作確認とフィードバック"
-echo -e "${BLUE}5. /cc-xp:retro${NC}                  → 振り返りと継続的改善"
+echo "🤖 サブエージェント："
+for file in "${AGENT_FILES[@]}"; do
+    if [ -f "$INSTALL_DIR/../agents/$file" ]; then
+        agent_name="${file%.md}"
+        echo -e "${BLUE}  ✓ ${agent_name}${NC}"
+    fi
+done
+echo ""
+echo "🔄 Intent Model駆動XPワークフロー："
+echo -e "${BLUE}1. /xp:discovery \"曖昧要件\"${NC}        → Intent Model構造化"
+echo -e "${BLUE}2. /xp:design${NC}                       → C4アーキテクチャ・ADR生成"
+echo -e "${BLUE}3. /xp:scaffold${NC}                     → プロジェクト足場構築"
+echo -e "${BLUE}4. /xp:tdd \"story\"${NC}                 → TDD実装（Red→Green→Refactor）"
+echo -e "${BLUE}5. /xp:cicd${NC}                         → CI/CDパイプライン設定"
+echo -e "${BLUE}6. /xp:preview${NC}                      → 動作確認・デモ"
+echo -e "${BLUE}7. /xp:review${NC}                       → レビュー資料生成"
+echo -e "${BLUE}8. /xp:retro${NC}                        → メトリクス分析・振り返り"
+echo -e "${BLUE}9. /xp:doc <テンプレ名>${NC}               → テンプレート展開"
 echo ""
 echo "💡 使用例："
-echo "  /cc-xp:plan \"ウェブブラウザで遊べるテトリスが欲しい\""
-echo "  /cc-xp:story"
-echo "  /cc-xp:develop"
-echo "  /cc-xp:review accept"
-echo "  /cc-xp:retro"
+echo "  /xp:discovery \"ウェブブラウザで遊べるテトリスが欲しい\""
+echo "  /xp:design"
+echo "  /xp:scaffold"
+echo "  /xp:tdd \"ユーザーがテトリスを操作できる\""
+echo "  /xp:cicd"
+echo "  /xp:preview"
+echo "  /xp:review"
+echo "  /xp:retro"
 echo ""
 echo "🛠️ モダンツールチェーン対応："
 echo "  JavaScript/TypeScript: Bun, pnpm + Vite"
@@ -232,5 +287,5 @@ if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
     echo -e "${YELLOW}📋 インストール元: $BRANCH ブランチ${NC}"
     echo ""
 fi
-echo -e "${GREEN}Kent Beck XP + TDD統合開発を実践しましょう！${NC}"
-echo -e "${GREEN}小さく始めて、継続的にフィードバックを得る。それがXPの本質です。${NC}"
+echo -e "${GREEN}Intent Model駆動XP開発を実践しましょう！${NC}"
+echo -e "${GREEN}曖昧要件からMVPへ、構造化された意図で継続的な価値を。${NC}"
