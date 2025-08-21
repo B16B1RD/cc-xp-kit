@@ -324,10 +324,11 @@ your-project/
 │   │   ├── retro.md         # /xp:retro
 │   │   └── doc.md           # /xp:doc
 │   └── agents/              # サブエージェント（コピー）
-├── docs/xp/                 # プロジェクトデータ
+├── docs/xp/                 # プロジェクトデータ（プロジェクト用インストール時に自動コピー）
 │   ├── discovery-intent.yaml # Intent Model
 │   ├── architecture.md      # C4アーキテクチャ
 │   ├── adr/                 # 決定記録
+│   ├── templates/           # 各種テンプレート
 │   └── metrics.json         # メトリクス
 └── .git/                    # Git管理
 ```

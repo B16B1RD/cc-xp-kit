@@ -2,6 +2,39 @@
 
 cc-xp-kit の主要な変更をお知らせします。
 
+## [0.3.1] - 2025-08-21
+
+### 改善
+
+#### ドキュメント・テンプレート管理の強化
+
+- **--docs-only オプション追加** - docs/xp/テンプレートのみを任意ディレクトリにコピー
+- **プロジェクト用インストール改善** - docs/xp/を自動的にプロジェクトルートにコピー  
+- **柔軟なテンプレート配布** - ユーザー用インストール後でも必要時にテンプレート取得可能
+
+#### 使用方法
+
+```bash
+# テンプレートのみをカレントディレクトリにコピー
+bash install.sh --docs-only
+
+# 指定ディレクトリにコピー  
+bash install.sh --docs-only /path/to/project
+
+# プロジェクト用インストール（docs/xp/が自動コピーされる）
+bash install.sh --project
+```
+
+#### テンプレートファイル
+
+- **discovery-intent.yaml** - Intent Model構造化テンプレート
+- **architecture.md** - C4アーキテクチャ設計テンプレート
+- **adr.md** - Architecture Decision Record テンプレート
+- **acceptance_criteria.feature** - Gherkin形式受け入れ条件
+- **test_strategy.md** - テスト戦略テンプレート
+- **runbook.md** - 運用手順書テンプレート
+- その他各種開発文書テンプレート
+
 ## [0.3.0] - 2025-08-21
 
 ### 🎯 XP Kit アーキテクチャ完全刷新

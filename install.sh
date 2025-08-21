@@ -16,6 +16,57 @@ BRANCH=${CC_TDD_BRANCH:-$DEFAULT_BRANCH}
 NON_INTERACTIVE=false
 INSTALL_DIR=""
 INSTALL_TYPE=""
+DOCS_ONLY=false
+DOCS_TARGET_DIR="."
+
+# docs/xp/をコピーする関数
+copy_docs_xp() {
+    local target_dir="$1"
+    local success=true
+    
+    if [ -d "$SCRIPT_DIR/src/docs/xp" ]; then
+        # ローカルファイルからコピー
+        cp -r "$SCRIPT_DIR/src/docs/xp"/* "$target_dir/docs/xp/" 2>/dev/null
+        if [ $? -eq 0 ]; then
+            echo -e "${BLUE}  ✓ docs/xp/ をローカルファイルからコピーしました${NC}"
+        else
+            success=false
+        fi
+    elif [ -d "$(pwd)/src/docs/xp" ]; then
+        # カレントディレクトリからコピー
+        cp -r "$(pwd)/src/docs/xp"/* "$target_dir/docs/xp/" 2>/dev/null
+        if [ $? -eq 0 ]; then
+            echo -e "${BLUE}  ✓ docs/xp/ をカレントディレクトリからコピーしました${NC}"
+        else
+            success=false
+        fi
+    else
+        # GitHubからダウンロード（主要なファイルのみ）
+        local docs_url="https://raw.githubusercontent.com/B16B1RD/cc-xp-kit/${BRANCH}/src/docs/xp"
+        local files=("README_XP_KIT.md" "discovery-intent.yaml" "templates/architecture.md" "templates/adr.md" "templates/requirements.md" "templates/test_strategy.md" "templates/acceptance_criteria.feature" "templates/runbook.md" "templates/quality-gates.md" "templates/release-strategy.md" "templates/bug-analysis.yaml" "templates/discovery-intent.yaml")
+        
+        mkdir -p "$target_dir/docs/xp/templates"
+        mkdir -p "$target_dir/docs/xp/dev-notes"
+        
+        for file in "${files[@]}"; do
+            if curl -fsSL "$docs_url/$file" -o "$target_dir/docs/xp/$file" 2>/dev/null; then
+                echo -e "${BLUE}  ✓ $file をダウンロードしました${NC}"
+            else
+                echo -e "${YELLOW}  ⚠️ $file のダウンロードに失敗しました${NC}"
+                success=false
+            fi
+        done
+        
+        # dev-notes/intent-decision-heuristics.md
+        if curl -fsSL "$docs_url/dev-notes/intent-decision-heuristics.md" -o "$target_dir/docs/xp/dev-notes/intent-decision-heuristics.md" 2>/dev/null; then
+            echo -e "${BLUE}  ✓ dev-notes/intent-decision-heuristics.md をダウンロードしました${NC}"
+        else
+            echo -e "${YELLOW}  ⚠️ dev-notes/intent-decision-heuristics.md のダウンロードに失敗しました${NC}"
+        fi
+    fi
+    
+    return $([ "$success" = "true" ])
+}
 
 # ヘルプ表示
 show_help() {
@@ -30,6 +81,7 @@ show_help() {
     echo "  --project          プロジェクト用インストール (.claude/commands/)"
     echo "  --user             ユーザー用インストール (~/.claude/commands/)"
     echo "  --local, --dev     ローカル開発用 (.claude/commands/ のエイリアス)"
+    echo "  --docs-only [DIR]  docs/xp/テンプレートのみをコピー (デフォルト: カレントディレクトリ)"
     echo ""
     echo "その他のオプション："
     echo "  -b, --branch BRANCH    インストール元のブランチを指定 (デフォルト: main)"
@@ -42,6 +94,8 @@ show_help() {
     echo "  bash install.sh                          # インタラクティブ選択"
     echo "  bash install.sh --local                  # ローカル開発用（非対話）"
     echo "  bash install.sh --user                   # ユーザー用（非対話）"
+    echo "  bash install.sh --docs-only              # テンプレートのみカレントディレクトリに"
+    echo "  bash install.sh --docs-only my-project   # テンプレートを指定ディレクトリに"
     echo "  bash install.sh --local --branch develop # ブランチ指定と組み合わせ"
     echo "  CC_TDD_BRANCH=feature bash install.sh    # 環境変数でブランチ指定"
     echo ""
@@ -72,6 +126,15 @@ while [[ $# -gt 0 ]]; do
             NON_INTERACTIVE=true
             shift
             ;;
+        --docs-only)
+            DOCS_ONLY=true
+            if [[ -n "$2" && "$2" != -* ]]; then
+                DOCS_TARGET_DIR="$2"
+                shift 2
+            else
+                shift
+            fi
+            ;;
         -h|--help)
             show_help
             exit 0
@@ -93,6 +156,32 @@ if [ "$NON_INTERACTIVE" = "true" ]; then
     echo -e "${BLUE}📁 インストール先: $INSTALL_TYPE${NC}"
 fi
 echo ""
+
+# --docs-only モードの場合、docs/xp/のみをコピーして終了
+if [ "$DOCS_ONLY" = "true" ]; then
+    echo -e "${BLUE}📋 docs/xp/ テンプレートをコピー中...${NC}"
+    echo -e "${BLUE}📍 コピー先: $DOCS_TARGET_DIR/docs/xp/${NC}"
+    
+    # コピー先ディレクトリ作成
+    mkdir -p "$DOCS_TARGET_DIR/docs/xp"
+    
+    # コピー処理
+    copy_docs_xp "$DOCS_TARGET_DIR"
+    
+    echo ""
+    echo -e "${GREEN}✅ docs/xp/ テンプレートのコピー完了！${NC}"
+    echo -e "${BLUE}📍 場所: $DOCS_TARGET_DIR/docs/xp/${NC}"
+    echo ""
+    echo "📋 コピーされたテンプレート:"
+    find "$DOCS_TARGET_DIR/docs/xp" -name "*.md" -o -name "*.yaml" -o -name "*.feature" | sort | while read file; do
+        echo -e "${BLUE}  ✓ ${file#$DOCS_TARGET_DIR/docs/xp/}${NC}"
+    done
+    echo ""
+    echo "💡 使用方法:"
+    echo "  /xp:doc <テンプレート名>    # テンプレートを展開"
+    echo "  /xp:discovery \"<要件>\"     # Intent Model構造化"
+    exit 0
+fi
 
 # インストール先の選択（非対話モードでない場合のみ）
 if [ "$NON_INTERACTIVE" != "true" ]; then
@@ -133,6 +222,11 @@ echo -e "${BLUE}ディレクトリを作成中...${NC}"
 mkdir -p "$INSTALL_DIR/xp"
 mkdir -p "$INSTALL_DIR/../agents"
 
+# プロジェクト用インストールの場合、docs/xp/もコピー
+if [ "$INSTALL_TYPE" = "project" ]; then
+    mkdir -p "docs/xp"
+fi
+
 # xp コマンドをインストール
 echo -e "${BLUE}9つのXPコマンドをインストール中...${NC}"
 
@@ -164,6 +258,12 @@ if [ -d "$SCRIPT_DIR/src/.claude/commands/xp" ]; then
         fi
     done
     
+    # プロジェクト用インストールの場合、docs/xp/もコピー
+    if [ "$INSTALL_TYPE" = "project" ]; then
+        echo -e "${BLUE}📋 docs/xp/ テンプレートをコピー中...${NC}"
+        copy_docs_xp "."
+    fi
+    
 elif [ -d "$(pwd)/src/.claude/commands/xp" ]; then
     # カレントディレクトリからコピー
     for file in "${XP_FILES[@]}"; do
@@ -184,6 +284,12 @@ elif [ -d "$(pwd)/src/.claude/commands/xp" ]; then
             echo -e "${YELLOW}  ⚠️ $file が見つかりません${NC}"
         fi
     done
+    
+    # プロジェクト用インストールの場合、docs/xp/もコピー
+    if [ "$INSTALL_TYPE" = "project" ]; then
+        echo -e "${BLUE}📋 docs/xp/ テンプレートをコピー中...${NC}"
+        copy_docs_xp "."
+    fi
 else
     # GitHub raw URLから直接ダウンロード
     echo -e "${BLUE}GitHubからダウンロード中...${NC}"
@@ -234,6 +340,12 @@ else
         echo -e "${YELLOW}💡 ブランチ '$BRANCH' を確認してください${NC}"
         echo "   例: main, develop, feature/branch-name"
         exit 1
+    fi
+    
+    # プロジェクト用インストールの場合、docs/xp/もコピー
+    if [ "$INSTALL_TYPE" = "project" ]; then
+        echo -e "${BLUE}📋 docs/xp/ テンプレートをコピー中...${NC}"
+        copy_docs_xp "."
     fi
 fi
 
