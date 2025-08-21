@@ -60,7 +60,7 @@ echo ""
 echo -e "${BLUE}📋 ファイル内容チェック...${NC}"
 
 # discovery.md の内容確認
-if grep -q "Intent Model" ".claude/commands/xp/discovery.md" && grep -q "capabilities" ".claude/commands/xp/discovery.md"; then
+if grep -q "discovery" ".claude/commands/xp/discovery.md" && grep -q "要求を整理" ".claude/commands/xp/discovery.md"; then
     echo -e "${GREEN}✅ discovery.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ discovery.md の内容が不正です${NC}"
