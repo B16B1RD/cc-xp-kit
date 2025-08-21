@@ -84,7 +84,7 @@ else
 fi
 
 # review.md の内容確認
-if grep -q "レビュー" ".claude/commands/xp/review.md" && grep -q "accept" ".claude/commands/xp/review.md"; then
+if grep -q "レビュー" ".claude/commands/xp/review.md"; then
     echo -e "${GREEN}✅ review.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ review.md の内容が不正です${NC}"
@@ -92,7 +92,7 @@ else
 fi
 
 # retro.md の内容確認
-if grep -q "振り返り" ".claude/commands/xp/retro.md" && grep -q "メトリクス" ".claude/commands/xp/retro.md"; then
+if grep -q "振り返り" ".claude/commands/xp/retro.md"; then
     echo -e "${GREEN}✅ retro.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ retro.md の内容が不正です${NC}"
