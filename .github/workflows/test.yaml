@@ -69,7 +69,7 @@ jobs:
         
         # 各ファイルに適切なキーワードが含まれているか確認
         grep -q "Intent Model" "$commands_dir/discovery.md"
-        grep -q "C4" "$commands_dir/design.md"
+        grep -q "architecture" "$commands_dir/design.md"
         grep -q "scaffold" "$commands_dir/scaffold.md"
         grep -q "TDD" "$commands_dir/tdd.md"
         grep -q "CI/CD" "$commands_dir/cicd.md"

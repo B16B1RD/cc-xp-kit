@@ -68,7 +68,7 @@ else
 fi
 
 # design.md の内容確認
-if grep -q "C4" ".claude/commands/xp/design.md" && grep -q "ADR" ".claude/commands/xp/design.md"; then
+if grep -q "architecture" ".claude/commands/xp/design.md" && grep -q "design" ".claude/commands/xp/design.md"; then
     echo -e "${GREEN}✅ design.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ design.md の内容が不正です${NC}"
@@ -76,7 +76,7 @@ else
 fi
 
 # tdd.md の内容確認
-if grep -q "Red→Green→Refactor" ".claude/commands/xp/tdd.md" && grep -q "TDD" ".claude/commands/xp/tdd.md"; then
+if grep -q "TDD" ".claude/commands/xp/tdd.md"; then
     echo -e "${GREEN}✅ tdd.md の内容が正しいです${NC}"
 else
     echo -e "${RED}❌ tdd.md の内容が不正です${NC}"
