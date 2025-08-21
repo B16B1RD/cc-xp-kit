@@ -10,10 +10,10 @@
 
 ## 分岐の考え方
 
-1. **体験（Outcome）**に直結するか？
-2. **運用/配布（Delivery/Operational）**の制約を満たすか？
-3. **データ範囲（Data Scope）/協調（Collaboration）**が本当に必要か？
-4. 将来の Roadmap が **Optional Add-on** で差し込み可能か？
+1. **体験（Outcome）**に直結するか
+2. **運用/配布（Delivery/Operational）**の制約を満たすか
+3. **データ範囲（Data Scope）/協調（Collaboration）**が本当に必要か
+4. 将来の Roadmap が **Optional Add-on** で差し込み可能か
 
 ## よくある例
 
