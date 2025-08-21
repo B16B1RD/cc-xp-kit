@@ -39,41 +39,41 @@ jobs:
     
     - name: Verify cc-xp installation
       run: |
-        # 5つのcc-xpファイルの確認
-        CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
+        # 9つのxpファイルの確認
+        XP_FILES=("discovery.md" "design.md" "scaffold.md" "tdd.md" "cicd.md" "preview.md" "review.md" "retro.md" "doc.md")
         
         if [ "${{ matrix.install-type }}" = "user" ]; then
-          for file in "${CC_XP_FILES[@]}"; do
-            test -f "$HOME/.claude/commands/cc-xp/$file"
+          for file in "${XP_FILES[@]}"; do
+            test -f "$HOME/.claude/commands/xp/$file"
             echo "✅ $file installed"
           done
         else
           cd test-project
-          for file in "${CC_XP_FILES[@]}"; do
-            test -f ".claude/commands/cc-xp/$file"
+          for file in "${XP_FILES[@]}"; do
+            test -f ".claude/commands/xp/$file"
             echo "✅ $file installed"
           done
         fi
     
-    - name: Verify cc-xp content
+    - name: Verify xp content
       run: |
         # ファイル内容の基本確認
-        CC_XP_FILES=("plan.md" "story.md" "develop.md" "review.md" "retro.md")
+        XP_FILES=("discovery.md" "design.md" "scaffold.md" "tdd.md" "cicd.md" "preview.md" "review.md" "retro.md" "doc.md")
         
         if [ "${{ matrix.install-type }}" = "user" ]; then
-          commands_dir="$HOME/.claude/commands/cc-xp"
+          commands_dir="$HOME/.claude/commands/xp"
         else
           cd test-project
-          commands_dir=".claude/commands/cc-xp"
+          commands_dir=".claude/commands/xp"
         fi
         
-        # 各ファイルにXPキーワードが含まれているか確認
-        grep -q "XP plan" "$commands_dir/plan.md"
-        grep -q "XP story" "$commands_dir/story.md"
-        grep -q "XP develop" "$commands_dir/develop.md"
-        grep -q "XP review" "$commands_dir/review.md"
-        grep -q "XP retro" "$commands_dir/retro.md"
-        echo "✅ All cc-xp files have correct content"
+        # 各ファイルに適切なキーワードが含まれているか確認
+        grep -q "Intent Model" "$commands_dir/discovery.md"
+        grep -q "C4" "$commands_dir/design.md"
+        grep -q "scaffold" "$commands_dir/scaffold.md"
+        grep -q "TDD" "$commands_dir/tdd.md"
+        grep -q "CI/CD" "$commands_dir/cicd.md"
+        echo "✅ All xp files have correct content"
 
   test-suite:
     name: Run Test Suite
